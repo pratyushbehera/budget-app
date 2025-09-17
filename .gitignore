@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+.env
+
+# React
+build/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
