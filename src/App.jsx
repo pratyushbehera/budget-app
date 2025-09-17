@@ -105,17 +105,17 @@ export default function App() {
             try {
                 let response;
                 if (action.type === 'addTransaction') {
-                    response = await fetch('/transactions', {
+                    response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(action.payload)
                     });
                 } else if (action.type === 'removeTransaction') {
-                    response = await fetch(`/transactions/${action.payload.id}`, {
+                    response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/${action.payload.id}`, {
                         method: 'DELETE',
                     });
                 } else if (action.type === 'updatePlans') {
-                    response = await fetch('/plans', {
+                    response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/plans`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: action.payload })
@@ -153,14 +153,14 @@ export default function App() {
 
     // Fetch data from backend
     const fetchTransactions = () => {
-        fetch('/transactions')
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions`)
             .then(res => res.json())
             .then(data => setTransactions(data))
             .catch(err => console.error("Error fetching transactions:", err));
     };
 
     const fetchPlans = () => {
-        fetch('/plans')
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/plans`)
             .then(res => res.json())
             .then(data => setPlans(data))
             .catch(err => console.error("Error fetching plans:", err));
@@ -189,7 +189,7 @@ export default function App() {
             `Based on this data, provide an actionable insight about planning vs. spending, identify areas of overspending or underspending, and offer a recommendation. Keep it under 200 words.`;
 
         try {
-            const response = await fetch('/generate-insight', {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generate-insight`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt })
@@ -204,7 +204,7 @@ export default function App() {
             setInsight(aiInsight);
 
             // Save the generated insight to the database
-            await fetch('/insights', {
+            await fetch(`${process.env.REACT_APP_BACKEND_URL}/insights`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -224,7 +224,7 @@ export default function App() {
 
     const fetchInsight = async () => {
         try {
-            const response = await fetch(`/insights/${currentYear}/${currentMonth}`);
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/insights/${currentYear}/${currentMonth}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch insight.');
             }
@@ -272,7 +272,7 @@ export default function App() {
         const amount = Number(form.amount || 0);
         if (!form.date || !form.category || !amount) return alert("Please fill date, category and amount (non-zero)");
         const t = { id: uid(), date: form.date, category: form.category, amount: amount, notes: form.notes };
-        fetch('/transactions', {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(t)
@@ -316,7 +316,7 @@ export default function App() {
         setIsDeleteModalOpen(false);
         setTransactionToDeleteId(null);
 
-        fetch(`/transactions/${id}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/transactions/${id}`, {
             method: 'DELETE',
         })
             .then(res => res.json())
@@ -428,7 +428,7 @@ export default function App() {
         console.log(`Attempting to copy plans from ${prevMonth}-${prevYear} to ${currentMonth}-${currentYear}`);
 
         try {
-            const response = await fetch('/plans');
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/plans`);
             if (!response.ok) throw new Error('Failed to fetch all plans for copy.');
             const allPlans = await response.json();
 
@@ -462,7 +462,7 @@ export default function App() {
             return;
         }
 
-        fetch('/plans', {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/plans`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: plans })
