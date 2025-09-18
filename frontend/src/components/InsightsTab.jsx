@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 
 export function InsightsTab({ generateInsight, insight, isLoading }) {
@@ -26,3 +26,9 @@ export function InsightsTab({ generateInsight, insight, isLoading }) {
         </div>
     );
 }
+
+InsightsTab.propTypes = {
+    generateInsight: PropTypes.func.isRequired,
+    insight: PropTypes.string.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+};

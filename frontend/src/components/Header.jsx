@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import { Download } from "lucide-react";
 import { MonthYearSelector } from "./MonthYearSelector";
 
@@ -20,3 +20,12 @@ export function Header({ currentMonth, setCurrentMonth, currentYear, setCurrentY
         </header>
     );
 }
+
+Header.propTypes = {
+    currentMonth: PropTypes.string.isRequired,
+    setCurrentMonth: PropTypes.func.isRequired,
+    currentYear: PropTypes.string.isRequired,
+    setCurrentYear: PropTypes.func.isRequired,
+    exportCSV: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired,
+};

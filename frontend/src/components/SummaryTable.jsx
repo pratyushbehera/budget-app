@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from "react";
 import { formatCurrency } from "../utils/helpers";
 import { DEFAULT_CATEGORIES } from "../utils/constants";
@@ -69,3 +70,14 @@ export function SummaryTable({ sumsByCategory, plans, updatePlanned, incomeTotal
         </div>
     );
 }
+
+SummaryTable.propTypes = {
+    sumsByCategory: PropTypes.object.isRequired,
+    plans: PropTypes.object.isRequired,
+    updatePlanned: PropTypes.func.isRequired,
+    incomeTotal: PropTypes.number.isRequired,
+    expenseTotal: PropTypes.number.isRequired,
+    hasPendingPlanChanges: PropTypes.bool.isRequired,
+    applyPlans: PropTypes.func.isRequired,
+    copyPreviousMonthPlans: PropTypes.func.isRequired,
+};

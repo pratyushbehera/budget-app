@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export function Tabs({ children, activeTab, onTabChange }) {
 
@@ -34,3 +35,15 @@ export function Tabs({ children, activeTab, onTabChange }) {
 export function TabContent({ children, label, value }) {
     return <div className="w-full" data-label={label} data-value={value}>{children}</div>;
 }
+
+Tabs.propTypes = {
+    children: PropTypes.node.isRequired,
+    activeTab: PropTypes.string.isRequired,
+    onTabChange: PropTypes.func.isRequired,
+};
+
+TabContent.propTypes = {
+    children: PropTypes.node.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+};

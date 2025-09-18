@@ -1,5 +1,5 @@
-import React from "react";
 import { PlusCircle } from "lucide-react";
+import PropTypes from 'prop-types';
 
 export function AddTransactionForm({ form, setForm, addTransaction, flatCategoryList }) {
     const isFormValid = form.date && form.category && Number(form.amount) > 0;
@@ -30,3 +30,10 @@ export function AddTransactionForm({ form, setForm, addTransaction, flatCategory
         </div>
     );
 }
+
+AddTransactionForm.propTypes = {
+    form: PropTypes.object.isRequired,
+    setForm: PropTypes.func.isRequired,
+    addTransaction: PropTypes.func.isRequired,
+    flatCategoryList: PropTypes.array.isRequired,
+};

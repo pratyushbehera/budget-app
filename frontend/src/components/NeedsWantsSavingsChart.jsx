@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { FLAT_COLORS } from "../utils/constants";
 import { formatCurrency } from "../utils/helpers";
@@ -39,3 +39,10 @@ export function NeedsWantsSavingsChart({ pieData, needsBreakdown, wantsBreakdown
         </div>
     );
 }
+
+NeedsWantsSavingsChart.propTypes = {
+    pieData: PropTypes.array.isRequired,
+    needsBreakdown: PropTypes.object.isRequired,
+    wantsBreakdown: PropTypes.object.isRequired,
+    savingsBreakdown: PropTypes.object.isRequired,
+};
