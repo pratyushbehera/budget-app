@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import { formatCurrency } from "../utils/helpers";
 
 export function SummaryCards({ incomeTotal, expenseTotal, savings, savingsPct, plans }) {
@@ -24,3 +24,11 @@ export function SummaryCards({ incomeTotal, expenseTotal, savings, savingsPct, p
         </section>
     );
 }
+
+SummaryCards.propTypes = {
+    incomeTotal: PropTypes.number.isRequired,
+    expenseTotal: PropTypes.number.isRequired,
+    savings: PropTypes.number.isRequired,
+    savingsPct: PropTypes.number.isRequired,
+    plans: PropTypes.object.isRequired,
+};

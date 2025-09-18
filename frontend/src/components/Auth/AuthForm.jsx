@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export function AuthForm({
     title,
@@ -50,3 +50,13 @@ export function AuthForm({
         </div>
     );
 }
+
+AuthForm.propTypes = {
+    title: PropTypes.string.isRequired,
+    formState: PropTypes.object.isRequired,
+    setFormState: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    isSubmitting: PropTypes.bool.isRequired,
+    error: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+};

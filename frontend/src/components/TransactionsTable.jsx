@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import { Trash2 } from "lucide-react";
 import { formatCurrency } from "../utils/helpers";
 
@@ -41,3 +41,13 @@ export function TransactionsTable({ selectedCategoryFilter, setSelectedCategoryF
         </div>
     );
 }
+
+TransactionsTable.propTypes = {
+    selectedCategoryFilter: PropTypes.string.isRequired,
+    setSelectedCategoryFilter: PropTypes.func.isRequired,
+    searchText: PropTypes.string.isRequired,
+    setSearchText: PropTypes.func.isRequired,
+    flatCategoryList: PropTypes.array.isRequired,
+    filteredTransactions: PropTypes.array.isRequired,
+    removeTransaction: PropTypes.func.isRequired,
+};

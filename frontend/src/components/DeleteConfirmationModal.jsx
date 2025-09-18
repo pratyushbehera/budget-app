@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 
 export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, itemId }) {
     if (!isOpen) return null;
@@ -20,3 +20,10 @@ export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, itemId }) 
         </div>
     );
 }
+
+DeleteConfirmationModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onConfirm: PropTypes.func.isRequired,
+    itemId: PropTypes.string.isRequired,
+};

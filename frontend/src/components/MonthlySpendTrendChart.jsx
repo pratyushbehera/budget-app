@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import { BarChart, Bar, XAxis, YAxis, Legend, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 
 export function MonthlySpendTrendChart({ monthlyTrend }) {
@@ -21,3 +21,7 @@ export function MonthlySpendTrendChart({ monthlyTrend }) {
         </div>
     );
 }
+
+MonthlySpendTrendChart.propTypes = {
+    monthlyTrend: PropTypes.array.isRequired,
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from 'prop-types';
 
 const months = [
     { value: "01", label: "January" },
@@ -44,3 +44,10 @@ export function MonthYearSelector({ currentMonth, setCurrentMonth, currentYear, 
         </div>
     );
 }
+
+MonthYearSelector.propTypes = {
+    currentMonth: PropTypes.string.isRequired,
+    setCurrentMonth: PropTypes.func.isRequired,
+    currentYear: PropTypes.string.isRequired,
+    setCurrentYear: PropTypes.func.isRequired,
+};

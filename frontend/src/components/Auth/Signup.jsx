@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { AuthForm } from './AuthForm';
 
 export function Signup({ onSignupSuccess, onSwitchToLogin }) {
@@ -17,7 +18,7 @@ export function Signup({ onSignupSuccess, onSwitchToLogin }) {
         setError(null);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,3 +79,8 @@ export function Signup({ onSignupSuccess, onSwitchToLogin }) {
         </AuthForm>
     );
 }
+
+Signup.propTypes = {
+    onSignupSuccess: PropTypes.func.isRequired,
+    onSwitchToLogin: PropTypes.func.isRequired,
+};
