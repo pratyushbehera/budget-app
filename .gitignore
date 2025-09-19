@@ -4,6 +4,10 @@ node_modules/
 
 # React
 build/
+dist/
+
+#Vite
+.vite/
 
 # Logs
 *.log
