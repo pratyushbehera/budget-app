@@ -25,6 +25,31 @@ export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(!!userToken);
     const [showLoginScreen, setShowLoginScreen] = useState(true); // true for login, false for signup
 
+    const logoutUser = useCallback(() => {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userInfo');
+        setUserToken(null);
+        setUserInfo(null);
+        setIsAuthenticated(false);
+        setShowLoginScreen(true); // Go back to login screen after logout
+    }, []);
+
+    const authFetch = useCallback(async (url, options = {}) => {
+        const token = localStorage.getItem('userToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+            ...options.headers,
+        };
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+            // If token is invalid or expired, log out the user
+            logoutUser(); // Assuming logoutUser is defined and handles state reset
+            throw new Error('Unauthorized: Please log in again.');
+        }
+        return response;
+    }, [logoutUser]); // Include logoutUser in dependency array
+
     useEffect(() => {
         if (userToken && userInfo) {
             setIsAuthenticated(true);
@@ -47,15 +72,6 @@ export default function App() {
         setUserToken(data.token);
         setUserInfo(data);
         setIsAuthenticated(true);
-    };
-
-    const logoutUser = () => {
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('userInfo');
-        setUserToken(null);
-        setUserInfo(null);
-        setIsAuthenticated(false);
-        setShowLoginScreen(true); // Go back to login screen after logout
     };
 
     // Transactions store
@@ -103,19 +119,17 @@ export default function App() {
             try {
                 let response;
                 if (action.type === 'addTransaction') {
-                    response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`, {
+                    response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(action.payload)
                     });
                 } else if (action.type === 'removeTransaction') {
-                    response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/transactions/${action.payload.id}`, {
+                    response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/transactions/${action.payload.id}`, {
                         method: 'DELETE',
                     });
                 } else if (action.type === 'updatePlans') {
-                    response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/plans`, {
+                    response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/plans`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: action.payload })
                     });
                 }
@@ -144,27 +158,29 @@ export default function App() {
         }
     };
 
+
+    // Fetch data from backend
+    const fetchTransactions = useCallback(() => {
+        authFetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`)
+            .then(res => res.json())
+            .then(data => setTransactions(data))
+            .catch(err => console.error("Error fetching transactions:", err));
+    }, [authFetch]);
+
+    const fetchPlans = useCallback(() => {
+        authFetch(`${import.meta.env.VITE_BACKEND_URL}/plans`)
+            .then(res => res.json())
+            .then(data => setPlans(data))
+            .catch(err => console.error("Error fetching plans:", err));
+    }, [authFetch]);
+
     useEffect(() => {
         if (isAuthenticated) {
             fetchTransactions();
             fetchPlans(); // This will fetch all plans, then monthlyPlans useMemo will filter
         }
-    }, [isAuthenticated]); // Load all plans once on initial mount and when authenticated status changes
+    }, [isAuthenticated, fetchTransactions, fetchPlans]); // Load all plans once on initial mount and when authenticated status changes
 
-    // Fetch data from backend
-    const fetchTransactions = () => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`)
-            .then(res => res.json())
-            .then(data => setTransactions(data))
-            .catch(err => console.error("Error fetching transactions:", err));
-    };
-
-    const fetchPlans = () => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/plans`)
-            .then(res => res.json())
-            .then(data => setPlans(data))
-            .catch(err => console.error("Error fetching plans:", err));
-    };
 
     // Filter transactions by current month and year
     const filteredTransactionsByMonth = useMemo(() => {
@@ -189,9 +205,8 @@ export default function App() {
             `Based on this data, provide an actionable insight about planning vs. spending, identify areas of overspending or underspending, and offer a recommendation. Keep it under 200 words.`;
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/generate-insight`, {
+            const response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/generate-insight`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt })
             });
 
@@ -204,9 +219,8 @@ export default function App() {
             setInsight(aiInsight);
 
             // Save the generated insight to the database
-            await fetch(`${import.meta.env.VITE_BACKEND_URL}/insights`, {
+            await authFetch(`${import.meta.env.VITE_BACKEND_URL}/insights`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     year: currentYear,
                     month: currentMonth,
@@ -224,7 +238,7 @@ export default function App() {
 
     const fetchInsight = useCallback(async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/insights/${currentYear}/${currentMonth}`);
+            const response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/insights/${currentYear}/${currentMonth}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch insight.');
             }
@@ -234,13 +248,13 @@ export default function App() {
             console.error("Error fetching insight:", error);
             setInsight("Failed to load previous insight.");
         }
-    }, [currentYear, currentMonth]);
+    }, [currentYear, currentMonth, authFetch]);
 
     useEffect(() => {
-        if (activeTab === "insights") {
+        if (activeTab === "insights" && isAuthenticated) {
             fetchInsight();
         }
-    }, [activeTab, currentMonth, currentYear, fetchInsight]);
+    }, [activeTab, currentMonth, currentYear, fetchInsight, isAuthenticated]);
 
     // Filtered plans for the current month and year
     const monthlyPlans = useMemo(() => {
@@ -248,8 +262,10 @@ export default function App() {
     }, [plans, currentYear, currentMonth]);
 
     useEffect(() => {
-        localStorage.setItem("budget_plans_v1", JSON.stringify(plans));
-    }, [plans]);
+        if (isAuthenticated) {
+            localStorage.setItem("budget_plans_v1", JSON.stringify(plans));
+        }
+    }, [plans, isAuthenticated]);
 
     // Form state
     const flatCategoryList = useMemo(() => {
@@ -268,9 +284,8 @@ export default function App() {
         const amount = Number(form.amount || 0);
         if (!form.date || !form.category || !amount) return alert("Please fill date, category and amount (non-zero)");
         const t = { id: uid(), date: form.date, category: form.category, amount: amount, notes: form.notes };
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`, {
+        authFetch(`${import.meta.env.VITE_BACKEND_URL}/transactions`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(t)
         })
             .then(res => res.json())
@@ -311,7 +326,7 @@ export default function App() {
         setIsDeleteModalOpen(false);
         setTransactionToDeleteId(null);
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/transactions/${id}`, {
+        authFetch(`${import.meta.env.VITE_BACKEND_URL}/transactions/${id}`, {
             method: 'DELETE',
         })
             .then(res => res.json())
@@ -423,7 +438,7 @@ export default function App() {
         console.log(`Attempting to copy plans from ${prevMonth}-${prevYear} to ${currentMonth}-${currentYear}`);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/plans`);
+            const response = await authFetch(`${import.meta.env.VITE_BACKEND_URL}/plans`);
             if (!response.ok) throw new Error('Failed to fetch all plans for copy.');
             const allPlans = await response.json();
 
@@ -454,9 +469,8 @@ export default function App() {
             return;
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/plans`, {
+        authFetch(`${import.meta.env.VITE_BACKEND_URL}/plans`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: plans })
         })
             .then(res => res.json())

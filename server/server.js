@@ -15,6 +15,32 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
 };
 
+// Auth middleware
+const protect = async (req, res, next) => {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            // Get token from header
+            token = req.headers.authorization.split(' ')[1];
+
+            // Verify token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Attach user to the request
+            req.user = await User.findById(decoded.id).select('-password'); // Exclude password
+            next();
+        } catch (error) {
+            console.error(error);
+            res.status(401).json({ message: 'Not authorized, token failed' });
+        }
+    }
+
+    if (!token) {
+        res.status(401).json({ message: 'Not authorized, no token' });
+    }
+};
+
 // Middleware
 app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json()); // for parsing application/json
@@ -29,18 +55,19 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Transaction Routes
-app.get('/transactions', async (req, res) => {
+app.get('/transactions', protect, async (req, res) => {
   try {
-    const transactions = await Transaction.find();
+    const transactions = await Transaction.find({ userId: req.user.id });
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-app.post('/transactions', async (req, res) => {
+app.post('/transactions', protect, async (req, res) => {
   const transaction = new Transaction({
     id: req.body.id,
+    userId: req.user.id,
     date: req.body.date,
     category: req.body.category,
     amount: req.body.amount,
@@ -54,9 +81,9 @@ app.post('/transactions', async (req, res) => {
   }
 });
 
-app.delete('/transactions/:id', async (req, res) => {
+app.delete('/transactions/:id', protect, async (req, res) => {
   try {
-    await Transaction.deleteOne({ id: req.params.id });
+    await Transaction.deleteOne({ id: req.params.id, userId: req.user.id });
     res.json({ message: 'Transaction deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -65,9 +92,9 @@ app.delete('/transactions/:id', async (req, res) => {
 
 // Plan Routes
 // Get all plans (should be only one document storing all month/year plans)
-app.get('/plans', async (req, res) => {
+app.get('/plans', protect, async (req, res) => {
   try {
-    const plans = await Plan.findOne(); // Assuming only one plan document exists
+    const plans = await Plan.findOne({ userId: req.user.id }); // Assuming only one plan document exists per user
     res.json(plans ? plans.data : {});
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -75,17 +102,17 @@ app.get('/plans', async (req, res) => {
 });
 
 // Update/Create plans
-app.post('/plans', async (req, res) => {
+app.post('/plans', protect, async (req, res) => {
   try {
     const { data } = req.body;
-    let plan = await Plan.findOne();
+    let plan = await Plan.findOne({ userId: req.user.id });
     if (plan) {
       plan.data = data; // Update the entire data field
       await plan.save();
       res.json(plan.data);
     } else {
-      // Create new plan document if none exists
-      plan = new Plan({ data });
+      // Create new plan document if none exists for this user
+      plan = new Plan({ userId: req.user.id, data });
       await plan.save();
       res.status(201).json(plan.data);
     }
@@ -96,7 +123,7 @@ app.post('/plans', async (req, res) => {
 
 // Insight Routes
 // Save or update an insight for a specific month/year
-app.post('/insights', async (req, res) => {
+app.post('/insights', protect, async (req, res) => {
   try {
     const { year, month, content } = req.body;
 
@@ -104,14 +131,14 @@ app.post('/insights', async (req, res) => {
       return res.status(400).json({ message: 'Year, month, and content are required.' });
     }
 
-    let insight = await Insight.findOne({ year, month });
+    let insight = await Insight.findOne({ userId: req.user.id, year, month });
 
     if (insight) {
       insight.content = content;
       await insight.save();
       res.json(insight);
     } else {
-      insight = new Insight({ year, month, content });
+      insight = new Insight({ userId: req.user.id, year, month, content });
       await insight.save();
       res.status(201).json(insight);
     }
@@ -121,10 +148,10 @@ app.post('/insights', async (req, res) => {
 });
 
 // Get an insight for a specific month/year
-app.get('/insights/:year/:month', async (req, res) => {
+app.get('/insights/:year/:month', protect, async (req, res) => {
   try {
     const { year, month } = req.params;
-    const insight = await Insight.findOne({ year, month });
+    const insight = await Insight.findOne({ userId: req.user.id, year, month });
     res.json(insight ? insight.content : ""); // Return content or empty string if not found
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -132,7 +159,7 @@ app.get('/insights/:year/:month', async (req, res) => {
 });
 
 // New API endpoint for AI insights
-app.post('/generate-insight', async (req, res) => {
+app.post('/generate-insight', protect, async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt) {
