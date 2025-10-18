@@ -1,61 +1,71 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { AuthForm } from './AuthForm';
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { AuthForm } from "./AuthForm";
 
 export function Login({ onLoginSuccess, onSwitchToSignup }) {
-    const [formState, setFormState] = useState({
-        email: '',
-        password: '',
-    });
-    const [error, setError] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formState),
-            });
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formState),
+        },
+      );
 
-            const data = await response.json();
+      const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
-            }
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
 
-            // Call the success handler from App.jsx
-            onLoginSuccess(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+      // Call the success handler from App.jsx
+      onLoginSuccess(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    return (
-        <AuthForm
-            title="Login"
-            formState={formState}
-            setFormState={setFormState}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            error={error}
+  return (
+    <AuthForm
+      title="Login"
+      formState={formState}
+      setFormState={setFormState}
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      error={error}
+    >
+      <p className="text-center text-sm text-gray-600 mt-4">
+        Don&#39;t have an account?{" "}
+        <button
+          type="button"
+          onClick={onSwitchToSignup}
+          className="font-medium text-indigo-600 hover:text-indigo-500"
         >
-            <p className="text-center text-sm text-gray-600 mt-4">
-                Don&#39;t have an account? <button type="button" onClick={onSwitchToSignup} className="font-medium text-indigo-600 hover:text-indigo-500">Sign Up</button>
-            </p>
-        </AuthForm>
-    );
+          Sign Up
+        </button>
+      </p>
+    </AuthForm>
+  );
 }
 
 Login.propTypes = {
-    onLoginSuccess: PropTypes.func.isRequired,
-    onSwitchToSignup: PropTypes.func.isRequired,
+  onLoginSuccess: PropTypes.func.isRequired,
+  onSwitchToSignup: PropTypes.func.isRequired,
 };

@@ -12,33 +12,33 @@ const PORT = process.env.PORT || 5001;
 
 // JWT Secret
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
 };
 
 // Auth middleware
 const protect = async (req, res, next) => {
-    let token;
+  let token;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            // Get token from header
-            token = req.headers.authorization.split(' ')[1];
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      // Get token from header
+      token = req.headers.authorization.split(' ')[1];
 
-            // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Attach user to the request
-            req.user = await User.findById(decoded.id).select('-password'); // Exclude password
-            next();
-        } catch (error) {
-            console.error(error);
-            res.status(401).json({ message: 'Not authorized, token failed' });
-        }
+      // Attach user to the request
+      req.user = await User.findById(decoded.id).select('-password'); // Exclude password
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: 'Not authorized, token failed' });
     }
+  }
 
-    if (!token) {
-        res.status(401).json({ message: 'Not authorized, no token' });
-    }
+  if (!token) {
+    res.status(401).json({ message: 'Not authorized, no token' });
+  }
 };
 
 // Middleware
@@ -152,7 +152,7 @@ app.get('/insights/:year/:month', protect, async (req, res) => {
   try {
     const { year, month } = req.params;
     const insight = await Insight.findOne({ userId: req.user.id, year, month });
-    res.json(insight ? insight.content : ""); // Return content or empty string if not found
+    res.json(insight ? insight.content : ''); // Return content or empty string if not found
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -167,28 +167,28 @@ app.post('/generate-insight', protect, async (req, res) => {
   }
 
   if (!process.env.OPENROUTER_API_KEY) {
-    console.error("OPENROUTER_API_KEY is not set in environment variables.");
+    console.error('OPENROUTER_API_KEY is not set in environment variables.');
     return res.status(500).json({ message: 'Server configuration error: API key missing.' });
   }
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions",
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions',
       {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "deepseek/deepseek-chat-v3-0324:free", // Changed from deepseek/deepseek-chat-v3-0324:free due to rate limits. User may need to adjust based on their OpenRouter account/pricing plan.
-          messages: [{ role: "user", content: prompt }],
+          model: 'deepseek/deepseek-chat-v3-0324:free', // Changed from deepseek/deepseek-chat-v3-0324:free due to rate limits. User may need to adjust based on their OpenRouter account/pricing plan.
+          messages: [{ role: 'user', content: prompt }],
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("OpenRouter API error:", response.status, response.statusText, errorData);
+      console.error('OpenRouter API error:', response.status, response.statusText, errorData);
       throw new Error(`OpenRouter API error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
 
@@ -196,7 +196,7 @@ app.post('/generate-insight', protect, async (req, res) => {
     res.json(data.choices[0].message.content); // Assuming the response structure
 
   } catch (error) {
-    console.error("Error calling OpenRouter API:", error);
+    console.error('Error calling OpenRouter API:', error);
     res.status(500).json({ message: 'Failed to generate insight from AI.', error: error.message });
   }
 });
