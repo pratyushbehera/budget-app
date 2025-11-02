@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
+import { Goal, IndianRupee, Wallet } from "lucide-react";
 
 export function HomePage() {
   const { theme } = useTheme();
@@ -39,7 +40,7 @@ export function HomePage() {
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
               Track your expenses, set budgets, and achieve your financial goals
               with our intuitive budget tracking application.
             </p>
@@ -63,7 +64,9 @@ export function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
               <div className="card p-6 text-left hover:shadow-md transition-shadow duration-300">
                 <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">💰</span>
+                  <span className="text-2xl">
+                    <IndianRupee />
+                  </span>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   Expense Tracking
@@ -76,7 +79,9 @@ export function HomePage() {
 
               <div className="card p-6 text-left hover:shadow-md transition-shadow duration-300">
                 <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">📊</span>
+                  <span className="text-2xl">
+                    <Wallet />
+                  </span>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   Budget Planning
@@ -89,7 +94,9 @@ export function HomePage() {
 
               <div className="card p-6 text-left hover:shadow-md transition-shadow duration-300">
                 <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">🎯</span>
+                  <span className="text-2xl">
+                    <Goal />
+                  </span>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   Goal Setting

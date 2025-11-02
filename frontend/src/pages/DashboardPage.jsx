@@ -8,6 +8,8 @@ import { RecentTransaction } from "../features/dashboard/components/RecentTransa
 import { MonthlySpendCard } from "../features/dashboard/components/MonthlySpendChart";
 import { Link } from "react-router-dom";
 import { setSelectedMonth } from "../app/store/appSlice";
+import { Plus } from "lucide-react";
+import { NoBackground } from "../assets/NoBackground";
 
 export function DashboardPage() {
   const dispatch = useDispatch();
@@ -39,31 +41,29 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <div className="flex justify-between px-4 py-8 sm:px-0">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Hi {currentUser?.firstName} 👋
-          </h2>
-          {!hasData ? (
-            <p className="text-gray-600 dark:text-gray-300">
-              Welcome to your budgeting dashboard. You haven’t added any
-              transactions yet — start by recording your income or expenses to
-              see your financial summary come alive!
-            </p>
-          ) : (
-            <p className="text-gray-600 dark:text-gray-300">
-              Here’s a summary of your finances for {selectedMonth}.
-            </p>
-          )}
-        </div>
+      <div className="flex justify-between px-4 py-4 sm:px-0">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Hi {currentUser?.firstName} 👋
+        </h2>
         <input
           name="month"
           type="month"
-          className="border rounded-lg h-10 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+          className="input-field h-10 w-48"
           value={selectedMonth}
           onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
         />
       </div>
+      {!hasData ? (
+        <p className="text-gray-600 dark:text-gray-300">
+          Welcome to your budgeting dashboard. You haven’t added any
+          transactions yet — start by recording your income or expenses to see
+          your financial summary come alive!
+        </p>
+      ) : (
+        <p className="text-gray-600 dark:text-gray-300">
+          Here’s a summary of your finances for {selectedMonth}.
+        </p>
+      )}
 
       {/* 👇 Dashboard Content */}
       {hasData ? (
@@ -106,24 +106,18 @@ export function DashboardPage() {
         </>
       ) : (
         /* Empty state with gentle guidance */
-        <div className="px-4 py-12 flex flex-col items-center justify-center text-center text-gray-600 dark:text-gray-300">
-          {/* <img
-              src="/assets/empty-dashboard.svg"
-              alt="No data"
-              className="w-56 mb-4 opacity-90"
-            /> */}
-          <h3 className="text-xl font-semibold mb-2">
+        <div className="card p-8 mt-8 flex flex-col">
+          <NoBackground />
+          <h3 className="text-xl font-semibold">
             Your dashboard is waiting for data
           </h3>
-          <p className="max-w-md">
+          <p className="mb-4">
             Once you start adding your income and expenses, this space will show
             your budget progress, top spending categories, and insights.
           </p>
-          <Link
-            to="/transactions"
-            className="mt-6 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all"
-          >
-            ➕ Add Your First Transaction
+          <Link to="/transactions" className="btn-primary self-end flex gap-2">
+            <Plus size={20} />
+            Add Your First Transaction
           </Link>
         </div>
       )}

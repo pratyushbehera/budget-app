@@ -71,17 +71,8 @@ exports.getDashboard = async (req, res) => {
 
     // Category plan usage
     const categoryPlanUsage = {};
-    if (
-      plan &&
-      plan.data &&
-      plan.data[currentYear]?.[
-        (currentMonthIndex + 1).toString().padStart(2, "0")
-      ]
-    ) {
-      const monthPlan =
-        plan.data[currentYear][
-          (currentMonthIndex + 1).toString().padStart(2, "0")
-        ];
+    if (plan && plan.data) {
+      const monthPlan = plan.data;
 
       Object.entries(monthPlan).forEach(([catName, plannedAmount]) => {
         if (catName === "Salary" || catName === "Other Income") return;

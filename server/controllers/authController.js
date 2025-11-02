@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { DEFAULT_CATEGORIES } = require("../utils/defaultCategories");
+const Category = require("../models/Category");
 
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });

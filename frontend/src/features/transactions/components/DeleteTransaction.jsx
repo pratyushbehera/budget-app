@@ -41,16 +41,13 @@ export const DeleteTransaction = ({ transaction, onClose }) => {
         Are you sure you want to delete this transaction?
       </p>
       <div className="flex justify-end gap-3">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 text-sm dark:text-gray-600 dark:hover:text-gray-400 rounded-md border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
+        <button className="btn-secondary" onClick={onClose}>
           Cancel
         </button>
         <button
+          className="btn-primary"
           onClick={handleDelete}
           disabled={isPending}
-          className="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700"
         >
           Delete
         </button>

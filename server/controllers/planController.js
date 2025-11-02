@@ -11,7 +11,7 @@ exports.getPlans = async (req, res) => {
 
 exports.savePlans = async (req, res) => {
   try {
-    const { data } = req.body;
+    const data = req.body;
     let plan = await Plan.findOne({ userId: req.user.id });
 
     if (plan) {

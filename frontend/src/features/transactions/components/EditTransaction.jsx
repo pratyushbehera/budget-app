@@ -93,13 +93,13 @@ export const EditTransaction = ({ transaction, onClose }) => {
           value={form?.date}
           onChange={setFormValue}
           placeholder="Date"
-          className="w-full border p-2 rounded-md dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+          className="input-field"
         />
         <select
           name="categoryId"
           value={form?.categoryId}
           onChange={setFormValue}
-          className="w-full border p-2 rounded-md dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+          className="input-field"
         >
           <option value="">Select category</option>
           {categoryList?.map((cat) => (
@@ -114,28 +114,20 @@ export const EditTransaction = ({ transaction, onClose }) => {
           value={form?.amount}
           onChange={setFormValue}
           placeholder="Amount"
-          className="w-full border p-2 rounded-md dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+          className="input-field"
         />
         <textarea
           placeholder="Notes"
           name="notes"
-          value={form.notes}
+          value={form?.notes}
           onChange={setFormValue}
-          className="w-full border p-2 rounded-md dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+          className="input-field"
         />
         <div className="flex justify-end gap-3 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm dark:text-gray-600 dark:hover:text-gray-400 rounded-md border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
+          <button type="button" className="btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
-          >
+          <button type="submit" className="btn-primary" disabled={isPending}>
             Update
           </button>
         </div>

@@ -82,7 +82,7 @@ export const useSavePlan = () => {
       queryClient.invalidateQueries(["plans"]);
     },
     onError: (error) => {
-      console.error("Failed to save plan:", error.message);
+      console.error("Failed to save plan:", error?.message);
     },
   });
 };
