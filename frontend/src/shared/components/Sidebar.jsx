@@ -19,6 +19,7 @@ import {
   LogOut,
   User as UserIcon,
 } from "lucide-react";
+import { useGravatar } from "../hooks/useGravatar";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,11 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const { addNotification } = useNotification();
   const { user } = useSelector((state) => state.auth);
+
+  const { avatarUrl, loading, error } = useGravatar(user?.email, {
+    size: 100,
+    checkExistence: true,
+  });
 
   const handleLogout = () => {
     dispatch(logout());
@@ -43,10 +49,10 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed top-4 left-4 z-50">
+        <div className="md:hidden fixed w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
           <button
             onClick={toggleSidebar}
-            className="p-2 border rounded-md bg-gray-200 dark:bg-gray-950 text-gray-800 dark:text-gray-200"
+            className="p-2 border top-4 left-4 rounded-md bg-gray-200 dark:bg-gray-300 text-gray-800 dark:text-white"
           >
             <Menu size={20} />
           </button>
@@ -128,14 +134,23 @@ export const Sidebar = () => {
 
           {/* Footer */}
           <div className="border-t dark:border-gray-700 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <UserIcon
-                size={18}
-                className="text-primary-600 dark:text-primary-400"
-              />
+            <div className="flex items-center gap-2 w-full">
+              {error || !avatarUrl || loading ? (
+                <UserIcon
+                  size={18}
+                  className="text-primary-600 dark:text-primary-400"
+                />
+              ) : (
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
+                  className="rounded-full w-8"
+                />
+              )}
+
               <Link
                 to="/profile"
-                className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500"
+                className="text-sm w-32 font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 overflow-hidden whitespace-nowrap text-ellipsis"
               >
                 {user?.firstName}
               </Link>
