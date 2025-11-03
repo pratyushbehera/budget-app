@@ -49,10 +49,10 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed top-4 left-4 z-50">
+        <div className="md:hidden fixed w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
           <button
             onClick={toggleSidebar}
-            className="p-2 border rounded-md bg-gray-200 dark:bg-gray-950 text-gray-800 dark:text-gray-200"
+            className="p-2 border top-4 left-4 rounded-md bg-gray-200 dark:bg-gray-300 text-gray-800 dark:text-white"
           >
             <Menu size={20} />
           </button>

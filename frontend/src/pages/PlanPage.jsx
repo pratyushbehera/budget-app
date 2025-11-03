@@ -107,39 +107,42 @@ export function PlanPage() {
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               Add your expected monthly income and expenses by category.
             </p>
-
-            <table className="min-w-full text-sm text-gray-900 dark:text-gray-900 mb-6">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold">
-                    Category
-                  </th>
-                  <th className="px-4 py-3 text-right font-semibold">
-                    Planned ₹
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((cat) => (
-                  <tr
-                    key={cat}
-                    className="border-b border-gray-200 dark:border-gray-600"
-                  >
-                    <td className="px-4 py-2 font-medium">{cat}</td>
-                    <td className="px-4 py-2 text-right">
-                      <input
-                        type="number"
-                        className="input-field w-32"
-                        value={editableData[cat] || ""}
-                        onChange={(e) => handleChange(cat, e.target.value)}
-                        placeholder="0"
-                      />
-                    </td>
+            <div
+              className="card overflow-hidden border rounded-xl shadow-sm
+            overflow-x-auto rounded-lg"
+            >
+              <table className="min-w-full">
+                <thead className="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-800 sticky top-0">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold">
+                      Category
+                    </th>
+                    <th className="px-4 py-3 text-right font-semibold">
+                      Planned ₹
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {categories.map((cat) => (
+                    <tr
+                      key={cat}
+                      className="border-b border-gray-200 dark:border-gray-600"
+                    >
+                      <td className="px-4 py-2 font-medium">{cat}</td>
+                      <td className="px-4 py-2 text-right">
+                        <input
+                          type="number"
+                          className="input-field w-32"
+                          value={editableData[cat] || ""}
+                          onChange={(e) => handleChange(cat, e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => {
@@ -178,9 +181,12 @@ export function PlanPage() {
               </button>
             </div>
 
-            <div className="card overflow-hidden border rounded-xl shadow-sm">
-              <table className="min-w-full text-sm text-gray-900 dark:text-gray-400">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+            <div
+              className="card overflow-hidden border rounded-xl shadow-sm
+            overflow-x-auto rounded-lg"
+            >
+              <table className="min-w-full">
+                <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
                   <tr>
                     <th className="px-4 py-3 text-left font-semibold">
                       Category
@@ -190,7 +196,7 @@ export function PlanPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {Object.entries(planData).map(([cat, val]) => (
                     <tr
                       key={cat}

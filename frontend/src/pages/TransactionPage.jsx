@@ -20,7 +20,7 @@ export function TransactionPage() {
   if (error) return <p>{error.message}</p>;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-6 px-6 lg:px-8">
+    <div className="min-h-screen max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-start md:flex-row flex-col lg:items-center justify-between mb-4">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -48,7 +48,7 @@ export function TransactionPage() {
       </div>
 
       {/* Scrollable Table */}
-      <div className="overflow-x-auto max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="overflow-x-auto max-w-[92vw] max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
             <tr>
