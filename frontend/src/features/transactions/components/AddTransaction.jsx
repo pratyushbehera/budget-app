@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddTransaction } from "../../../services/transactionApi";
 import { Modal } from "../../../shared/components/Modal";
 import { useNotification } from "../../../contexts/NotificationContext";
@@ -79,57 +79,72 @@ export const AddTransaction = ({ onClose }) => {
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      addNotification({
+        type: "error",
+        title: "Something went wrong",
+        message: "Please try again after sometime.",
+      });
+      onClose();
+    }
+  }, [error]);
+
   if (isLoading) return "Loading...";
 
   return (
     <Modal title="Add Transaction" onClose={onClose}>
-      <form className="space-y-3" onSubmit={handleSubmit}>
-        <input
-          id="transaction-date"
-          name="date"
-          type="date"
-          value={form.date}
-          onChange={setFormValue}
-          placeholder="Date"
-          className="input-field"
-        />
-        <select
-          name="categoryId"
-          value={form.categoryId}
-          onChange={setFormValue}
-          className="input-field"
-        >
-          <option value="">Select category</option>
-          {categoryList?.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          name="amount"
-          value={form.amount}
-          onChange={setFormValue}
-          placeholder="Amount"
-          className="input-field"
-        />
-        <textarea
-          placeholder="Notes"
-          name="notes"
-          value={form.notes}
-          onChange={setFormValue}
-          className="input-field"
-        />
-        <div className="flex justify-end gap-3 pt-2">
-          <button type="button" className="btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" disabled={isPending} className="btn-primary">
-            Save
-          </button>
-        </div>
-      </form>
+      {isLoading ? (
+        "Loading..."
+      ) : (
+        <form className="space-y-3" onSubmit={handleSubmit}>
+          <input
+            id="transaction-date"
+            name="date"
+            type="date"
+            value={form.date}
+            onChange={setFormValue}
+            placeholder="Date"
+            className="input-field"
+          />
+          <select
+            name="categoryId"
+            value={form.categoryId}
+            onChange={setFormValue}
+            className="input-field"
+          >
+            <option value="">Select category</option>
+            {categoryList?.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            name="amount"
+            value={form.amount}
+            onChange={setFormValue}
+            placeholder="Amount"
+            className="input-field"
+          />
+          <textarea
+            placeholder="Notes"
+            name="notes"
+            value={form.notes}
+            onChange={setFormValue}
+            className="input-field"
+          />
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" className="btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" disabled={isPending} className="btn-primary">
+              {isPending ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </form>
+      )}
     </Modal>
   );
 };
