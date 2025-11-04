@@ -8,9 +8,23 @@ import { RecentTransaction } from "../features/dashboard/components/RecentTransa
 import { MonthlySpendCard } from "../features/dashboard/components/MonthlySpendChart";
 import { Link } from "react-router-dom";
 import { setSelectedMonth } from "../app/store/appSlice";
-import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 import { NoBackground } from "../assets/NoBackground";
 import { QuickAdd } from "../features/dashboard/components/QuickAdd";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
 
 export function DashboardPage() {
   const dispatch = useDispatch();
@@ -70,39 +84,54 @@ export function DashboardPage() {
       {hasData ? (
         <>
           {/* Info Tiles */}
-          <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
-            <InfoTile
-              title="Total Income"
-              amount={dashboardData?.overview?.totalIncome}
-            />
-            <InfoTile
-              title="This Month's Spend"
-              amount={dashboardData?.overview?.totalExpense}
-            />
-            <InfoTile
-              title="Savings"
-              amount={dashboardData?.overview?.savings}
-              helperText={`${
-                dashboardData?.overview?.totalIncome === 0
-                  ? 0
-                  : (
-                      (dashboardData?.overview?.savings /
-                        dashboardData?.overview?.totalIncome) *
-                      100
-                    ).toFixed(1)
-              }% of income`}
-            />
-            <InfoTile
-              title="Top Category"
-              amount={dashboardData?.overview?.topCategory || "—"}
-            />
-          </div>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0"
+          >
+            {[
+              {
+                title: "Total Income",
+                amount: dashboardData?.overview?.totalIncome,
+              },
+              {
+                title: "This Month's Spend",
+                amount: dashboardData?.overview?.totalExpense,
+              },
+              {
+                title: "Savings",
+                amount: dashboardData?.overview?.savings,
+                helperText: `${
+                  dashboardData?.overview?.totalIncome === 0
+                    ? 0
+                    : (
+                        (dashboardData?.overview?.savings /
+                          dashboardData?.overview?.totalIncome) *
+                        100
+                      ).toFixed(1)
+                }% of income`,
+              },
+              {
+                title: "Top Category",
+                amount: dashboardData?.overview?.topCategory || "—",
+              },
+            ].map((tile) => (
+              <motion.div key={tile.title} variants={itemVariants}>
+                <InfoTile {...tile} />
+              </motion.div>
+            ))}
+          </motion.div>
 
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
-            <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
-            <MonthlySpendCard monthlySpend={dashboardData?.monthlySpend} />
+            <MonthlySpendCard
+              monthlySpend={dashboardData?.monthlySpend}
+              monthlyIncome={dashboardData?.monthlyIncome}
+            />
             <RecentTransaction month={selectedMonth} />
+
+            <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
           </div>
         </>
       ) : (

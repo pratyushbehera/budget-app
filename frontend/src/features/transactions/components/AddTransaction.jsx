@@ -90,8 +90,6 @@ export const AddTransaction = ({ onClose }) => {
     }
   }, [error]);
 
-  if (isLoading) return "Loading...";
-
   return (
     <Modal title="Add Transaction" onClose={onClose}>
       {isLoading ? (

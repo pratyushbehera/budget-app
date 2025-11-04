@@ -21,7 +21,7 @@ export const InfoTile = ({ title, amount, helperText }) => {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl p-4 text-white shadow-lg bg-gradient-to-r ${gradient}`}
+      className={`relative overflow-hidden rounded-2xl sm:min-h-[112px] p-4 text-white shadow-lg bg-gradient-to-r ${gradient}`}
     >
       {/* Background Glyph */}
       <Icon

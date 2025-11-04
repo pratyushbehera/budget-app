@@ -111,6 +111,7 @@ exports.getDashboard = async (req, res) => {
     });
 
     const monthlySpend = Array(12).fill(0);
+    const monthlyIncome = Array(12).fill(0);
 
     yearTxns.forEach((t) => {
       let categoryId = t.categoryId;
@@ -123,10 +124,17 @@ exports.getDashboard = async (req, res) => {
           monthlySpend[txnMonth] += t.amount;
         }
       }
+      if (type === "Income") {
+        const txnMonth = new Date(t.date).getMonth();
+        if (txnMonth <= currentMonthIndex) {
+          monthlyIncome[txnMonth] += t.amount;
+        }
+      }
     });
 
     // Trim to show only till selected month (e.g. if November => Jan–Nov)
     const monthlySpendYTD = monthlySpend.slice(0, currentMonthIndex + 1);
+    const monthlyIncomeYTD = monthlyIncome.slice(0, currentMonthIndex + 1);
 
     // Final response
     res.json({
@@ -140,6 +148,7 @@ exports.getDashboard = async (req, res) => {
       categorySpend,
       categoryPlanUsage,
       monthlySpend: monthlySpendYTD,
+      monthlyIncome: monthlyIncomeYTD,
     });
   } catch (err) {
     console.error(err);
