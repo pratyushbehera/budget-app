@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { setSelectedMonth } from "../app/store/appSlice";
 import { Plus } from "lucide-react";
 import { NoBackground } from "../assets/NoBackground";
+import { QuickAdd } from "../features/dashboard/components/QuickAdd";
 
 export function DashboardPage() {
   const dispatch = useDispatch();
@@ -120,13 +121,7 @@ export function DashboardPage() {
           </Link>
         </div>
       )}
-      {/* <Link
-        to="/transactions/add"
-        className="fixed btn-primary bottom-8 right-8 flex items-center gap-2 font-semibold px-4 py-3 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
-      >
-        <Plus size={20} />
-        Add Quick Transaction
-      </Link> */}
+      <QuickAdd />
     </div>
   );
 }
