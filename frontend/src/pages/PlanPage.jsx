@@ -109,10 +109,10 @@ export function PlanPage() {
             </p>
             <div
               className="card overflow-hidden border rounded-xl shadow-sm
-            overflow-x-auto rounded-lg"
+            overflow-x-auto rounded-lg mb-4"
             >
               <table className="min-w-full">
-                <thead className="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-800 sticky top-0">
+                <thead className="table-head">
                   <tr>
                     <th className="px-4 py-3 text-left font-semibold">
                       Category
@@ -128,8 +128,10 @@ export function PlanPage() {
                       key={cat}
                       className="border-b border-gray-200 dark:border-gray-600"
                     >
-                      <td className="px-4 py-2 font-medium">{cat}</td>
-                      <td className="px-4 py-2 text-right">
+                      <td className="px-4 py-2 font-medium text-gray-600 dark:text-gray-300">
+                        {cat}
+                      </td>
+                      <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-300">
                         <input
                           type="number"
                           className="input-field w-32"
@@ -186,7 +188,7 @@ export function PlanPage() {
             overflow-x-auto rounded-lg"
             >
               <table className="min-w-full">
-                <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
+                <thead className="table-head">
                   <tr>
                     <th className="px-4 py-3 text-left font-semibold">
                       Category
@@ -202,8 +204,10 @@ export function PlanPage() {
                       key={cat}
                       className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
-                      <td className="px-4 py-2 font-medium">{cat}</td>
-                      <td className="px-4 py-2 text-right">
+                      <td className="px-4 py-2 font-medium text-gray-600 dark:text-gray-300">
+                        {cat}
+                      </td>
+                      <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-300">
                         ₹{val.toLocaleString()}
                       </td>
                     </tr>

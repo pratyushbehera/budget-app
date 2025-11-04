@@ -71,15 +71,15 @@ export function DashboardPage() {
           {/* Info Tiles */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
             <InfoTile
-              title="💰 Total Income"
+              title="Total Income"
               amount={dashboardData?.overview?.totalIncome}
             />
             <InfoTile
-              title="📅 This Month's Spend"
+              title="This Month's Spend"
               amount={dashboardData?.overview?.totalExpense}
             />
             <InfoTile
-              title="🪙 Savings"
+              title="Savings"
               amount={dashboardData?.overview?.savings}
               helperText={`${
                 dashboardData?.overview?.totalIncome === 0
@@ -92,7 +92,7 @@ export function DashboardPage() {
               }% of income`}
             />
             <InfoTile
-              title="🧾 Top Category"
+              title="Top Category"
               amount={dashboardData?.overview?.topCategory || "—"}
             />
           </div>
@@ -108,19 +108,25 @@ export function DashboardPage() {
         /* Empty state with gentle guidance */
         <div className="card p-8 mt-8 flex flex-col">
           <NoBackground />
-          <h3 className="text-xl font-semibold">
+          <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
             Your dashboard is waiting for data
           </h3>
-          <p className="mb-4">
+          <p className="mb-4 text-gray-600 dark:text-gray-300">
             Once you start adding your income and expenses, this space will show
             your budget progress, top spending categories, and insights.
           </p>
           <Link to="/transactions" className="btn-primary self-end flex gap-2">
-            <Plus size={20} />
-            Add Your First Transaction
+            Explore Transactions
           </Link>
         </div>
       )}
+      {/* <Link
+        to="/transactions/add"
+        className="fixed btn-primary bottom-8 right-8 flex items-center gap-2 font-semibold px-4 py-3 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
+      >
+        <Plus size={20} />
+        Add Quick Transaction
+      </Link> */}
     </div>
   );
 }

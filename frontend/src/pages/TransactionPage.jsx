@@ -31,7 +31,7 @@ export function TransactionPage() {
           <input
             name="month"
             type="month"
-            className="border rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-gray-800 dark:bg-gray-50 dark:border-gray-700"
+            className="input-field w-48"
             value={selectedMonth}
             onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
           />
@@ -39,7 +39,6 @@ export function TransactionPage() {
           <button
             onClick={() => setShowAddModal(true)}
             className="btn-primary flex items-center gap-2"
-            //className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-lg transition-colors"
           >
             <Plus size={16} />
             Add Transaction
@@ -48,9 +47,9 @@ export function TransactionPage() {
       </div>
 
       {/* Scrollable Table */}
-      <div className="overflow-x-auto max-w-[92vw] max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="card overflow-x-auto max-w-[92vw] max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
+          <thead className="table-head">
             <tr>
               <th className="px-4 py-2 text-left font-medium">Date</th>
               <th className="px-4 py-2 text-left font-medium">Category</th>
