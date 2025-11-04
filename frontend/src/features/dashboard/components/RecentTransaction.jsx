@@ -16,7 +16,7 @@ export function RecentTransaction({ month }) {
 
       <div className="overflow-x-auto overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
         <table className="min-w-full">
-          <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
+          <thead className="table-head">
             <tr>
               <th className="px-4 py-2 text-left font-medium">Date</th>
               <th className="px-4 py-2 text-left font-medium">Category</th>

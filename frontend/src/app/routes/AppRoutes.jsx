@@ -10,11 +10,13 @@ import ProtectedLayout from "../layouts/ProtectedLayout";
 import { TransactionPage } from "../../pages/TransactionPage";
 import { CategoyPage } from "../../pages/CategoryPage";
 import { PlanPage } from "../../pages/PlanPage";
+import NotFoundPage from "../../pages/NotFoundPage";
 
 // Protected Route component
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem("auth-token");
+  return isAuthenticated || token ? children : <Navigate to="/login" />;
 }
 
 // Public Route component (redirect to dashboard if already authenticated)
@@ -49,22 +51,21 @@ export function AppRoutes() {
 
       {/* Protected routes */}
       <Route
-        path="/"
         element={
           <ProtectedRoute>
             <ProtectedLayout />
           </ProtectedRoute>
         }
       >
-        <Route exact path="plan" element={<PlanPage />} />
-        <Route exact path="dashboard" element={<DashboardPage />} />
-        <Route exact path="profile" element={<ProfilePage />} />
-        <Route exact path="transactions" element={<TransactionPage />} />
-        <Route exact path="categories" element={<CategoyPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/plan" element={<PlanPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/transactions" element={<TransactionPage />} />
+        <Route path="/categories" element={<CategoyPage />} />
       </Route>
 
       {/* Fallback route */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

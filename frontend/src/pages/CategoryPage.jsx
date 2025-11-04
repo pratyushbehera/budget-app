@@ -29,9 +29,9 @@ export function CategoyPage() {
         </div>
 
         {/* Scrollable Table */}
-        <div className="overflow-x-auto max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
+        <div className="card overflow-x-auto max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-100 dark:bg-gray-50 text-gray-700 dark:text-gray-800 sticky top-0">
+            <thead className="table-head">
               <tr>
                 <th className="px-4 py-2 text-left font-medium">Category</th>
                 <th className="px-4 py-2 text-center font-medium">Action</th>
