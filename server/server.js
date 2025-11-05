@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const compression = require("compression");
+const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
@@ -15,13 +16,9 @@ const PORT = process.env.PORT || 5001;
 
 app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
+app.use(compression());
 
-app.get("/", (req, res) => res.send("Budget App API"));
-
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+app.get("/", (req, res) => res.send("Budget App API running"));
 
 // Feature routes
 app.use("/api/auth", authRoutes);
@@ -31,4 +28,7 @@ app.use("/api/insights", insightRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+(async () => {
+  await connectDB();
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})();
