@@ -2,9 +2,10 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { DEFAULT_CATEGORIES } = require("../utils/defaultCategories");
 const Category = require("../models/Category");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  jwt.sign({ id }, JWT_SECRET, { expiresIn: "24h" });
 
 exports.registerUser = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
@@ -32,8 +33,6 @@ exports.registerUser = async (req, res) => {
         });
       }
 
-      await Category.insertMany(bulkCategories);
-
       res.status(201).json({
         _id: user._id,
         firstName: user.firstName,
@@ -41,6 +40,7 @@ exports.registerUser = async (req, res) => {
         email: user.email,
         token: generateToken(user._id),
       });
+      Category.insertMany(bulkCategories).catch(console.error);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
