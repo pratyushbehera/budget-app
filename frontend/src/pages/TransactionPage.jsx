@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTransaction } from "../services/transactionApi";
 import { formatCurrency } from "../shared/utils/formatCurrency";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Wallet, Search } from "lucide-react";
 import { AddTransaction } from "../features/transactions/components/AddTransaction";
 import { EditTransaction } from "../features/transactions/components/EditTransaction";
 import { DeleteTransaction } from "../features/transactions/components/DeleteTransaction";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedMonth } from "../app/store/appSlice";
+import { categoryIconMap } from "../shared/utils/categoryIconMap";
 
 export function TransactionPage() {
   const dispatch = useDispatch();
@@ -15,8 +16,45 @@ export function TransactionPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editTx, setEditTx] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
 
-  if (isLoading) return <p>Loading...</p>;
+  // ✅ Filtered transactions (search + category)
+  const filteredTransactions = useMemo(() => {
+    if (!data) return [];
+    return data.filter((tx) => {
+      const matchesSearch =
+        tx.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (tx.notes &&
+          tx.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory =
+        categoryFilter === "All" ||
+        tx.category.toLowerCase() === categoryFilter.toLowerCase();
+      return matchesSearch && matchesCategory;
+    });
+  }, [data, searchQuery, categoryFilter]);
+
+  // ✅ Group by date
+  const groupedTransactions = useMemo(() => {
+    return filteredTransactions.reduce((acc, tx) => {
+      const date = new Date(tx.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(tx);
+      return acc;
+    }, {});
+  }, [filteredTransactions]);
+
+  // Unique categories for filter dropdown
+  const categoryOptions = useMemo(() => {
+    const cats = new Set(data?.map((tx) => tx.category) || []);
+    return ["All", ...cats];
+  }, [data]);
+
+  if (isLoading) return <p>Loading transactions...</p>;
   if (error) return <p>{error.message}</p>;
 
   return (
@@ -46,97 +84,110 @@ export function TransactionPage() {
         </div>
       </div>
 
-      {/* Scrollable Table */}
-      <div className="card overflow-x-auto max-w-[92vw] max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
-        <table className="min-w-full text-sm">
-          <thead className="table-head">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Date</th>
-              <th className="px-4 py-2 text-left font-medium">Category</th>
-              <th className="px-4 py-2 text-left font-medium">Notes</th>
-              <th className="px-4 py-2 text-right font-medium">Amount</th>
-              <th className="px-4 py-2 text-center font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {data?.length === 0 && (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400"
-                >
-                  No transactions found for this month.
-                </td>
-              </tr>
-            )}
-            {data?.map((tx) => {
-              const isIncome =
-                tx.type?.toLowerCase() === "income" ||
-                ["salary", "bonus", "interest", "other income"].includes(
-                  tx.category.toLowerCase()
-                );
+      {/* Filters Row */}
+      <div className="flex flex-col md:flex-row justify-between gap-3 mb-6">
+        <div className="relative w-full md:w-1/2">
+          <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search by category or notes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input-field pl-9"
+          />
+        </div>
 
-              return (
-                <tr
-                  key={tx._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <td className="px-4 py-2 text-gray-600 dark:text-gray-300">
-                    {new Date(tx.date).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                    })}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        isIncome
-                          ? "border border-green-200 text-green-700 dark:border-green-700 dark:text-green-300"
-                          : "border border-red-200 text-red-700 dark:border-red-700 dark:text-red-300"
-                      }`}
-                    >
-                      {tx.category}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-2 text-gray-600 dark:text-gray-300">
-                    {tx.notes || "-"}
-                  </td>
-
-                  <td
-                    className={`px-4 py-2 text-right font-medium ${
-                      isIncome
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
-                    }`}
-                  >
-                    {isIncome ? "+" : "-"}
-                    {formatCurrency(tx.amount)}
-                  </td>
-
-                  <td className="px-4 py-2 text-center">
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => setEditTx(tx)}
-                        className="text-blue-500 hover:text-blue-600"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(tx)}
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="input-field md:w-48"
+        >
+          {categoryOptions.map((cat) => (
+            <option key={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
+
+      {/* Transaction List */}
+      {!filteredTransactions?.length ? (
+        <div className="flex flex-col items-center justify-center h-60 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <Wallet className="w-8 h-8 mb-2" />
+          <p className="text-sm">No transactions found.</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {Object.entries(groupedTransactions).map(([date, txList]) => (
+            <div key={date}>
+              <h3 className="text-xs uppercase text-gray-500 dark:text-gray-400 mb-2 ml-1">
+                {date}
+              </h3>
+
+              <ul className="space-y-2">
+                {txList.map((tx) => {
+                  const isIncome =
+                    tx.type?.toLowerCase() === "income" ||
+                    ["salary", "bonus", "interest", "other income"].includes(
+                      tx.category.toLowerCase()
+                    );
+
+                  const Icon =
+                    categoryIconMap[tx.category.toLowerCase()] || Wallet;
+
+                  return (
+                    <li
+                      key={tx._id}
+                      className="flex items-center justify-between bg-white dark:bg-gray-950 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-sm transition"
+                    >
+                      {/* Left: Icon + Info */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                          <Icon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {tx.category}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {tx.notes || "—"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right: Amount + Actions */}
+                      <div className="flex items-center gap-3">
+                        <p
+                          className={`text-sm font-semibold ${
+                            isIncome
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {isIncome ? "+" : "-"}
+                          {formatCurrency(tx.amount)}
+                        </p>
+                        <button
+                          onClick={() => setEditTx(tx)}
+                          className="text-blue-500 hover:text-blue-600"
+                          title="Edit"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(tx)}
+                          className="text-red-500 hover:text-red-600"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ➕ Add Modal */}
       {showAddModal && (
