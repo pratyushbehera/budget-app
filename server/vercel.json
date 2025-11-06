@@ -1,5 +1,6 @@
 {
   "version": 2,
   "builds": [{ "src": "index.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "/" }]
+  "routes": [{ "src": "/(.*)", "dest": "/" }],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ../server/ || exit 1"
 }
