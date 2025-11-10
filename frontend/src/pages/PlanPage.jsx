@@ -2,17 +2,28 @@ import React, { useEffect, useState } from "react";
 import { usePlan, useSavePlan } from "../services/planApi";
 import { useNotification } from "../contexts/NotificationContext";
 import { useCategory } from "../services/categoryApi";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Plus, Save, X, Trash2 } from "lucide-react";
+import { formatCurrency } from "../shared/utils/formatCurrency";
+import { categoryIconMap } from "../shared/utils/categoryIconMap";
+import { AddCategory } from "../features/plan/components/AddCategory";
+import { DeleteCategory } from "../features/plan/components/DeleteCategory";
+import { NoPlan } from "../features/plan/components/NoPlan";
 
 export function PlanPage() {
   const { data: categoryList } = useCategory();
   const { addNotification } = useNotification();
   const { data: planData, isLoading } = usePlan();
   const { mutateAsync: savePlan, isPending } = useSavePlan();
+
   const [editableData, setEditableData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const categories = categoryList?.map((cat) => cat.name);
+  useEffect(() => {
+    setEditableData(planData || {});
+  }, [planData]);
+
   const handleChange = (category, value) => {
     setEditableData((prev) => ({
       ...prev,
@@ -26,7 +37,7 @@ export function PlanPage() {
       addNotification({
         type: "error",
         title: "Validation failed",
-        message: "Please add atleast one category.",
+        message: "Please add at least one category.",
       });
       return;
     }
@@ -60,10 +71,6 @@ export function PlanPage() {
     }
   };
 
-  useEffect(() => {
-    setEditableData(planData);
-  }, [planData]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -77,147 +84,318 @@ export function PlanPage() {
     );
   }
 
+  // 🧭 Dynamically group categories by "type" and "group"
+  const groupedCategories =
+    categoryList?.reduce((acc, cat) => {
+      const typeName = cat.type || "Others";
+      if (!acc[typeName]) acc[typeName] = {};
+      const groupName = cat.group || "General";
+      if (!acc[typeName][groupName]) acc[typeName][groupName] = [];
+      acc[typeName][groupName].push(cat);
+      return acc;
+    }, {}) || {};
+
+  // 🧮 Compute dynamic totals
+  const totalPlannedIncome = categoryList
+    ?.filter((cat) => cat.type === "Income")
+    .reduce((sum, cat) => sum + (editableData?.[cat.name] || 0), 0);
+
+  const totalPlannedExpense = categoryList
+    ?.filter((cat) => cat.type === "Expense")
+    .reduce((sum, cat) => sum + (editableData?.[cat.name] || 0), 0);
+
+  const plannedSavings = (totalPlannedIncome || 0) - (totalPlannedExpense || 0);
+
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-6 px-6 lg:px-8">
-      <div className="flex flex-col">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-          Plans
+    <div className="min-h-screen max-w-7xl mx-auto py-6 px-6 lg:px-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Financial Plan
         </h1>
-        {!isEditing && Object.keys(planData).length === 0 && (
-          <div className="card p-8">
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              You don’t have a plan yet. Let’s create your first one to start
-              tracking your spending goals.
-            </p>
+        {!isEditing && Object.keys(planData).length > 0 && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Edit size={16} /> Edit Plan
+          </button>
+        )}
+      </div>
+
+      {/* --- No plan yet --- */}
+      {!isEditing && Object.keys(planData).length === 0 && <NoPlan />}
+
+      {/* --- Edit / Create Mode --- */}
+      {isEditing && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Edit Your Plan
+            </h2>
             <button
-              onClick={() => setIsEditing(true)}
-              className="btn-primary flex gap-2 items-center"
+              onClick={() => setShowAddCategory(true)}
+              className="btn-primary flex items-center gap-2"
             >
-              <Plus /> Create Plan
+              <Plus size={16} /> Add Category
             </button>
           </div>
-        )}
-        {isEditing && (
-          <div className="card p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              {Object.keys(planData).length !== 0
-                ? "Edit Your Plan"
-                : "Create Your First Plan"}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Add your expected monthly income and expenses by category.
-            </p>
-            <div
-              className="card overflow-hidden border rounded-xl shadow-sm
-            overflow-x-auto rounded-lg mb-4"
-            >
-              <table className="min-w-full">
-                <thead className="table-head">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold">
-                      Category
-                    </th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      Planned ₹
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {categories.map((cat) => (
-                    <tr
-                      key={cat}
-                      className="border-b border-gray-200 dark:border-gray-600"
-                    >
-                      <td className="px-4 py-2 font-medium text-gray-600 dark:text-gray-300">
-                        {cat}
-                      </td>
-                      <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-300">
-                        <input
-                          type="number"
-                          className="input-field w-32"
-                          value={editableData[cat] || ""}
-                          onChange={(e) => handleChange(cat, e.target.value)}
-                          placeholder="0"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="space-y-6">
+            {/* Loop over all types (Income / Expense) */}
+            {Object.entries(groupedCategories).map(([type, groups]) => (
+              <div key={type} className="card p-6">
+                {/* Loop over groups under each type */}
+                {Object.entries(groups).map(([group, cats]) => (
+                  <div key={group} className="mb-5">
+                    <h3 className="text-md font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                      {group}
+                    </h3>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {cats.map((cat) => {
+                        const Icon =
+                          categoryIconMap[cat.name?.toLowerCase()] ||
+                          categoryIconMap["other"];
+
+                        return (
+                          <div
+                            key={cat._id}
+                            className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-sm transition"
+                          >
+                            {/* Left side: icon + label */}
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`p-2 rounded-full ${
+                                  type === "Income"
+                                    ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300"
+                                    : group?.toLowerCase().includes("want")
+                                    ? "bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300"
+                                    : "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300"
+                                }`}
+                              >
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium text-gray-700 dark:text-gray-300">
+                                {cat.name}
+                              </span>
+                            </div>
+
+                            {/* Right side: input */}
+                            <div className="flex gap-2">
+                              <input
+                                type="number"
+                                value={editableData[cat.name] || ""}
+                                onChange={(e) =>
+                                  handleChange(cat.name, e.target.value)
+                                }
+                                placeholder="0"
+                                className="input-field w-28 text-right"
+                              />
+                              <button
+                                onClick={() => setDeleteTarget(cat)}
+                                className="text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                                title="Delete Category"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+
+            {/* --- Summary Card --- */}
+            <div className="card p-6 grid sm:grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-gray-500 text-sm">Planned Income</p>
+                <h3 className="text-xl font-semibold text-green-600">
+                  {formatCurrency(totalPlannedIncome)}
+                </h3>
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Planned Expenses</p>
+                <h3 className="text-xl font-semibold text-red-500">
+                  {formatCurrency(totalPlannedExpense)}
+                </h3>
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Estimated Savings</p>
+                <h3
+                  className={`text-xl font-semibold ${
+                    plannedSavings < 0 ? "text-red-600" : "text-blue-600"
+                  }`}
+                >
+                  {formatCurrency(plannedSavings)}
+                </h3>
+              </div>
             </div>
-            <div className="flex justify-end space-x-3">
+
+            {/* --- Buttons --- */}
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => {
                   setIsEditing(false);
                   setEditableData(planData || {});
                 }}
-                className="btn-secondary"
+                className="btn-secondary flex items-center gap-2"
               >
-                Cancel
+                <X size={16} /> Cancel
               </button>
               <button
                 onClick={handleSavePlan}
                 disabled={isPending}
-                className="btn-primary"
+                className="btn-primary flex items-center gap-2"
               >
+                <Save size={16} />
                 {isPending ? "Saving..." : "Save Plan"}
               </button>
             </div>
           </div>
-        )}
-        {!isEditing && Object.keys(planData).length > 0 && (
-          <div>
-            <div className="card p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Your Plan Overview
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                You can edit your plan anytime to match your goals.
-              </p>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="btn-primary mt-2 flex gap-2"
-              >
-                <Edit />
-                Edit Plan
-              </button>
-            </div>
+        </>
+      )}
 
-            <div
-              className="card overflow-hidden border rounded-xl shadow-sm
-            overflow-x-auto rounded-lg"
-            >
-              <table className="min-w-full">
-                <thead className="table-head">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold">
-                      Category
-                    </th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      Planned ₹
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {Object.entries(planData).map(([cat, val]) => (
-                    <tr
-                      key={cat}
-                      className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    >
-                      <td className="px-4 py-2 font-medium text-gray-600 dark:text-gray-300">
-                        {cat}
-                      </td>
-                      <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-300">
-                        ₹{val.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {/* --- Plan Dashboard --- */}
+      {!isEditing && Object.keys(planData).length > 0 && (
+        <div className="space-y-6">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="card p-4 text-center">
+              <p className="text-gray-500 text-sm">Total Planned Income</p>
+              <h3 className="text-xl font-semibold text-green-600">
+                {formatCurrency(totalPlannedIncome)}
+              </h3>
+            </div>
+            <div className="card p-4 text-center">
+              <p className="text-gray-500 text-sm">Total Planned Expense</p>
+              <h3 className="text-xl font-semibold text-red-500">
+                {formatCurrency(totalPlannedExpense)}
+              </h3>
+            </div>
+            <div className="card p-4 text-center">
+              <p className="text-gray-500 text-sm">Expected Savings</p>
+              <h3
+                className={`text-xl font-semibold ${
+                  plannedSavings < 0 ? "text-red-600" : "text-blue-600"
+                }`}
+              >
+                {formatCurrency(plannedSavings)}
+              </h3>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Dynamic Grouped Plan View */}
+          <div className="space-y-8">
+            {Object.entries(
+              categoryList?.reduce((acc, cat) => {
+                const groupName = cat.group || "Others";
+                if (!acc[groupName]) acc[groupName] = [];
+                acc[groupName].push(cat);
+                return acc;
+              }, {}) || {}
+            ).map(([group, cats]) => (
+              <div key={group}>
+                {/* Group Title */}
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+                    {group}
+                  </h3>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {cats[0]?.type}
+                  </span>
+                </div>
+
+                {/* Categories Grid */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {cats.map((cat) => {
+                    const value = planData?.[cat.name] || 0;
+                    const isIncome = cat.type === "Income";
+
+                    return (
+                      <div
+                        key={cat._id}
+                        className={`flex items-center justify-between p-4 rounded-xl bg-gradient-to-br 
+    from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 shadow-sm hover:shadow-md 
+    border border-gray-200 dark:border-gray-700 transition`}
+                      >
+                        {/* Left Section - Icon + Category name */}
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`p-2 rounded-full ${
+                              isIncome
+                                ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-300"
+                                : cat.group?.toLowerCase().includes("want")
+                                ? "bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-300"
+                                : "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300"
+                            }`}
+                          >
+                            {(() => {
+                              const Icon =
+                                categoryIconMap[cat.name?.toLowerCase()] ||
+                                categoryIconMap["other"];
+                              return <Icon className="w-5 h-5" />;
+                            })()}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800 dark:text-gray-200 capitalize">
+                              {cat.name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {cat.group}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Right Section - Amount */}
+                        <div className="text-right">
+                          <p
+                            className={`text-lg font-semibold ${
+                              isIncome
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-gray-900 dark:text-gray-100"
+                            }`}
+                          >
+                            ₹{value.toLocaleString()}
+                          </p>
+                          {!isIncome && (
+                            <div className="mt-1 w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full ${
+                                  cat.group?.toLowerCase().includes("want")
+                                    ? "bg-orange-500"
+                                    : "bg-blue-500"
+                                }`}
+                                style={{
+                                  width: `${Math.min(
+                                    (value / totalPlannedIncome) * 100,
+                                    100
+                                  )}%`,
+                                }}
+                              ></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showAddCategory && (
+        <AddCategory onClose={() => setShowAddCategory(false)} />
+      )}
+
+      {deleteTarget && (
+        <DeleteCategory
+          category={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
