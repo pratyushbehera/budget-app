@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNotification } from "../../../contexts/NotificationContext";
-import { useCategory } from "../../../services/categoryApi";
 import { useEditTransaction } from "../../../services/transactionApi";
 import { Modal } from "../../../shared/components/Modal";
+import { useSelector } from "react-redux";
 
 export const EditTransaction = ({ transaction, onClose }) => {
-  const { data: categoryList, isLoading, error } = useCategory();
+  const { category: categoryList, loading: isLoading } = useSelector(
+    (state) => state.category
+  );
   const { mutateAsync: editTx, isPending } = useEditTransaction();
 
   const { addNotification } = useNotification();

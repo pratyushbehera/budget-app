@@ -8,6 +8,7 @@ import { DeleteTransaction } from "../features/transactions/components/DeleteTra
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedMonth } from "../app/store/appSlice";
 import { categoryIconMap } from "../shared/utils/categoryIconMap";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
 export function TransactionPage() {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ export function TransactionPage() {
     return ["All", ...cats];
   }, [data]);
 
-  if (isLoading) return <p>Loading transactions...</p>;
+  if (isLoading) return <LoadingPage page="transactions" />;
   if (error) return <p>{error.message}</p>;
 
   return (

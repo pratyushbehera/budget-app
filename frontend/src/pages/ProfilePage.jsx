@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useUpdateProfile, useCurrentUser } from "../services/authApi";
+import { useUpdateProfile } from "../services/authApi";
 import { useNotification } from "../contexts/NotificationContext";
 import { Modal } from "../shared/components/Modal";
 import { Pencil } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
+import { useSelector } from "react-redux";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
 export function ProfilePage() {
-  const { data: user, isLoading } = useCurrentUser();
+  const { user, loading: isLoading } = useSelector((state) => state.auth);
   const updateProfileMutation = useUpdateProfile();
   const { addNotification } = useNotification();
 
@@ -70,16 +72,7 @@ export function ProfilePage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 border-t-2 border-b-2 border-primary-600 rounded-full animate-spin"></div>
-          <span className="text-gray-600 dark:text-gray-300">
-            Loading profile...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingPage page="profile" />;
   }
 
   return (
@@ -106,7 +99,7 @@ export function ProfilePage() {
         </div>
 
         <button
-          className="btn-secondary flex items-center gap-2"
+          className="btn-primary flex items-center gap-2"
           onClick={() => setIsModalOpen(true)}
         >
           <Pencil size={16} />

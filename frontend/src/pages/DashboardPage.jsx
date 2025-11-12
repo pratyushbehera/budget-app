@@ -1,6 +1,5 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useCurrentUser } from "../services/authApi";
 import { useDashboard } from "../services/dashboardApi";
 import { InfoTile } from "../features/dashboard/components/InfoTile";
 import { CategorySpendChart } from "../features/dashboard/components/CategorySpendChart";
@@ -11,6 +10,7 @@ import { setSelectedMonth } from "../app/store/appSlice";
 import { motion } from "framer-motion";
 import { NoBackground } from "../assets/NoBackground";
 import { QuickAdd } from "../features/dashboard/components/QuickAdd";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,24 +28,17 @@ const itemVariants = {
 
 export function DashboardPage() {
   const dispatch = useDispatch();
+  const { user: currentUser, loading: userLoading } = useSelector(
+    (state) => state.auth
+  );
   const selectedMonth = useSelector((state) => state.app.selectedMonth);
-  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { data: dashboardData, isLoading: dashboardLoading } =
     useDashboard(selectedMonth);
 
   const isLoading = userLoading || dashboardLoading;
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 border-t-2 border-b-2 border-primary-600 rounded-full animate-spin"></div>
-          <span className="text-gray-600 dark:text-gray-300">
-            Loading dashboard...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingPage page="dashboard" />;
   }
 
   const hasData =
@@ -69,13 +62,13 @@ export function DashboardPage() {
         />
       </div>
       {!hasData ? (
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
           Welcome to your budgeting dashboard. You haven’t added any
           transactions yet — start by recording your income or expenses to see
           your financial summary come alive!
         </p>
       ) : (
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
           Here’s a summary of your finances for {selectedMonth}.
         </p>
       )}
