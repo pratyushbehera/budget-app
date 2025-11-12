@@ -90,13 +90,13 @@ const deleteCategory = async (id) => {
   return response.json();
 };
 
-export const useCategory = ({ month, limit } = {}) => {
+export const useCategory = (userId) => {
   return useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", userId],
     queryFn: getCategory,
     retry: 1,
     staleTime: 5 * 60 * 1000,
-    enabled: !!localStorage.getItem("auth-token"),
+    enabled: !!localStorage.getItem("auth-token") && !!userId,
   });
 };
 export const useDeleteCategory = () => {

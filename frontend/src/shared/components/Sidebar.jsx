@@ -49,13 +49,23 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
+        <div className="md:hidden fixed flex space-x-2 w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
           <button
             onClick={toggleSidebar}
             className="p-2 border top-4 left-4 rounded-md bg-gray-200 dark:bg-gray-300 text-gray-800 dark:text-white"
           >
             <Menu size={20} />
           </button>
+          <div className="flex items-center space-x-2">
+            <img
+              src="/logo.png"
+              alt="FinPal Logo"
+              className="w-7 h-7 object-contain"
+            />
+            <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400">
+              FinPal
+            </h1>
+          </div>
         </div>
       )}
 

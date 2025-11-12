@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { usePlan, useSavePlan } from "../services/planApi";
 import { useNotification } from "../contexts/NotificationContext";
-import { useCategory } from "../services/categoryApi";
 import { Edit, Plus, Save, X, Trash2 } from "lucide-react";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { categoryIconMap } from "../shared/utils/categoryIconMap";
 import { AddCategory } from "../features/plan/components/AddCategory";
 import { DeleteCategory } from "../features/plan/components/DeleteCategory";
 import { NoPlan } from "../features/plan/components/NoPlan";
+import { LoadingPage } from "../shared/components/LoadingPage";
+import { useSelector } from "react-redux";
 
 export function PlanPage() {
-  const { data: categoryList } = useCategory();
+  const { category: categoryList } = useSelector((state) => state.category);
   const { addNotification } = useNotification();
   const { data: planData, isLoading } = usePlan();
   const { mutateAsync: savePlan, isPending } = useSavePlan();
@@ -72,16 +73,7 @@ export function PlanPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 border-t-2 border-b-2 border-primary-600 rounded-full animate-spin"></div>
-          <span className="text-gray-600 dark:text-gray-300">
-            Loading plan...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingPage page="plan" />;
   }
 
   // 🧭 Dynamically group categories by "type" and "group"
@@ -316,7 +308,7 @@ export function PlanPage() {
                       <div
                         key={cat._id}
                         className={`flex items-center justify-between p-4 rounded-xl bg-gradient-to-br 
-    from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 shadow-sm hover:shadow-md 
+    from-gray-50 to-white dark:from-gray-50 dark:to-gray-950 shadow-sm hover:shadow-md 
     border border-gray-200 dark:border-gray-700 transition`}
                       >
                         {/* Left Section - Icon + Category name */}
@@ -338,7 +330,7 @@ export function PlanPage() {
                             })()}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-800 dark:text-gray-200 capitalize">
+                            <p className="font-medium text-gray-800 dark:text-gray-900 capitalize">
                               {cat.name}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -353,7 +345,7 @@ export function PlanPage() {
                             className={`text-lg font-semibold ${
                               isIncome
                                 ? "text-green-600 dark:text-green-400"
-                                : "text-gray-900 dark:text-gray-100"
+                                : "text-gray-900 dark:text-gray-900"
                             }`}
                           >
                             ₹{value.toLocaleString()}

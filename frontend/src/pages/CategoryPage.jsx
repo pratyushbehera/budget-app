@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { useCategory } from "../services/categoryApi";
+import { useSelector } from "react-redux";
 
 export function CategoyPage() {
-  const { data, isLoading, error } = useCategory();
+  
+  const { category: data, loading: isLoading } = useSelector(
+    (state) => state.category
+  );
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteCategory, setDeleteCategory] = useState(null);
   const [editCategory, setEditCategory] = useState(null);
