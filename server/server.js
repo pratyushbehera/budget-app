@@ -10,6 +10,7 @@ const planRoutes = require("./routes/planRoutes");
 const insightRoutes = require("./routes/insightRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -27,6 +28,7 @@ app.use("/api/plans", planRoutes);
 app.use("/api/insights", insightRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/ai", aiRoutes);
 
 (async () => {
   await connectDB();
