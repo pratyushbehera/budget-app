@@ -21,7 +21,7 @@ export const InfoTile = ({ title, amount, helperText }) => {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl sm:min-h-[112px] p-4 text-white shadow-lg bg-gradient-to-r ${gradient}`}
+      className={`relative overflow-hidden rounded-2xl md:min-h-[112px] p-4 text-white shadow-lg bg-gradient-to-r ${gradient}`}
     >
       {/* Background Glyph */}
       <Icon
@@ -30,7 +30,9 @@ export const InfoTile = ({ title, amount, helperText }) => {
       />
 
       <h3 className="text-sm font-medium">{title}</h3>
-      <p className="text-3xl font-bold mt-1">{formatCurrency(amount)}</p>
+      <p className="md:text-3xl text-xl font-bold mt-1">
+        {formatCurrency(amount)}
+      </p>
       {helperText && (
         <div className="text-xs mt-1 opacity-80">{helperText}</div>
       )}

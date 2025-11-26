@@ -104,7 +104,7 @@ export function HomePage() {
                 transition: { staggerChildren: 0.2 },
               },
             }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 mx-16"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 mx-8 md:mx-12 md:mt-12"
           >
             {features.map((feature, i) => (
               <motion.div

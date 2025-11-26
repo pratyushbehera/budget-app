@@ -34,7 +34,7 @@ export function RecentTransaction({ month }) {
           {data.map((tx) => {
             const isIncome =
               tx.type?.toLowerCase() === "income" ||
-              ["salary", "bonus", "interest", "other income"].includes(
+              ["salary", "bonus", "interest", "other income","dividend"].includes(
                 tx.category.toLowerCase()
               );
 

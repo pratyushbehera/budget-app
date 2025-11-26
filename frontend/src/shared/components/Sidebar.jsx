@@ -52,6 +52,7 @@ export const Sidebar = () => {
         <div className="md:hidden fixed flex space-x-2 w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
           <button
             onClick={toggleSidebar}
+            aria-label="Open menu"
             className="p-2 border top-4 left-4 rounded-md bg-gray-200 dark:bg-gray-300 text-gray-800 dark:text-white"
           >
             <Menu size={20} />
@@ -71,6 +72,8 @@ export const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
+        role="navigation"
+        aria-label="Main Sidebar"
         className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
@@ -91,6 +94,7 @@ export const Sidebar = () => {
               <ThemeToggle />
               <button
                 onClick={toggleSidebar}
+                aria-label="Close menu"
                 className="md:hidden p-1 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <X size={20} />
@@ -102,39 +106,44 @@ export const Sidebar = () => {
           <nav className="flex-1 overflow-y-auto p-4 space-y-1 text-gray-700 dark:text-gray-300">
             <Link
               to="/dashboard"
+              onClick={toggleSidebar}
               className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <LayoutDashboard size={18} /> Overview
             </Link>
             <Link
               to="/transactions"
+              onClick={toggleSidebar}
               className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <CreditCard size={18} /> Transactions
             </Link>
             <Link
               to="/plan"
+              onClick={toggleSidebar}
               className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <FileText size={18} /> Plan
             </Link>
 
-            <div className="pt-4 border-t dark:border-gray-700">
+            {/* <div className="pt-4 border-t dark:border-gray-700">
               <p className="text-xs uppercase text-gray-400 mb-2">
                 Stocks & Mutual funds
               </p>
               <Link
                 to="/portfolio"
+                onClick={toggleSidebar}
                 className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <Wallet size={18} /> My Portfolio
               </Link>
-            </div>
+            </div>*/}
 
             <div className="pt-4 border-t dark:border-gray-700">
               <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
               <Link
                 to="/shared"
+                onClick={toggleSidebar}
                 className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <Share2 size={18} /> Shared Access
@@ -167,6 +176,7 @@ export const Sidebar = () => {
             </div>
             <button
               onClick={handleLogout}
+              aria-label="Logout"
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500"
             >
               <LogOut size={16} /> Logout

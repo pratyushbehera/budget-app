@@ -49,11 +49,33 @@ export function TransactionPage() {
     }, {});
   }, [filteredTransactions]);
 
+  // 🔥 Summary should be based on filtered results
+  const summary = useMemo(() => {
+    if (!filteredTransactions) return { total: 0 };
+
+    let total = 0;
+
+    filteredTransactions.forEach((tx) => {
+      const isIncome =
+        tx.type?.toLowerCase() === "income" ||
+        ["salary", "bonus", "interest", "other income", "dividend"].includes(
+          tx.category.toLowerCase()
+        );
+
+      total += isIncome ? tx.amount : -tx.amount;
+    });
+
+    return { total };
+  }, [filteredTransactions]);
+
   // Unique categories for filter dropdown
   const categoryOptions = useMemo(() => {
     const cats = new Set(data?.map((tx) => tx.category) || []);
     return ["All", ...cats];
   }, [data]);
+
+  const shouldShowSummary =
+    searchQuery.trim() !== "" || categoryFilter !== "All";
 
   if (isLoading) return <LoadingPage page="transactions" />;
   if (error) return <p>{error.message}</p>;
@@ -109,6 +131,39 @@ export function TransactionPage() {
         </select>
       </div>
 
+      {shouldShowSummary && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between bg-white dark:bg-gray-950 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+            {/* Left: Icon + Label */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                <Wallet className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  Total for filtered results
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {filteredTransactions.length} transactions
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Total Amount */}
+            <p
+              className={`text-sm font-semibold ${
+                summary.total >= 0
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
+            >
+              {summary.total >= 0 ? "+" : "-"}
+              {formatCurrency(Math.abs(summary.total))}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Transaction List */}
       {!filteredTransactions?.length ? (
         <div className="flex flex-col items-center justify-center h-60 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -127,9 +182,13 @@ export function TransactionPage() {
                 {txList.map((tx) => {
                   const isIncome =
                     tx.type?.toLowerCase() === "income" ||
-                    ["salary", "bonus", "interest", "other income"].includes(
-                      tx.category.toLowerCase()
-                    );
+                    [
+                      "salary",
+                      "bonus",
+                      "interest",
+                      "other income",
+                      "dividend",
+                    ].includes(tx.category.toLowerCase());
 
                   const Icon =
                     categoryIconMap[tx.category.toLowerCase()] || Wallet;

@@ -81,7 +81,7 @@ export function DashboardPage() {
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0"
+            className="grid lg:grid-cols-4 grid-cols-2 gap-4 px-4 py-3 sm:px-0"
           >
             {[
               {
