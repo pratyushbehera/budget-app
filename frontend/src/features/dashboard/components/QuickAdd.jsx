@@ -7,11 +7,10 @@ export const QuickAdd = () => {
   return (
     <>
       <button
-        className="fixed btn-primary bottom-8 right-8 flex items-center gap-2 font-semibold px-4 py-3 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
+        className="fixed btn-primary bottom-8 right-8 flex items-center gap-2 font-semibold px-4 py-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
         onClick={() => setShowAddModal(true)}
       >
         <Plus size={20} />
-        Add Quick Transaction
       </button>
 
       {showAddModal && (

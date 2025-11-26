@@ -86,6 +86,7 @@ export const AddCategory = ({ onClose }) => {
           <option value="Savings & Investments">Savings & Investments</option>
           <option value="Annual/Irregular">Annual/Irregular</option>
           <option value="Variable Wants">Variable Wants</option>
+          <option value="Income">Income</option>
         </select>
 
         <div className="flex justify-end gap-3 pt-2">
