@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { NoBackground } from "../assets/NoBackground";
 import { QuickAdd } from "../features/dashboard/components/QuickAdd";
 import { LoadingPage } from "../shared/components/LoadingPage";
-
+import ChatWidget from "../features/dashboard/components/ChatWidget";
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -34,6 +34,8 @@ export function DashboardPage() {
   const selectedMonth = useSelector((state) => state.app.selectedMonth);
   const { data: dashboardData, isLoading: dashboardLoading } =
     useDashboard(selectedMonth);
+
+  // const insightHook = useInsights(selectedMonth, currentUser);
 
   const isLoading = userLoading || dashboardLoading;
 
@@ -116,6 +118,12 @@ export function DashboardPage() {
             ))}
           </motion.div>
 
+          {/* <h2 className="text-lg font-semibold mb-2">AI Insights</h2>
+          <InsightsCardList
+            selectedMonth={selectedMonth}
+            insightHook={insightHook}
+          /> */}
+
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
             <MonthlySpendCard
@@ -144,6 +152,7 @@ export function DashboardPage() {
         </div>
       )}
       <QuickAdd />
+      <ChatWidget categoryPlanUsage={dashboardData?.categoryPlanUsage} />
     </div>
   );
 }

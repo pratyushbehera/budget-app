@@ -27,16 +27,17 @@ const InsightSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    }, // Added userId
+    },
     year: { type: String, required: true },
     month: { type: String, required: true },
-    content: { type: String, required: true },
+    content: {
+      type: mongoose.Schema.Types.Mixed, // can hold array/object (JSON)
+      required: true,
+    },
   },
-  {
-    timestamps: true, // Adds createdAt and updatedAt fields automatically
-    unique: ["year", "month"], // Ensure only one insight per month/year
-  }
+  { timestamps: true }
 );
+InsightSchema.index({ userId: 1, year: 1, month: 1 }, { unique: true });
 
 const Transaction = mongoose.model("Transaction", TransactionSchema);
 const Plan = mongoose.model("Plan", PlanSchema);
