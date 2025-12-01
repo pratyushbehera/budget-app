@@ -29,7 +29,11 @@ const buildChatPrompt = (query, categoryPlanUsage) => {
   - Only reference categories and values that exist in categoryPlanUsage.
   - If the query requires more data than available, say so honestly.
   
-  Return plain text, no code fences.
+  FORMAT RULES:
+  - Return your answer in **Markdown**.
+  - Use **bold** to highlight category names or numbers.
+  - Use bullet points when explaining multiple items.
+  - Do not wrap markdown in code fences.
   `;
 };
 

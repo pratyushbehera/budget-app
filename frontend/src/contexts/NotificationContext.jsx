@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const NotificationContext = createContext();
 
@@ -11,20 +11,20 @@ export function NotificationProvider({ children }) {
       id,
       ...notification,
     };
-    
-    setNotifications(prev => [...prev, newNotification]);
-    
+
+    setNotifications((prev) => [...prev, newNotification]);
+
     if (notification.autoHide !== false) {
       setTimeout(() => {
         removeNotification(id);
       }, notification.duration || 5000);
     }
-    
+
     return id;
   };
 
   const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
   };
 
   const clearAll = () => {
@@ -48,7 +48,9 @@ export function NotificationProvider({ children }) {
 export const useNotification = () => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider');
+    throw new Error(
+      "useNotification must be used within a NotificationProvider"
+    );
   }
   return context;
 };
