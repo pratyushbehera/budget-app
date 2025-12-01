@@ -99,45 +99,94 @@ export const AddTransaction = ({ onClose }) => {
       {isLoading ? (
         "Loading..."
       ) : (
-        <form className="space-y-3" onSubmit={handleSubmit}>
-          <input
-            id="transaction-date"
-            name="date"
-            type="date"
-            value={form.date}
-            onChange={setFormValue}
-            placeholder="Date"
-            className="input-field"
-          />
-          <select
-            name="categoryId"
-            value={form.categoryId}
-            onChange={setFormValue}
-            className="input-field"
-          >
-            <option value="">Select category</option>
-            {categoryList?.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            name="amount"
-            value={form.amount}
-            onChange={setFormValue}
-            placeholder="Amount"
-            className="input-field"
-          />
-          <textarea
-            placeholder="Notes"
-            name="notes"
-            value={form.notes}
-            onChange={setFormValue}
-            className="input-field"
-          />
-          <div className="flex justify-end gap-3 pt-2">
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Section heading */}
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            Transaction Details
+          </h3>
+
+          {/* Date */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="transaction-date"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Date
+            </label>
+            <input
+              id="transaction-date"
+              name="date"
+              type="date"
+              value={form.date}
+              onChange={setFormValue}
+              className="input-field focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+
+          {/* Category */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="categoryId"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Category
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={form.categoryId}
+              onChange={setFormValue}
+              className="input-field focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="">Select category</option>
+              {categoryList?.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="amount"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Amount
+            </label>
+            <input
+              id="amount"
+              type="number"
+              name="amount"
+              value={form.amount}
+              onChange={setFormValue}
+              className="input-field focus:ring-2 focus:ring-primary-500"
+              placeholder="0.00"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="notes"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Notes
+            </label>
+            <textarea
+              id="notes"
+              name="notes"
+              value={form.notes}
+              onChange={setFormValue}
+              className="input-field resize-none focus:ring-2 focus:ring-primary-500"
+              placeholder="Optional"
+              rows={3}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800 mt-6">
             <button type="button" className="btn-secondary" onClick={onClose}>
               Cancel
             </button>

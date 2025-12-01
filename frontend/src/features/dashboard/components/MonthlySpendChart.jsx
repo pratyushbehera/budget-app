@@ -7,6 +7,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { convertToShortForm } from "../../../shared/utils/formatCurrency";
 
 export const MonthlySpendCard = ({ monthlySpend = [], monthlyIncome = [] }) => {
   const data = monthlySpend.map((spend, i) => ({
@@ -41,7 +42,7 @@ export const MonthlySpendCard = ({ monthlySpend = [], monthlyIncome = [] }) => {
                 axisLine={false}
               />
               <YAxis
-                tickFormatter={(val) => `₹${val.toLocaleString()}`}
+                tickFormatter={(val) => `₹${convertToShortForm(val)}`}
                 tick={{ fill: "#6b7280", fontSize: 11 }}
                 axisLine={false}
               />

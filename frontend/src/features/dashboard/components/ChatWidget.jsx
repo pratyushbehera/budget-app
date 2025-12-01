@@ -2,6 +2,7 @@
 import { BotMessageSquare, X } from "lucide-react";
 import React, { useState, useRef } from "react";
 import { streamChatResponse } from "../../../services/chatApi";
+import ReactMarkdown from "react-markdown";
 
 const PREDEFINED_PILLS = [
   "Where did I overspend this month?",
@@ -124,7 +125,7 @@ export default function ChatWidget({ categoryPlanUsage }) {
                       : "bg-white dark:bg-gray-950 text-gray-900 dark:text-white border"
                   }`}
                 >
-                  {msg.text}
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
                   {msg.from === "ai" &&
                     isStreaming &&
                     index === messages.length - 1 && (
