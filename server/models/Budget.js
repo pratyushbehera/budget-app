@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const TransactionSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Added userId
+  paidBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: false,
+  },
   date: { type: String, required: true },
   category: { type: String, required: true },
   categoryId: {
@@ -12,6 +17,22 @@ const TransactionSchema = new mongoose.Schema({
   },
   amount: { type: Number, required: true },
   notes: { type: String },
+  groupId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Group",
+    default: null,
+  },
+  splitDetails: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+      email: { type: String }, // if invited but not registered yet
+      shareAmount: { type: Number, default: 0 }, // amount owed
+    },
+  ],
 });
 
 const PlanSchema = new mongoose.Schema({

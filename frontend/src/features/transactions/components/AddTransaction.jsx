@@ -4,23 +4,38 @@ import { Modal } from "../../../shared/components/Modal";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { uid } from "../../../shared/utils/generateUid";
 import { useSelector } from "react-redux";
+import { useGroup } from "../../../services/groupApi";
 
 export const AddTransaction = ({ onClose }) => {
+  const { user: currentUser } = useSelector((state) => state.auth);
   const {
     category: categoryList,
     loading: isLoading,
     error,
   } = useSelector((state) => state.category);
-  const { mutateAsync: addTx, isPending } = useAddTransaction();
-
-  const { addNotification } = useNotification();
+  const { groups, loading: isGroupLoading } = useSelector(
+    (state) => state.group
+  );
 
   const [form, setForm] = useState({
     date: new Date().toISOString().split("T")[0],
     categoryId: "",
     amount: "0",
     notes: "",
+    groupId: "",
+    paidBy: currentUser?._id,
+    splitDetails: [],
   });
+
+  const { mutateAsync: addTx, isPending } = useAddTransaction();
+  const { data: selectedGroup } = useGroup(form.groupId, {
+    enabled: !!form.groupId,
+  });
+
+  const [splitMode, setSplitMode] = useState("equal");
+  const [splitDetails, setSplitDetails] = useState([]);
+
+  const { addNotification } = useNotification();
 
   const setFormValue = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -52,6 +67,25 @@ export const AddTransaction = ({ onClose }) => {
         amount: form.amount,
         notes: form.notes,
       };
+
+      if (form.groupId && !isSplitValid) {
+        addNotification({
+          type: "error",
+          title: "Invalid Split",
+          message: "Split amounts do not add up to total.",
+        });
+        return;
+      }
+
+      if (form.groupId) {
+        transaction.groupId = form.groupId;
+        transaction.paidBy = form.paidBy;
+        transaction.splitDetails = splitDetails.map((s) => ({
+          userId: s.userId,
+          email: s.email,
+          shareAmount: Number(s.amount),
+        }));
+      }
 
       await addTx(
         { transaction },
@@ -94,9 +128,39 @@ export const AddTransaction = ({ onClose }) => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (selectedGroup) {
+      const initial = selectedGroup.members.map((m) => ({
+        userId: m.userId?._id || null,
+        email: m.email,
+        percent: 0,
+        amount: 0,
+      }));
+      setSplitDetails(initial);
+    }
+  }, [selectedGroup]);
+
+  useEffect(() => {
+    if (splitMode === "equal" && form.amount) {
+      const n = splitDetails.length;
+      const equalShare = (Number(form.amount) / n).toFixed(2);
+
+      setSplitDetails((prev) =>
+        prev.map((s) => ({ ...s, amount: equalShare }))
+      );
+    }
+  }, [splitMode, form.amount]);
+
+  const totalSplit = splitDetails.reduce(
+    (sum, s) => sum + Number(s.amount || 0),
+    0
+  );
+
+  const isSplitValid = Math.abs(totalSplit - Number(form.amount)) < 0.01;
+
   return (
     <Modal title="Add Transaction" onClose={onClose}>
-      {isLoading ? (
+      {isLoading && isGroupLoading ? (
         "Loading..."
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
@@ -166,6 +230,149 @@ export const AddTransaction = ({ onClose }) => {
             />
           </div>
 
+          
+            <select
+            name="groupId"
+            value={form.groupId}
+            onChange={setFormValue}
+            className="input-field"
+          >
+            <option value="">No Group</option>
+            {groups.map((g) => (
+              <option key={g._id || g.id} value={g._id || g.id}>
+                {g.name}
+              </option>
+            ))}
+          </select>
+          {form.groupId && selectedGroup && (
+            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg space-y-2">
+              <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                Split Details
+              </h3>
+              <select
+                name="paidBy"
+                className="input-field"
+                value={form.paidBy}
+                onChange={setFormValue}
+              >
+                {selectedGroup.members.map((m) => (
+                  <option value={m.userId?._id} key={m.email}>
+                    {m.userId?.firstName || m.email}
+                  </option>
+                ))}
+              </select>
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  className={`px-2 py-1 rounded text-sm ${
+                    splitMode === "equal"
+                      ? "bg-primary-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                  onClick={() => setSplitMode("equal")}
+                >
+                  Equal
+                </button>
+
+                <button
+                  type="button"
+                  className={`px-2 py-1 rounded text-sm ${
+                    splitMode === "percent"
+                      ? "bg-primary-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                  onClick={() => setSplitMode("percent")}
+                >
+                  %
+                </button>
+
+                <button
+                  type="button"
+                  className={`px-2 py-1 rounded text-sm ${
+                    splitMode === "exact"
+                      ? "bg-primary-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                  onClick={() => setSplitMode("exact")}
+                >
+                  Exact
+                </button>
+              </div>
+
+              {splitMode === "percent" &&
+                splitDetails.map((s, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <span>{s.email}</span>
+                    <input
+                      type="number"
+                      value={s.percent}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setSplitDetails((cur) =>
+                          cur.map((x, i) =>
+                            i === idx
+                              ? {
+                                  ...x,
+                                  percent: val,
+                                  amount: ((val / 100) * form.amount).toFixed(
+                                    2
+                                  ),
+                                }
+                              : x
+                          )
+                        );
+                      }}
+                      className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                    />
+                    %
+                  </div>
+                ))}
+              {splitMode === "exact" &&
+                splitDetails.map((s, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <span>{s.email}</span>
+                    <input
+                      type="number"
+                      value={s.amount}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setSplitDetails((cur) =>
+                          cur.map((x, i) =>
+                            i === idx ? { ...x, amount: val } : x
+                          )
+                        );
+                      }}
+                      className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                    />
+                  </div>
+                ))}
+
+              {!isSplitValid && (
+                <div className="text-xs text-red-500 mt-1">
+                  Split total must equal the transaction amount (Current:{" "}
+                  {totalSplit})
+                </div>
+              )}
+
+              <div className="space-y-1">
+                {selectedGroup.members.map((m) => (
+                  <div
+                    key={m.email}
+                    className="flex justify-between text-sm text-gray-600 dark:text-gray-300"
+                  >
+                    <span>{m.userId?.firstName || m.email.split("@")[0]}</span>
+                    <span> — equal split</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {/* Notes */}
           <div className="space-y-1.5">
             <label
@@ -174,7 +381,7 @@ export const AddTransaction = ({ onClose }) => {
             >
               Notes
             </label>
-            <textarea
+          <textarea
               id="notes"
               name="notes"
               value={form.notes}

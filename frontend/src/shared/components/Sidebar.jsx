@@ -8,16 +8,11 @@ import {
   LayoutDashboard,
   CreditCard,
   FileText,
-  Wallet,
-  Bell,
-  Share2,
-  FolderTree,
-  Users,
-  Trophy,
   Menu,
   X,
   LogOut,
   User as UserIcon,
+  TicketCheck,
 } from "lucide-react";
 import { useGravatar } from "../hooks/useGravatar";
 
@@ -27,6 +22,9 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const { addNotification } = useNotification();
   const { user } = useSelector((state) => state.auth);
+  const { groups, loading: isGroupLoading } = useSelector(
+    (state) => state.group
+  );
 
   const { avatarUrl, loading, error } = useGravatar(user?.email, {
     size: 100,
@@ -138,17 +136,21 @@ export const Sidebar = () => {
                 <Wallet size={18} /> My Portfolio
               </Link>
             </div>*/}
-
-            <div className="pt-4 border-t dark:border-gray-700">
-              <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
-              <Link
-                to="/shared"
-                onClick={toggleSidebar}
-                className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <Share2 size={18} /> Shared Access
-              </Link>
-            </div>
+            {!isGroupLoading && groups?.length > 0 && (
+              <div className="pt-4 border-t dark:border-gray-700">
+                <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
+                {groups?.map((grp) => (
+                  <Link
+                    key={grp?._id}
+                    to={`/groups/${grp?._id}`}
+                    onClick={toggleSidebar}
+                    className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <TicketCheck size={18} /> {grp.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </nav>
 
           {/* Footer */}

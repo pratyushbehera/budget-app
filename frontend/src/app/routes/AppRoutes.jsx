@@ -11,6 +11,7 @@ import { TransactionPage } from "../../pages/TransactionPage";
 import { CategoyPage } from "../../pages/CategoryPage";
 import { PlanPage } from "../../pages/PlanPage";
 import NotFoundPage from "../../pages/NotFoundPage";
+import GroupPage from "../../pages/GroupPage";
 
 // Protected Route component
 function ProtectedRoute({ children }) {
@@ -62,6 +63,7 @@ export function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/transactions" element={<TransactionPage />} />
         <Route path="/categories" element={<CategoyPage />} />
+        <Route path="/groups/:groupId" element={<GroupPage />} />
       </Route>
 
       {/* Fallback route */}

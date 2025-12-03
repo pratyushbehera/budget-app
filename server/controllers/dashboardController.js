@@ -17,7 +17,16 @@ exports.getDashboard = async (req, res) => {
     // Fetch transactions, categories, and plan in parallel
     const [transactions, categories, plan] = await Promise.all([
       Transaction.find({
-        userId,
+        $or: [
+          { paidBy: userId }, // new group-based expenses
+          {
+            $and: [
+              // backward compatibility
+              { paidBy: { $exists: false } },
+              { userId: userId },
+            ],
+          },
+        ],
         date: {
           $gte: startDate.toISOString().split("T")[0],
           $lt: endDate.toISOString().split("T")[0],
@@ -103,7 +112,16 @@ exports.getDashboard = async (req, res) => {
     const yearEnd = new Date(`${currentYear}-12-31`);
 
     const yearTxns = await Transaction.find({
-      userId,
+      $or: [
+        { paidBy: userId }, // new group-based expenses
+        {
+          $and: [
+            // backward compatibility
+            { paidBy: { $exists: false } },
+            { userId: userId },
+          ],
+        },
+      ],
       date: {
         $gte: yearStart.toISOString().split("T")[0],
         $lt: yearEnd.toISOString().split("T")[0],

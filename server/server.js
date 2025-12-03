@@ -11,6 +11,7 @@ const insightRoutes = require("./routes/insightRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const groupRoutes = require("./routes/groupRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -29,6 +30,7 @@ app.use("/api/insights", insightRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/groups", groupRoutes);
 
 (async () => {
   await connectDB();
