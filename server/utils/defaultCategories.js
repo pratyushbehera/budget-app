@@ -19,5 +19,6 @@ exports.DEFAULT_CATEGORIES = {
     "Health Check-up",
     "Festivals/Gifts",
     "Other",
+    "Settlement",
   ],
 };

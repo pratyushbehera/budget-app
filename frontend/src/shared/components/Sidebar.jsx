@@ -13,6 +13,7 @@ import {
   LogOut,
   User as UserIcon,
   TicketCheck,
+  Group,
 } from "lucide-react";
 import { useGravatar } from "../hooks/useGravatar";
 
@@ -122,6 +123,13 @@ export const Sidebar = () => {
               className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <FileText size={18} /> Plan
+            </Link>
+            <Link
+              to="/groups"
+              onClick={toggleSidebar}
+              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <Group size={18} /> Groups
             </Link>
 
             {/* <div className="pt-4 border-t dark:border-gray-700">

@@ -1,242 +1,79 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "./apiClient";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+/* -----------------------------------------------------
+   GROUP FETCHING
+----------------------------------------------------- */
 
-// GET /api/groups
-export const fetchGroups = async () => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/groups`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to fetch groups: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-// GET /api/groups/:groupId
-export const fetchGroupDetails = async (groupId) => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/groups/${groupId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to fetch group by Id: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-// POST /api/groups
-export const createGroup = async (group) => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/groups`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(group),
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to create group: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-export const fetchGroupTransactions = async (groupId) => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/api/groups/${groupId}/transactions`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message ||
-        `Failed to fetch group transactions: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-export const getGroupSummary = async (groupId) => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/api/groups/${groupId}/summary`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to fetch group summary: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-export const useGroups = () => {
-  return useQuery({
+export const useGroups = () =>
+  useQuery({
     queryKey: ["groups"],
-    queryFn: fetchGroups,
-    staleTime: 1000 * 60 * 5, // 5 minutes caching
+    queryFn: () => api.get("/api/groups"),
+    staleTime: 5 * 60 * 1000,
   });
-};
 
-export const useGroup = (groupId) => {
-  return useQuery({
+export const useGroup = (groupId) =>
+  useQuery({
     queryKey: ["group", groupId],
-    queryFn: () => fetchGroupDetails(groupId),
+    queryFn: () => api.get(`/api/groups/${groupId}`),
     enabled: !!groupId,
   });
-};
+
+export const useGroupTransactions = (groupId) =>
+  useQuery({
+    queryKey: ["group", groupId, "transactions"],
+    queryFn: () => api.get(`/api/groups/${groupId}/transactions`),
+    enabled: !!groupId,
+  });
+
+export const useGroupSummary = (groupId) =>
+  useQuery({
+    queryKey: ["group", groupId, "summary"],
+    queryFn: () => api.get(`/api/groups/${groupId}/summary`),
+    enabled: !!groupId,
+  });
+
+export const useGroupActivity = (groupId) =>
+  useQuery({
+    queryKey: ["group-activity", groupId],
+    queryFn: () => api.get(`/api/groups/${groupId}/activity`),
+    enabled: !!groupId,
+    refetchInterval: 15000,
+  });
+
+/* -----------------------------------------------------
+   CREATE & UPDATE
+----------------------------------------------------- */
 
 export const useCreateGroup = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: createGroup,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["groups"]);
-    },
+    mutationFn: (group) => api.post("/api/groups", group),
+    onSuccess: () => qc.invalidateQueries(["groups"]),
   });
 };
 
-export const useGroupTransactions = (groupId) => {
-  return useQuery({
-    queryKey: ["group", groupId, "transactions"],
-    queryFn: () => fetchGroupTransactions(groupId),
-    enabled: !!groupId,
+export const useUpdateGroup = (groupId) => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ group }) => api.put(`/api/groups/${groupId}`, group),
+    onSuccess: () => qc.invalidateQueries(["group", groupId]),
   });
 };
 
-export const useGroupSummary = (groupId) => {
-  return useQuery({
-    queryKey: ["group", groupId, "summary"],
-    queryFn: () => getGroupSummary(groupId),
-    enabled: !!groupId,
-  });
-};
-
-export const settleTransaction = async ({ groupId, settlements }) => {
-  //from, to, amount
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/groups/${groupId}/settle`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(settlements),
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to settle transaction: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
+/* -----------------------------------------------------
+   SETTLEMENT
+----------------------------------------------------- */
 
 export const useSettleUp = (groupId) => {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: ({ settlements }) =>
-      settleTransaction({ groupId, settlements }),
+      api.post(`/api/groups/${groupId}/settle`, settlements),
+
     onSuccess: () => {
       qc.invalidateQueries(["group-summary", groupId]);
       qc.invalidateQueries(["group-transactions", groupId]);
@@ -244,40 +81,63 @@ export const useSettleUp = (groupId) => {
   });
 };
 
-export const updateGroup = async ({ group }, groupId) => {
-  const token = localStorage.getItem("auth-token");
+/* -----------------------------------------------------
+   MEMBERSHIP MANAGEMENT
+----------------------------------------------------- */
 
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
+export const useRemoveMember = (groupId) => {
+  const qc = useQueryClient();
 
-  const response = await fetch(`${API_BASE_URL}/api/groups/${groupId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(group),
+  return useMutation({
+    mutationFn: (member) => api.post(`/api/groups/${groupId}/remove`, member),
+
+    onSuccess: () => qc.invalidateQueries(["group", groupId]),
   });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to update group: ${response.status}`
-    );
-  }
-
-  return response.json();
 };
 
-export const useUpdateGroup = (groupId) => {
+export const useLeaveGroup = (groupId) => {
   const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: (data) => updateGroup(data, groupId),
+    mutationFn: () => api.post(`/api/groups/${groupId}/leave`),
+    onSuccess: () => qc.invalidateQueries(["groups"]),
+  });
+};
+
+export const useInviteMember = (groupId) => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (member) => api.post(`/api/groups/${groupId}/invite`, member),
+
     onSuccess: () => qc.invalidateQueries(["group", groupId]),
+  });
+};
+
+export const useAcceptInvite = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (groupId) =>
+      api.post("/api/groups/invites/accept", { groupId }),
+
+    onSuccess: () => qc.invalidateQueries(["groups"]),
+  });
+};
+
+/* -----------------------------------------------------
+   DELETE GROUP
+----------------------------------------------------- */
+
+export const useDeleteGroup = (groupId) => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => api.del(`/api/groups/${groupId}`),
+
+    onSuccess: () => {
+      qc.invalidateQueries(["groups"]);
+      window.location.href = "/dashboard";
+    },
   });
 };

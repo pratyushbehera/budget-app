@@ -1,5 +1,8 @@
 const { Transaction } = require("../models/Budget");
 const Group = require("../models/Group");
+const GroupActivity = require("../models/GroupActivity");
+const User = require("../models/User");
+const Category = require("../models/Category");
 
 // POST /api/groups
 exports.createGroup = async (req, res) => {
@@ -33,7 +36,7 @@ exports.getMyGroups = async (req, res) => {
   try {
     const groups = await Group.find({
       "members.userId": req.user._id,
-    }).select("_id name");
+    }).select("_id name createdBy description members");
 
     res.json(groups);
   } catch (err) {
@@ -203,6 +206,20 @@ exports.settleUp = async (req, res) => {
     const { groupId } = req.params;
     const { id, from, to, amount } = req.body;
 
+    let categoryId = null;
+    const category = await Category.find({ name: "Settlement" });
+    if (!category || category.length === 0) {
+      const ctx = await Category.create({
+        userId: from,
+        type: "Expense",
+        name: "Settlement",
+        group: "Annual/Irregular",
+      });
+      categoryId = ctx._id;
+    } else {
+      categoryId = category[0]?._id;
+    }
+
     // Create a transaction representing settlement
     const tx = await Transaction.create({
       id,
@@ -211,12 +228,20 @@ exports.settleUp = async (req, res) => {
       groupId,
       amount,
       category: "Settlement",
+      categoryId,
+      date: new Date(),
       notes: `Settlement between members`,
-      categoryId: null,
       splitDetails: [{ userId: to, shareAmount: amount }],
     });
 
     res.json(tx);
+
+    await GroupActivity.create({
+      groupId,
+      type: "settle",
+      actorId: from,
+      data: { to, amount },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
@@ -240,6 +265,188 @@ exports.updateGroup = async (req, res) => {
 
     await group.save();
     res.json(group);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.deleteGroup = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.groupId);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    // Only creator/admin can delete
+    if (group.createdBy.toString() !== req.user.id)
+      return res.status(403).json({ message: "Only admin can delete group" });
+
+    await group.deleteOne();
+
+    res.json({ message: "Group deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.leaveGroup = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const userId = req.user.id;
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    const isAdmin = group.createdBy.toString() === userId;
+
+    // Admin cannot leave unless there is a replacement admin
+    if (isAdmin) {
+      if (group.members.length === 1) {
+        // only member
+        await group.deleteOne();
+        return res.json({
+          message: "Group deleted as you were the only member",
+        });
+      }
+
+      const remaining = group.members.filter(
+        (m) => m.userId?.toString() !== userId
+      );
+
+      // Assign new admin (first non-admin)
+      group.createdBy = remaining[0].userId;
+    }
+
+    // Remove current user
+    group.members = group.members.filter(
+      (m) => m.userId?.toString() !== userId
+    );
+
+    await group.save();
+
+    await GroupActivity.create({
+      groupId,
+      type: "left",
+      actorId: userId,
+    });
+
+    res.json({ message: "Left group successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.removeMember = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { memberId } = req.body;
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    // Only admin
+    if (group.createdBy.toString() !== req.user.id)
+      return res.status(403).json({ message: "Not authorized" });
+
+    group.members = group.members.filter(
+      (m) => m.userId?.toString() !== memberId
+    );
+
+    await group.save();
+
+    await GroupActivity.create({
+      groupId,
+      type: "removed",
+      actorId: req.user.id,
+      data: { removedUserId: memberId },
+    });
+
+    res.json({ message: "Member removed" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.inviteMember = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { groupId } = req.params;
+    const inviterId = req.user.id;
+
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+
+    // Only admin (creator) can invite
+    if (group.createdBy.toString() !== inviterId)
+      return res.status(403).json({ message: "Not authorized" });
+
+    // Prevent duplicate invites
+    const existing = group.members.find((m) => m.email === email);
+    if (existing)
+      return res.status(400).json({ message: "User already invited" });
+
+    // Check if email belongs to existing user
+    const user = await User.findOne({ email });
+
+    group.members.push({
+      email,
+      userId: user?._id || null,
+      status: "pending",
+      role: "member",
+    });
+
+    await group.save();
+
+    await GroupActivity.create({
+      groupId,
+      type: "invite",
+      actorId: inviterId,
+      data: { email },
+    });
+
+    // TODO: send email later
+
+    res.json({ message: "Invite sent successfully", group });
+  } catch (err) {
+    console.error("Invite error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.acceptInvite = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const email = req.user.email;
+    const { groupId } = req.body;
+
+    const groups = await Group.find({ "members.email": email, _id: groupId });
+
+    groups.forEach(async (g) => {
+      const member = g.members.find((m) => m.email === email);
+
+      if (member && member.status === "pending") {
+        member.status = "accepted";
+        member.userId = userId;
+        await g.save();
+      }
+    });
+
+    res.json({ message: "Invites accepted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getGroupActivity = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+
+    const activities = await GroupActivity.find({ groupId })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .populate("actorId", "firstName email");
+
+    res.json(activities);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

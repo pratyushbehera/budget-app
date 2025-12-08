@@ -3,6 +3,7 @@ import { useNotification } from "../../../contexts/NotificationContext";
 import { useEditTransaction } from "../../../services/transactionApi";
 import { Modal } from "../../../shared/components/Modal";
 import { useSelector } from "react-redux";
+import { useGroup } from "../../../services/groupApi";
 
 export const EditTransaction = ({ transaction, onClose }) => {
   const { category: categoryList, loading: isLoading } = useSelector(
@@ -13,21 +14,81 @@ export const EditTransaction = ({ transaction, onClose }) => {
   const { addNotification } = useNotification();
 
   const [form, setForm] = useState();
+
+  const { data: selectedGroup } = useGroup(form?.groupId, {
+    enabled: !!form?.groupId,
+  });
+
+  const [splitMode, setSplitMode] = useState("equal");
+  const [splitDetails, setSplitDetails] = useState([]);
+
   useEffect(() => {
+    if (!transaction || !categoryList) return;
+
     let categoryId;
-    if (!transaction.categoryId && categoryList) {
+    if (!transaction.categoryId) {
       categoryId = categoryList?.find(
         (ct) => ct.name === transaction.category
       )?._id;
     } else {
-      categoryId = transaction?.categoryId;
+      categoryId = transaction.categoryId;
     }
-    setForm({ ...transaction, categoryId });
+
+    setForm({
+      ...transaction,
+      categoryId,
+      groupId: transaction.groupId || "",
+      paidBy: transaction.paidBy || transaction.userId, // fallback for old ones
+    });
   }, [transaction, categoryList]);
 
   const setFormValue = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
+
+  useEffect(() => {
+    if (!selectedGroup) return;
+    if (!transaction.splitDetails) return;
+
+    // Build splitDetails array
+    const initialized = selectedGroup.members.map((m) => {
+      const existing = transaction.splitDetails.find(
+        (s) => s.userId === m.userId?._id || s.email === m.email
+      );
+
+      return {
+        userId: m.userId?._id || null,
+        email: m.email,
+        percent: 0,
+        amount: existing?.shareAmount || 0,
+      };
+    });
+
+    setSplitDetails(initialized);
+
+    // Detect split mode
+    const total = Number(transaction.amount);
+    const equal = total / initialized.length;
+
+    const isEqual = initialized.every(
+      (itm) => Math.abs(itm.amount - equal) < 0.01
+    );
+
+    if (isEqual) return setSplitMode("equal");
+
+    // Check percent mode
+    const percentSum = initialized.reduce((sum, s) => sum + s.percent, 0);
+    if (Math.abs(percentSum - 100) < 1) return setSplitMode("percent");
+
+    setSplitMode("exact");
+  }, [selectedGroup, transaction]);
+
+  useEffect(() => {
+    if (splitMode === "equal" && form?.amount && splitDetails.length) {
+      const equal = (Number(form.amount) / splitDetails.length).toFixed(2);
+      setSplitDetails((prev) => prev.map((s) => ({ ...s, amount: equal })));
+    }
+  }, [splitMode, form?.amount]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +115,25 @@ export const EditTransaction = ({ transaction, onClose }) => {
         amount: form.amount,
         notes: form.notes,
       };
+
+      if (form.groupId) {
+        if (!isSplitValid) {
+          addNotification({
+            type: "error",
+            title: "Invalid Split",
+            message: "Split amounts do not add up.",
+          });
+          return;
+        }
+
+        updates.groupId = form.groupId;
+        updates.paidBy = form.paidBy;
+        updates.splitDetails = splitDetails.map((s) => ({
+          userId: s.userId,
+          email: s.email,
+          shareAmount: Number(s.amount),
+        }));
+      }
 
       await editTx(
         { id: form.id, updates },
@@ -84,6 +164,13 @@ export const EditTransaction = ({ transaction, onClose }) => {
       onClose();
     }
   };
+
+  const totalSplit = splitDetails.reduce(
+    (sum, s) => sum + Number(s.amount || 0),
+    0
+  );
+
+  const isSplitValid = Math.abs(totalSplit - Number(form?.amount)) < 0.01;
 
   if (isLoading) return "Loading...";
   return (
@@ -165,6 +252,133 @@ export const EditTransaction = ({ transaction, onClose }) => {
             className="input-field  focus:ring-2 focus:ring-primary-500"
           />
         </div>
+        {form?.groupId && selectedGroup && (
+          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg space-y-2">
+            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+              Split Details
+            </h3>
+
+            {/* Payer */}
+            <select
+              name="paidBy"
+              className="input-field"
+              value={form.paidBy}
+              onChange={setFormValue}
+            >
+              {selectedGroup.members.map((m) => (
+                <option key={m.email} value={m.userId?._id}>
+                  {m.userId?.firstName || m.email}
+                </option>
+              ))}
+            </select>
+
+            {/* Split Mode */}
+            <div className="flex gap-2 mt-2">
+              <button
+                type="button"
+                className={`px-2 py-1 rounded text-sm ${
+                  splitMode === "equal"
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700"
+                }`}
+                onClick={() => setSplitMode("equal")}
+              >
+                Equal
+              </button>
+
+              <button
+                type="button"
+                className={`px-2 py-1 rounded text-sm ${
+                  splitMode === "percent"
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700"
+                }`}
+                onClick={() => setSplitMode("percent")}
+              >
+                %
+              </button>
+
+              <button
+                type="button"
+                className={`px-2 py-1 rounded text-sm ${
+                  splitMode === "exact"
+                    ? "bg-primary-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700"
+                }`}
+                onClick={() => setSplitMode("exact")}
+              >
+                Exact
+              </button>
+            </div>
+
+            {/* Percent Mode */}
+            {splitMode === "percent" &&
+              splitDetails.map((s, idx) => (
+                <div
+                  key={idx}
+                  className="flex justify-between items-center text-sm"
+                >
+                  <span>{s.email}</span>
+                  <span>
+                    <input
+                      type="number"
+                      value={s.percent}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setSplitDetails((cur) =>
+                          cur.map((x, i) =>
+                            i === idx
+                              ? {
+                                  ...x,
+                                  percent: val,
+                                  amount: ((val / 100) * form.amount).toFixed(
+                                    2
+                                  ),
+                                }
+                              : x
+                          )
+                        );
+                      }}
+                      className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                    />
+                    %
+                  </span>
+                </div>
+              ))}
+
+            {/* Exact Mode */}
+            {splitMode === "exact" &&
+              splitDetails.map((s, idx) => (
+                <div
+                  key={idx}
+                  className="flex justify-between items-center text-sm"
+                >
+                  <span>{s.email}</span>
+                  <input
+                    type="number"
+                    value={s.amount}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setSplitDetails((cur) =>
+                        cur.map((x, i) =>
+                          i === idx ? { ...x, amount: val } : x
+                        )
+                      );
+                    }}
+                    className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                  />
+                </div>
+              ))}
+
+            {!isSplitValid && (
+              <div className="text-xs text-red-500 mt-1">
+                Split total must equal the transaction amount (Current:{" "}
+                {totalSplit})
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex justify-end  border-t dark:border-gray-800 mt-6 gap-3 pt-4">
           <button type="button" className="btn-secondary" onClick={onClose}>
             Cancel

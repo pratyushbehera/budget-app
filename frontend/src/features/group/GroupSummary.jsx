@@ -3,11 +3,19 @@ import { useGroupSummary, useSettleUp } from "../../services/groupApi";
 import { ArrowRight, Wallet } from "lucide-react";
 import { useSelector } from "react-redux";
 import { uid } from "../../shared/utils/generateUid";
+import { useNotification } from "../../contexts/NotificationContext";
 
-const GroupSummary = ({ groupId }) => {
+const GroupSummary = ({ group, groupId }) => {
+  const { addNotification } = useNotification();
   const { user } = useSelector((state) => state.auth);
   const { data: summary, isLoading } = useGroupSummary(groupId);
   const { mutate: settleUp, isPending } = useSettleUp(groupId);
+
+  const getMemberName = (userId) => {
+    const m = group.members.find((x) => x.userId?._id === userId);
+    return m?.userId?.firstName || m?.email || "Unknown";
+  };
+
   if (isLoading) return <div>Loading summary...</div>;
 
   if (!summary?.settlements?.length)
@@ -20,7 +28,25 @@ const GroupSummary = ({ groupId }) => {
     );
 
   const handleSettle = (from, to, amount) => {
-    settleUp({ settlements: { id: uid(), from, to, amount } });
+    settleUp(
+      { settlements: { id: uid(), from, to, amount } },
+      {
+        onError: (err) => {
+          addNotification({
+            type: "error",
+            title: "Failure",
+            message: err?.message || "Error deleting member.",
+          });
+        },
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            title: "Success",
+            message: "Transactions settled.",
+          });
+        },
+      }
+    );
   };
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border dark:border-gray-800">
@@ -46,9 +72,9 @@ const GroupSummary = ({ groupId }) => {
 
                 <div>
                   <p className="font-medium text-gray-700 dark:text-gray-200">
-                    {isYouOwe ? "You" : s.from.name}
+                    {isYouOwe ? "You" : getMemberName(s.from.id)}
                     <ArrowRight className="inline mx-1" size={14} />
-                    {isYouGet ? "You" : s.to.name}
+                    {isYouGet ? "You" : getMemberName(s.to.id)}
                   </p>
 
                   <p className="text-sm text-gray-500">₹{s.amount}</p>

@@ -12,6 +12,7 @@ import { CategoyPage } from "../../pages/CategoryPage";
 import { PlanPage } from "../../pages/PlanPage";
 import NotFoundPage from "../../pages/NotFoundPage";
 import GroupPage from "../../pages/GroupPage";
+import GroupsPage from "../../pages/GroupsPage";
 
 // Protected Route component
 function ProtectedRoute({ children }) {
@@ -63,6 +64,7 @@ export function AppRoutes() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/transactions" element={<TransactionPage />} />
         <Route path="/categories" element={<CategoyPage />} />
+        <Route path="/groups" element={<GroupsPage />} />
         <Route path="/groups/:groupId" element={<GroupPage />} />
       </Route>
 

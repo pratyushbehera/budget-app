@@ -1,5 +1,6 @@
 const { Transaction } = require("../models/Budget");
 const Group = require("../models/Group");
+const GroupActivity = require("../models/GroupActivity");
 
 exports.getTransactions = async (req, res) => {
   try {
@@ -107,6 +108,21 @@ exports.addTransaction = async (req, res) => {
     });
 
     const saved = await transaction.save();
+
+    if (groupId) {
+      await GroupActivity.create({
+        groupId,
+        type: "transaction",
+        actorId: req.user.id,
+        data: {
+          amount,
+          notes,
+          paidBy,
+          transactionId: saved._id,
+        },
+      });
+    }
+
     return res.status(201).json(saved);
   } catch (err) {
     console.error("Add transaction error:", err);
@@ -116,7 +132,19 @@ exports.addTransaction = async (req, res) => {
 
 exports.deleteTransaction = async (req, res) => {
   try {
-    await Transaction.deleteOne({ id: req.params.id, userId: req.user.id });
+    const filter = {
+      id: req.params.id,
+      $or: [
+        { paidBy: req.user.id }, // new group transactions
+        {
+          $and: [
+            { paidBy: { $exists: false } }, // backward compatibility
+            { userId: req.user.id }, // old normal transactions
+          ],
+        },
+      ],
+    };
+    await Transaction.deleteOne(filter);
     res.json({ message: "Transaction deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -137,8 +165,16 @@ exports.editTransaction = async (req, res) => {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    const { date, category, categoryId, amount, notes, groupId, splitDetails } =
-      req.body;
+    const {
+      date,
+      category,
+      categoryId,
+      amount,
+      notes,
+      groupId,
+      paidBy,
+      splitDetails,
+    } = req.body;
 
     // ---------- GROUP VALIDATION (only if updating group or split) ----------
     if (groupId !== undefined || splitDetails !== undefined) {
@@ -191,6 +227,7 @@ exports.editTransaction = async (req, res) => {
 
     // ---------- UPDATE GROUP FIELDS ----------
     if (groupId !== undefined) transaction.groupId = groupId;
+    if (paidBy !== undefined) transaction.paidBy = paidBy;
     if (splitDetails !== undefined) transaction.splitDetails = splitDetails;
 
     const updated = await transaction.save();

@@ -1,152 +1,68 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "./apiClient";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+/* -----------------------------------------------------
+   AUTH API CALLS
+----------------------------------------------------- */
 
-// API functions
-const loginUser = async (credentials) => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
+// POST /auth/login
+const loginUser = (credentials) => api.post("/api/auth/login", credentials); // no token needed
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Login failed: ${response.status}`);
-  }
+// POST /auth/signup
+const registerUser = (userData) => api.post("/api/auth/signup", userData);
 
-  return response.json();
-};
+// GET /auth/me
+const getCurrentUser = () => api.get("/api/auth/me");
 
-const registerUser = async (userData) => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
+// PUT /auth/profile
+const updateUserProfile = (userData) => api.put("/api/auth/profile", userData);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Registration failed: ${response.status}`
-    );
-  }
+// POST /auth/forgot-password
+const forgotPassword = (email) =>
+  api.post("/api/auth/forgot-password", { email });
 
-  return response.json();
-};
+/* -----------------------------------------------------
+   AUTH HOOKS
+----------------------------------------------------- */
 
-const getCurrentUser = async () => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      localStorage.removeItem("auth-token");
-    }
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to fetch user: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-const updateUserProfile = async (userData) => {
-  const token = localStorage.getItem("auth-token");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(userData),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Profile update failed: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-const forgotPassword = async (email) => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Password reset request failed: ${response.status}`
-    );
-  }
-
-  return response.json();
-};
-
-// React Query hooks
+// LOGIN
 export const useLogin = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      // Store token if your API returns one
       if (data.token) {
         localStorage.setItem("auth-token", data.token);
       }
-      // Invalidate any user-related queries
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+
+      // refresh user data
+      qc.invalidateQueries(["currentUser"]);
     },
   });
 };
 
+// REGISTER
 export const useRegister = () => {
   return useMutation({
     mutationFn: registerUser,
   });
 };
 
+// CURRENT USER
 export const useCurrentUser = () => {
   return useQuery({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
+    enabled: !!localStorage.getItem("auth-token"),
+    staleTime: 5 * 60 * 1000,
     retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!localStorage.getItem("auth-token"), // Only run if token exists
   });
 };
 
+// UPDATE PROFILE
 export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: updateUserProfile,
@@ -154,26 +70,24 @@ export const useUpdateProfile = () => {
       if (data.token) {
         localStorage.setItem("auth-token", data.token);
       }
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      qc.invalidateQueries(["currentUser"]);
     },
   });
 };
 
+// FORGOT PASSWORD
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: forgotPassword,
   });
 };
 
+// LOGOUT
 export const useLogout = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return () => {
-    // Clear local storage
     localStorage.removeItem("auth-token");
-    // Remove user from cache
-    queryClient.removeQueries({ queryKey: ["currentUser"] });
-    // Optional: Call logout endpoint if you have one
-    // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
+    qc.removeQueries(["currentUser"]);
   };
 };

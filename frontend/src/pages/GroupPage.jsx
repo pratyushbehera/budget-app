@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGroup } from "../services/groupApi";
 import GroupHeader from "../features/group/GroupHeader";
 import GroupMembers from "../features/group/GroupMembers";
 import GroupSummary from "../features/group/GroupSummary";
 import GroupTransactions from "../features/group/GroupTransactions";
+import { useSelector } from "react-redux";
+import GroupActivityList from "../features/group/GroupActivityList";
 
 const GroupPage = () => {
   const { groupId } = useParams();
-
+  const user = useSelector((s) => s.auth.user);
   const { data: group, isLoading, isError } = useGroup(groupId);
+  const [isAdmin, setAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user && group) {
+      setAdmin(group?.createdBy === user?._id);
+    }
+  }, [group, user]);
 
   if (isLoading) {
     return (
@@ -25,11 +34,19 @@ const GroupPage = () => {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <GroupHeader group={group} />
-      <GroupMembers members={group.members} />
+      <GroupHeader group={group} isAdmin={isAdmin} />
+      <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+        <GroupMembers
+          members={group.members}
+          owner={group.createdBy}
+          isAdmin={isAdmin}
+          groupId={groupId}
+        />
 
-      <GroupSummary groupId={groupId} />
-      <GroupTransactions groupId={groupId} />
+        <GroupSummary group={group} groupId={groupId} />
+        <GroupTransactions group={group} groupId={groupId} />
+        <GroupActivityList groupId={groupId} />
+      </div>
     </div>
   );
 };

@@ -68,7 +68,7 @@ export const CategorySpendChart = ({ data }) => {
           </div>
         ) : (
           <>
-            <div className="space-y-3">
+            <div className={`space-y-3 ${isFullscreen ? "mx-4 mt-4" : ""}`}>
               {visibleData.map((item) => (
                 <div key={item.category}>
                   <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
