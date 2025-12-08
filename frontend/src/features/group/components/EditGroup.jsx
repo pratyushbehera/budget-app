@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNotification } from "../../contexts/NotificationContext";
-import { Modal } from "../../shared/components/Modal";
-import { useUpdateGroup } from "../../services/groupApi";
+import { useNotification } from "../../../contexts/NotificationContext";
+import { Modal } from "../../../shared/components/Modal";
+import { useUpdateGroup } from "../../../services/groupApi";
 
 export const EditGroup = ({ group, onClose }) => {
   useEffect(() => {

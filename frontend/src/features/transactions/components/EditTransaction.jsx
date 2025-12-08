@@ -1,56 +1,77 @@
-import { useEffect, useState } from "react";
+// EditTransaction.jsx
+
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Modal } from "../../../shared/components/Modal";
 import { useNotification } from "../../../contexts/NotificationContext";
 import { useEditTransaction } from "../../../services/transactionApi";
-import { Modal } from "../../../shared/components/Modal";
-import { useSelector } from "react-redux";
 import { useGroup } from "../../../services/groupApi";
 
+import { GroupSection } from "./GroupSection";
+import { SplitSection } from "./SplitSection";
+import { useSplitCalculation } from "../hooks/useSplitCalculation";
+
 export const EditTransaction = ({ transaction, onClose }) => {
-  const { category: categoryList, loading: isLoading } = useSelector(
-    (state) => state.category
+  const { category: categoryList, loading: isCatLoading } = useSelector(
+    (s) => s.category
   );
+  const { groups = [] } = useSelector((s) => s.group || {});
+  const { addNotification } = useNotification();
   const { mutateAsync: editTx, isPending } = useEditTransaction();
 
-  const { addNotification } = useNotification();
+  const [form, setForm] = useState(null);
 
-  const [form, setForm] = useState();
+  // flexible updater — supports event or {name, value}
+  const updateFormField = (eOrObj) => {
+    if (!eOrObj) return;
 
-  const { data: selectedGroup } = useGroup(form?.groupId, {
-    enabled: !!form?.groupId,
-  });
+    if (eOrObj.target?.name) {
+      const { name, value } = eOrObj.target;
+      setForm((f) => ({ ...f, [name]: value }));
+    } else if (eOrObj.name) {
+      setForm((f) => ({ ...f, [eOrObj.name]: eOrObj.value }));
+    }
+  };
 
-  const [splitMode, setSplitMode] = useState("equal");
-  const [splitDetails, setSplitDetails] = useState([]);
-
+  // Load initial form
   useEffect(() => {
     if (!transaction || !categoryList) return;
 
-    let categoryId;
-    if (!transaction.categoryId) {
-      categoryId = categoryList?.find(
+    let categoryId = transaction.categoryId;
+    if (!categoryId) {
+      categoryId = categoryList.find(
         (ct) => ct.name === transaction.category
       )?._id;
-    } else {
-      categoryId = transaction.categoryId;
     }
 
     setForm({
       ...transaction,
       categoryId,
       groupId: transaction.groupId || "",
-      paidBy: transaction.paidBy || transaction.userId, // fallback for old ones
+      paidBy: transaction.paidBy || transaction.userId,
     });
   }, [transaction, categoryList]);
 
-  const setFormValue = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  };
+  const { data: selectedGroup } = useGroup(form?.groupId, {
+    enabled: !!form?.groupId,
+  });
 
+  // Split calculation hook
+  const {
+    splitMode,
+    setSplitMode,
+    splitDetails,
+    updatePercent,
+    updateExact,
+    totalSplit,
+    isSplitValid,
+    setSplitDetails,
+  } = useSplitCalculation(form?.amount, selectedGroup?.members);
+
+  // Initialize split details when editing
   useEffect(() => {
-    if (!selectedGroup) return;
-    if (!transaction.splitDetails) return;
+    if (!selectedGroup || !form?.amount || !transaction?.splitDetails) return;
 
-    // Build splitDetails array
     const initialized = selectedGroup.members.map((m) => {
       const existing = transaction.splitDetails.find(
         (s) => s.userId === m.userId?._id || s.email === m.email
@@ -66,320 +87,217 @@ export const EditTransaction = ({ transaction, onClose }) => {
 
     setSplitDetails(initialized);
 
-    // Detect split mode
-    const total = Number(transaction.amount);
-    const equal = total / initialized.length;
+    // Detect mode
+    const total = Number(form.amount);
+    const equalAmt = total / initialized.length;
 
     const isEqual = initialized.every(
-      (itm) => Math.abs(itm.amount - equal) < 0.01
+      (itm) => Math.abs(itm.amount - equalAmt) < 0.01
     );
 
     if (isEqual) return setSplitMode("equal");
 
-    // Check percent mode
     const percentSum = initialized.reduce((sum, s) => sum + s.percent, 0);
     if (Math.abs(percentSum - 100) < 1) return setSplitMode("percent");
 
     setSplitMode("exact");
-  }, [selectedGroup, transaction]);
+  }, [selectedGroup, transaction, form?.amount]);
 
-  useEffect(() => {
-    if (splitMode === "equal" && form?.amount && splitDetails.length) {
-      const equal = (Number(form.amount) / splitDetails.length).toFixed(2);
-      setSplitDetails((prev) => prev.map((s) => ({ ...s, amount: equal })));
-    }
-  }, [splitMode, form?.amount]);
+  if (isCatLoading || !form) return "Loading...";
 
+  // -------------------------
+  // Submit Handler
+  // -------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const transactionData = { ...form };
-      if (
-        !transactionData.amount ||
-        !transactionData.category ||
-        !transactionData.notes
-      ) {
+    if (!form.amount || !form.categoryId) {
+      addNotification({
+        type: "error",
+        title: "Validation error",
+        message: "Category & Amount are required.",
+      });
+      return;
+    }
+
+    const updates = {
+      date: form.date,
+      categoryId: form.categoryId,
+      category: categoryList.find((ct) => ct._id === form.categoryId)?.name,
+      amount: Number(form.amount),
+      notes: form.notes,
+    };
+
+    if (form.groupId) {
+      if (!isSplitValid) {
         addNotification({
           type: "error",
-          title: "Validation error",
-          message: "Please fill category, amount, notes.",
+          title: "Invalid split",
+          message: "Split values must total the transaction amount.",
         });
         return;
       }
 
-      const updates = {
-        date: form.date,
-        category: categoryList?.find((ct) => ct._id === form.categoryId)?.name,
-        categoryId: form.categoryId,
-        amount: form.amount,
-        notes: form.notes,
-      };
+      updates.groupId = form.groupId;
+      updates.paidBy = form.paidBy;
+      updates.splitDetails = splitDetails.map((s) => ({
+        userId: s.userId,
+        email: s.email,
+        shareAmount: Number(s.amount),
+      }));
+    }
 
-      if (form.groupId) {
-        if (!isSplitValid) {
-          addNotification({
-            type: "error",
-            title: "Invalid Split",
-            message: "Split amounts do not add up.",
-          });
-          return;
-        }
-
-        updates.groupId = form.groupId;
-        updates.paidBy = form.paidBy;
-        updates.splitDetails = splitDetails.map((s) => ({
-          userId: s.userId,
-          email: s.email,
-          shareAmount: Number(s.amount),
-        }));
-      }
-
+    try {
       await editTx(
         { id: form.id, updates },
         {
           onSuccess: () => {
             addNotification({
               type: "success",
-              title: "Success",
+              title: "Updated",
               message: "Transaction updated successfully.",
             });
             onClose();
           },
-          onError: (err) => {
+          onError: (err) =>
             addNotification({
               type: "error",
-              title: "Failure",
-              message: err?.message || "Error updating transaction.",
-            });
-          },
+              title: "Error updating",
+              message: err?.message || "Something went wrong.",
+            }),
         }
       );
     } catch (err) {
       addNotification({
         type: "error",
         title: "Failure",
-        message: err.message || "Failed to update transaction.",
+        message: err?.message || "Failed to update transaction.",
       });
-      onClose();
     }
   };
 
-  const totalSplit = splitDetails.reduce(
-    (sum, s) => sum + Number(s.amount || 0),
-    0
-  );
-
-  const isSplitValid = Math.abs(totalSplit - Number(form?.amount)) < 0.01;
-
-  if (isLoading) return "Loading...";
+  // -------------------------
+  // RENDER
+  // -------------------------
   return (
     <Modal title="Edit Transaction" onClose={onClose}>
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        {/* Section heading */}
-        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
-          Transaction Details
-        </h3>
-        <div className="space-y-1.5">
-          <label
-            htmlFor="transaction-date"
-            className="text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
-            Date
-          </label>
-          <input
-            id="transaction-date"
-            name="date"
-            type="date"
-            value={form?.date}
-            onChange={setFormValue}
-            placeholder="Date"
-            className="input-field focus:ring-2 focus:ring-primary-500"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label
-            htmlFor="categoryId"
-            className="text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
-            Category
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={form?.categoryId}
-            onChange={setFormValue}
-            className="input-field  focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">Select category</option>
-            {categoryList?.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-1.5">
-          <label
-            htmlFor="amount"
-            className="text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
-            Amount
-          </label>
-          <input
-            id="amount"
-            type="number"
-            name="amount"
-            value={form?.amount}
-            onChange={setFormValue}
-            placeholder="Amount"
-            className="input-field  focus:ring-2 focus:ring-primary-500"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label
-            htmlFor="notes"
-            className="text-xs font-medium text-gray-500 dark:text-gray-400"
-          >
-            Notes
-          </label>
-          <textarea
-            id="notes"
-            placeholder="Notes"
-            name="notes"
-            value={form?.notes}
-            onChange={setFormValue}
-            className="input-field  focus:ring-2 focus:ring-primary-500"
-          />
-        </div>
-        {form?.groupId && selectedGroup && (
-          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg space-y-2">
-            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-              Split Details
-            </h3>
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* ---------------- Transaction Fields ---------------- */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Transaction Details
+          </h3>
 
-            {/* Payer */}
-            <select
-              name="paidBy"
-              className="input-field"
-              value={form.paidBy}
-              onChange={setFormValue}
+          {/* Date */}
+          <div className="space-y-2">
+            <label
+              htmlFor="edit-date"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
             >
-              {selectedGroup.members.map((m) => (
-                <option key={m.email} value={m.userId?._id}>
-                  {m.userId?.firstName || m.email}
+              Date
+            </label>
+            <input
+              id="edit-date"
+              name="date"
+              type="date"
+              className="input-field"
+              value={form.date}
+              onChange={updateFormField}
+            />
+          </div>
+
+          {/* Category */}
+          <div className="space-y-2 mt-3">
+            <label
+              htmlFor="edit-category"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Category
+            </label>
+            <select
+              id="edit-category"
+              name="categoryId"
+              className="input-field"
+              value={form.categoryId}
+              onChange={updateFormField}
+            >
+              <option value="">Select Category</option>
+              {categoryList?.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
                 </option>
               ))}
             </select>
-
-            {/* Split Mode */}
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                className={`px-2 py-1 rounded text-sm ${
-                  splitMode === "equal"
-                    ? "bg-primary-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}
-                onClick={() => setSplitMode("equal")}
-              >
-                Equal
-              </button>
-
-              <button
-                type="button"
-                className={`px-2 py-1 rounded text-sm ${
-                  splitMode === "percent"
-                    ? "bg-primary-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}
-                onClick={() => setSplitMode("percent")}
-              >
-                %
-              </button>
-
-              <button
-                type="button"
-                className={`px-2 py-1 rounded text-sm ${
-                  splitMode === "exact"
-                    ? "bg-primary-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}
-                onClick={() => setSplitMode("exact")}
-              >
-                Exact
-              </button>
-            </div>
-
-            {/* Percent Mode */}
-            {splitMode === "percent" &&
-              splitDetails.map((s, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center text-sm"
-                >
-                  <span>{s.email}</span>
-                  <span>
-                    <input
-                      type="number"
-                      value={s.percent}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setSplitDetails((cur) =>
-                          cur.map((x, i) =>
-                            i === idx
-                              ? {
-                                  ...x,
-                                  percent: val,
-                                  amount: ((val / 100) * form.amount).toFixed(
-                                    2
-                                  ),
-                                }
-                              : x
-                          )
-                        );
-                      }}
-                      className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-700"
-                    />
-                    %
-                  </span>
-                </div>
-              ))}
-
-            {/* Exact Mode */}
-            {splitMode === "exact" &&
-              splitDetails.map((s, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center text-sm"
-                >
-                  <span>{s.email}</span>
-                  <input
-                    type="number"
-                    value={s.amount}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      setSplitDetails((cur) =>
-                        cur.map((x, i) =>
-                          i === idx ? { ...x, amount: val } : x
-                        )
-                      );
-                    }}
-                    className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-700"
-                  />
-                </div>
-              ))}
-
-            {!isSplitValid && (
-              <div className="text-xs text-red-500 mt-1">
-                Split total must equal the transaction amount (Current:{" "}
-                {totalSplit})
-              </div>
-            )}
           </div>
+
+          {/* Amount */}
+          <div className="space-y-2 mt-3">
+            <label
+              htmlFor="edit-amount"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Amount
+            </label>
+            <input
+              id="edit-amount"
+              type="number"
+              name="amount"
+              className="input-field"
+              value={form.amount}
+              onChange={updateFormField}
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-2 mt-3">
+            <label
+              htmlFor="edit-notes"
+              className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            >
+              Notes
+            </label>
+            <textarea
+              id="edit-notes"
+              name="notes"
+              className="input-field resize-none"
+              rows={3}
+              value={form.notes}
+              onChange={updateFormField}
+              placeholder="Optional"
+            />
+          </div>
+        </div>
+
+        {/* ---------------- Group Section ---------------- */}
+        <GroupSection
+          groups={groups}
+          form={form}
+          updateFormField={updateFormField}
+          disabled={false} // editing allows changing group
+        />
+
+        {/* ---------------- Split Section ---------------- */}
+        {form.groupId && selectedGroup && (
+          <SplitSection
+            splitMode={splitMode}
+            setSplitMode={setSplitMode}
+            splitDetails={splitDetails}
+            updatePercent={updatePercent}
+            updateExact={updateExact}
+            isSplitValid={isSplitValid}
+            totalSplit={totalSplit}
+            amount={form.amount}
+            selectedGroup={selectedGroup}
+            paidBy={form.paidBy}
+            onPaidByChange={updateFormField}
+          />
         )}
 
-        <div className="flex justify-end  border-t dark:border-gray-800 mt-6 gap-3 pt-4">
+        {/* ---------------- Actions ---------------- */}
+        <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800">
           <button type="button" className="btn-secondary" onClick={onClose}>
             Cancel
           </button>

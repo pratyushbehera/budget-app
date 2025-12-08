@@ -14,8 +14,8 @@ const Tab = ({ tabs = [], active, onChange }) => {
               text-sm font-medium transition-all pb-1
               ${
                 isActive
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-gray-500 dark:text-gray-400 hover:text-primary"
+                  ? "text-primary dark:text-white border-b-2 border-primary"
+                  : "text-gray-500 dark:text-gray-700 hover:text-primary"
               }
             `}
           >

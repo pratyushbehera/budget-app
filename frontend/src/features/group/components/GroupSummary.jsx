@@ -1,9 +1,9 @@
 import React from "react";
-import { useGroupSummary, useSettleUp } from "../../services/groupApi";
+import { useGroupSummary, useSettleUp } from "../../../services/groupApi";
 import { ArrowRight, Wallet } from "lucide-react";
 import { useSelector } from "react-redux";
-import { uid } from "../../shared/utils/generateUid";
-import { useNotification } from "../../contexts/NotificationContext";
+import { uid } from "../../../shared/utils/generateUid";
+import { useNotification } from "../../../contexts/NotificationContext";
 
 const GroupSummary = ({ group, groupId }) => {
   const { addNotification } = useNotification();
@@ -20,8 +20,8 @@ const GroupSummary = ({ group, groupId }) => {
 
   if (!summary?.settlements?.length)
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border dark:border-gray-800 text-center">
-        <p className="text-gray-600 dark:text-gray-300">
+      <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800 text-center">
+        <p className="text-gray-600 dark:text-gray-500">
           No one owes anything 🎉
         </p>
       </div>
@@ -48,9 +48,10 @@ const GroupSummary = ({ group, groupId }) => {
       }
     );
   };
+
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border dark:border-gray-800">
-      <h2 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">
+    <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800">
+      <h2 className="font-semibold mb-4 text-gray-800 dark:text-white">
         Summary
       </h2>
 
@@ -62,16 +63,18 @@ const GroupSummary = ({ group, groupId }) => {
           return (
             <div
               key={idx}
-              className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+              className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-850"
             >
               <div className="flex items-center gap-3">
-                <Wallet
-                  className="text-primary-600 dark:text-primary-400"
-                  size={18}
-                />
+                <div
+                  className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 
+                flex items-center justify-center shadow-sm"
+                >
+                  <Wallet size={20} className="text-white" />
+                </div>
 
                 <div>
-                  <p className="font-medium text-gray-700 dark:text-gray-200">
+                  <p className="font-medium text-gray-700 dark:text-gray-600">
                     {isYouOwe ? "You" : getMemberName(s.from.id)}
                     <ArrowRight className="inline mx-1" size={14} />
                     {isYouGet ? "You" : getMemberName(s.to.id)}

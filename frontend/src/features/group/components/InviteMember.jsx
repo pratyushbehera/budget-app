@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Modal } from "../../shared/components/Modal";
-import { useNotification } from "../../contexts/NotificationContext";
-import { useInviteMember } from "../../services/groupApi";
+import { Modal } from "../../../shared/components/Modal";
+import { useNotification } from "../../../contexts/NotificationContext";
+import { useInviteMember } from "../../../services/groupApi";
 
 const InviteMemberModal = ({ groupId, onClose }) => {
   const [email, setEmail] = useState("");

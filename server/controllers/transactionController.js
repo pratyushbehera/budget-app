@@ -117,7 +117,7 @@ exports.addTransaction = async (req, res) => {
         data: {
           amount,
           notes,
-          paidBy,
+          paidBy: payer,
           transactionId: saved._id,
         },
       });
@@ -132,21 +132,44 @@ exports.addTransaction = async (req, res) => {
 
 exports.deleteTransaction = async (req, res) => {
   try {
-    const filter = {
-      id: req.params.id,
-      $or: [
-        { paidBy: req.user.id }, // new group transactions
-        {
-          $and: [
-            { paidBy: { $exists: false } }, // backward compatibility
-            { userId: req.user.id }, // old normal transactions
-          ],
+    const { id } = req.params;
+
+    // Fetch transaction first
+    const transaction = await Transaction.findOne({ id });
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    // Permission check
+    const canDelete =
+      transaction.paidBy?.toString() === req.user.id ||
+      (!transaction.paidBy && transaction.userId.toString() === req.user.id);
+
+    if (!canDelete) {
+      return res.status(403).json({ message: "Not allowed to delete" });
+    }
+
+    // Perform deletion
+    await Transaction.deleteOne({ id });
+
+    // Add group activity
+    if (transaction.groupId) {
+      await GroupActivity.create({
+        groupId: transaction.groupId,
+        type: "transaction_deleted",
+        actorId: req.user.id,
+        data: {
+          transactionId: transaction._id,
+          amount: transaction.amount,
+          notes: transaction.notes,
         },
-      ],
-    };
-    await Transaction.deleteOne(filter);
+      });
+    }
+
     res.json({ message: "Transaction deleted" });
   } catch (err) {
+    console.error("Delete transaction error:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -155,14 +178,20 @@ exports.editTransaction = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find the transaction belonging to the user
-    const transaction = await Transaction.findOne({
-      id,
-      userId: req.user.id,
-    });
+    // Fetch existing transaction
+    const transaction = await Transaction.findOne({ id });
 
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    // Permission check (same logic as delete)
+    const canEdit =
+      transaction.paidBy?.toString() === req.user.id ||
+      (!transaction.paidBy && transaction.userId.toString() === req.user.id);
+
+    if (!canEdit) {
+      return res.status(403).json({ message: "Not allowed to edit" });
     }
 
     const {
@@ -176,61 +205,67 @@ exports.editTransaction = async (req, res) => {
       splitDetails,
     } = req.body;
 
-    // ---------- GROUP VALIDATION (only if updating group or split) ----------
-    if (groupId !== undefined || splitDetails !== undefined) {
-      const finalGroupId = groupId ?? transaction.groupId;
+    const oldGroupId = transaction.groupId?.toString();
+    const newGroupId = groupId !== undefined ? groupId : oldGroupId;
 
-      if (finalGroupId) {
-        const group = await Group.findById(finalGroupId);
+    // ---------- GROUP VALIDATION ----------
+    if (newGroupId) {
+      const group = await Group.findById(newGroupId);
+      if (!group) return res.status(400).json({ message: "Invalid groupId" });
 
-        if (!group) {
-          return res.status(400).json({ message: "Invalid groupId" });
-        }
-
-        const isMember = group.members.some(
-          (m) => m.userId?.toString() === req.user.id.toString()
-        );
-        if (!isMember) {
-          return res.status(403).json({
-            message: "You are not part of this group",
-          });
-        }
-
-        // validate split details if sent
-        if (splitDetails && splitDetails.length > 0) {
-          const groupEmails = group.members.map((m) => m.email);
-          const groupUserIds = group.members.map((m) => m.userId?.toString());
-
-          for (const s of splitDetails) {
-            const validByEmail = s.email && groupEmails.includes(s.email);
-            const validById =
-              s.userId && groupUserIds.includes(s.userId.toString());
-
-            if (!validByEmail && !validById) {
-              return res.status(400).json({
-                message: `Split entry not part of group: ${
-                  s.email || s.userId
-                }`,
-              });
-            }
-          }
-        }
-      }
+      const isMember = group.members.some(
+        (m) => m.userId?.toString() === req.user.id
+      );
+      if (!isMember)
+        return res
+          .status(403)
+          .json({ message: "You are not part of this group" });
     }
 
-    // ---------- UPDATE NORMAL FIELDS ----------
+    // ---------- Track changed fields for activity ----------
+    const changes = {};
+
+    if (amount !== undefined && amount !== transaction.amount)
+      changes.amount = { from: transaction.amount, to: amount };
+
+    if (notes !== undefined && notes !== transaction.notes)
+      changes.notes = { from: transaction.notes, to: notes };
+
+    if (paidBy !== undefined && paidBy !== transaction.paidBy?.toString())
+      changes.paidBy = { from: transaction.paidBy, to: paidBy };
+
+    if (splitDetails !== undefined) changes.splitDetails = "updated";
+
+    if (groupId !== undefined && groupId !== oldGroupId)
+      changes.groupChange = { from: oldGroupId, to: groupId };
+
+    // ---------- APPLY UPDATES ----------
     if (date !== undefined) transaction.date = date;
     if (category !== undefined) transaction.category = category;
     if (categoryId !== undefined) transaction.categoryId = categoryId;
     if (amount !== undefined) transaction.amount = amount;
     if (notes !== undefined) transaction.notes = notes;
-
-    // ---------- UPDATE GROUP FIELDS ----------
     if (groupId !== undefined) transaction.groupId = groupId;
     if (paidBy !== undefined) transaction.paidBy = paidBy;
     if (splitDetails !== undefined) transaction.splitDetails = splitDetails;
 
     const updated = await transaction.save();
+
+    // ---------- LOG ACTIVITY (only if group exists now or before) ----------
+    const activityGroupId = newGroupId || oldGroupId;
+
+    if (activityGroupId && Object.keys(changes).length > 0) {
+      await GroupActivity.create({
+        groupId: activityGroupId,
+        type: "transaction_edited",
+        actorId: req.user.id,
+        data: {
+          transactionId: updated._id,
+          changes,
+        },
+      });
+    }
+
     res.json(updated);
   } catch (err) {
     console.error("Edit transaction error:", err);

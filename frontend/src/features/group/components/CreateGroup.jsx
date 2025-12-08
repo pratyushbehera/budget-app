@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useCreateGroup } from "../../services/groupApi";
-import { useNotification } from "../../contexts/NotificationContext";
-import { Modal } from "../../shared/components/Modal";
+import { useCreateGroup } from "../../../services/groupApi";
+import { useNotification } from "../../../contexts/NotificationContext";
+import { Modal } from "../../../shared/components/Modal";
 
 const CreateGroupModal = ({ onClose }) => {
   const [name, setName] = useState("");

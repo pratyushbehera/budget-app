@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Edit, Trash2, LogOut, UserPlus, Plus } from "lucide-react";
 import { EditGroup } from "./EditGroup";
-import { useDeleteGroup, useLeaveGroup } from "../../services/groupApi";
-import { useSelector } from "react-redux";
+import { useDeleteGroup, useLeaveGroup } from "../../../services/groupApi";
 import InviteMemberModal from "./InviteMember";
-import { AddTransaction } from "../transactions/components/AddTransaction";
+import { AddTransaction } from "../../transactions/components/AddTransaction";
 
 const GroupHeader = ({ group, isAdmin }) => {
   const [editGroup, setEditGroup] = useState(false);
@@ -16,10 +15,10 @@ const GroupHeader = ({ group, isAdmin }) => {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           {group.name}
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
+        <p className="text-gray-500 dark:text-gray-800 text-sm">
           {group.description}
         </p>
       </div>
@@ -81,7 +80,10 @@ const GroupHeader = ({ group, isAdmin }) => {
       )}
 
       {showAddModal && (
-        <AddTransaction onClose={() => setShowAddModal(false)} />
+        <AddTransaction
+          onClose={() => setShowAddModal(false)}
+          groupId={group._id}
+        />
       )}
     </div>
   );

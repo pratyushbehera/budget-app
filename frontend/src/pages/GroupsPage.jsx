@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Plus } from "lucide-react";
 import { useGroups, useAcceptInvite } from "../services/groupApi";
-import GroupCard from "../features/group/GroupCard";
-import CreateGroupModal from "../features/group/CreateGroup";
+import GroupCard from "../features/group/components/GroupCard";
+import CreateGroupModal from "../features/group/components/CreateGroup";
 import Tab from "../shared/components/Tab";
 
 const GroupsPage = () => {
   const { user } = useSelector((s) => s.auth);
-  const { data: groups, isLoading } = useGroups();
+  const { groups, loading: isLoading} = useSelector(
+    (state) => state.group
+  );
   const acceptInvite = useAcceptInvite();
   const [showCreate, setShowCreate] = useState(false);
 
@@ -34,7 +36,9 @@ const GroupsPage = () => {
     <div className="p-6 space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Groups</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Groups
+        </h1>
 
         <button
           onClick={() => setShowCreate(true)}

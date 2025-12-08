@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Users } from "lucide-react";
-import { gradientPalette } from "../../shared/constants/constants";
+import { gradientPalette } from "../../../shared/constants/constants";
 
 const gradientKeys = Object.keys(gradientPalette);
 
