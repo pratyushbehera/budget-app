@@ -3,10 +3,11 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 
 export function CategoyPage() {
-  
-  const { category: data, loading: isLoading } = useSelector(
-    (state) => state.category
-  );
+  const {
+    category: data,
+    loading: isLoading,
+    error,
+  } = useSelector((state) => state.category);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteCategory, setDeleteCategory] = useState(null);

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedMonth } from "../app/store/appSlice";
 import { categoryIconMap } from "../shared/utils/categoryIconMap";
 import { LoadingPage } from "../shared/components/LoadingPage";
+import { TransactionItem } from "../features/transactions/components/TransactionItem";
 
 export function TransactionPage() {
   const dispatch = useDispatch();
@@ -179,70 +180,14 @@ export function TransactionPage() {
               </h3>
 
               <ul className="space-y-2">
-                {txList.map((tx) => {
-                  const isIncome =
-                    tx.type?.toLowerCase() === "income" ||
-                    [
-                      "salary",
-                      "bonus",
-                      "interest",
-                      "other income",
-                      "dividend",
-                    ].includes(tx.category.toLowerCase());
-
-                  const Icon =
-                    categoryIconMap[tx.category.toLowerCase()] || Wallet;
-
-                  return (
-                    <li
-                      key={tx._id}
-                      className="flex items-center justify-between bg-white dark:bg-gray-950 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-sm transition"
-                    >
-                      {/* Left: Icon + Info */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                          <Icon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            {tx.category}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {tx.notes || "—"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Right: Amount + Actions */}
-                      <div className="flex items-center gap-3">
-                        <p
-                          className={`text-sm font-semibold ${
-                            isIncome
-                              ? "text-green-600 dark:text-green-400"
-                              : "text-red-600 dark:text-red-400"
-                          }`}
-                        >
-                          {isIncome ? "+" : "-"}
-                          {formatCurrency(tx.amount)}
-                        </p>
-                        <button
-                          onClick={() => setEditTx(tx)}
-                          className="text-blue-500 hover:text-blue-600"
-                          title="Edit"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteTarget(tx)}
-                          className="text-red-500 hover:text-red-600"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </li>
-                  );
-                })}
+                {txList.map((tx) => (
+                  <TransactionItem
+                    key={tx._id}
+                    tx={tx}
+                    onEdit={(t) => setEditTx(t)}
+                    onDelete={(t) => setDeleteTarget(t)}
+                  />
+                ))}
               </ul>
             </div>
           ))}

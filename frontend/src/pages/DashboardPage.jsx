@@ -12,6 +12,7 @@ import { NoBackground } from "../assets/NoBackground";
 import { QuickAdd } from "../features/dashboard/components/QuickAdd";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import ChatWidget from "../features/dashboard/components/ChatWidget";
+import { PendingInviteBanner } from "../features/group/components/PendingInviteBanner";
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -31,6 +32,8 @@ export function DashboardPage() {
   const { user: currentUser, loading: userLoading } = useSelector(
     (state) => state.auth
   );
+  const { groups } = useSelector((state) => state.group);
+
   const selectedMonth = useSelector((state) => state.app.selectedMonth);
   const { data: dashboardData, isLoading: dashboardLoading } =
     useDashboard(selectedMonth);
@@ -49,6 +52,11 @@ export function DashboardPage() {
       dashboardData.overview?.totalExpense > 0 ||
       Object.keys(dashboardData.categorySpend || {}).length > 0);
 
+  const pendingInvites = groups?.filter((g) => {
+    const member = g.members.find((m) => m.email === currentUser?.email);
+    return member?.status === "pending";
+  }).length;
+
   return (
     <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div className="flex justify-between px-4 py-4 sm:px-0">
@@ -63,6 +71,9 @@ export function DashboardPage() {
           onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
         />
       </div>
+      {pendingInvites > 0 && (
+        <PendingInviteBanner pendingCount={pendingInvites} />
+      )}
       {!hasData ? (
         <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
           Welcome to your budgeting dashboard. You haven’t added any

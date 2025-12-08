@@ -8,16 +8,12 @@ import {
   LayoutDashboard,
   CreditCard,
   FileText,
-  Wallet,
-  Bell,
-  Share2,
-  FolderTree,
-  Users,
-  Trophy,
   Menu,
   X,
   LogOut,
   User as UserIcon,
+  TicketCheck,
+  Group,
 } from "lucide-react";
 import { useGravatar } from "../hooks/useGravatar";
 
@@ -27,6 +23,9 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const { addNotification } = useNotification();
   const { user } = useSelector((state) => state.auth);
+  const { groups, loading: isGroupLoading } = useSelector(
+    (state) => state.group
+  );
 
   const { avatarUrl, loading, error } = useGravatar(user?.email, {
     size: 100,
@@ -44,6 +43,11 @@ export const Sidebar = () => {
   };
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const acceptedGroups = groups?.filter((grp) => {
+    const member = grp.members?.find((m) => m.userId === user?._id);
+    return member && member.status !== "pending";
+  });
 
   return (
     <>
@@ -125,6 +129,13 @@ export const Sidebar = () => {
             >
               <FileText size={18} /> Plan
             </Link>
+            <Link
+              to="/groups"
+              onClick={toggleSidebar}
+              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <Group size={18} /> Groups
+            </Link>
 
             {/* <div className="pt-4 border-t dark:border-gray-700">
               <p className="text-xs uppercase text-gray-400 mb-2">
@@ -139,16 +150,21 @@ export const Sidebar = () => {
               </Link>
             </div>*/}
 
-            <div className="pt-4 border-t dark:border-gray-700">
-              <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
-              <Link
-                to="/shared"
-                onClick={toggleSidebar}
-                className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <Share2 size={18} /> Shared Access
-              </Link>
-            </div>
+            {!isGroupLoading && acceptedGroups?.length > 0 && (
+              <div className="pt-4 border-t dark:border-gray-700">
+                <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
+                {acceptedGroups?.map((grp) => (
+                  <Link
+                    key={grp?._id}
+                    to={`/groups/${grp?._id}`}
+                    onClick={toggleSidebar}
+                    className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <TicketCheck size={18} /> {grp.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </nav>
 
           {/* Footer */}

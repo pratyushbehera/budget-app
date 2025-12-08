@@ -2,7 +2,7 @@ export const NoBackground = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 647.63626 632.17383"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
     role="img"
     artist="Katerina Limpitsouni"
     source="https://undraw.co/"

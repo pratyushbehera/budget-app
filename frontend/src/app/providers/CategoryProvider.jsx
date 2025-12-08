@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCategory } from "../../services/categoryApi";
 import { setCategory } from "../store/categorySlice";
-import { useAuth } from "../../contexts/AuthContext";
 
 export function CategoryProvider({ children }) {
   const dispatch = useDispatch();
