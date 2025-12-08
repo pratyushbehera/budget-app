@@ -8,9 +8,7 @@ import Tab from "../shared/components/Tab";
 
 const GroupsPage = () => {
   const { user } = useSelector((s) => s.auth);
-  const { groups, loading: isLoading} = useSelector(
-    (state) => state.group
-  );
+  const { groups, loading: isLoading } = useSelector((state) => state.group);
   const acceptInvite = useAcceptInvite();
   const [showCreate, setShowCreate] = useState(false);
 
@@ -48,6 +46,74 @@ const GroupsPage = () => {
         </button>
       </div>
 
+      {/* PENDING INVITES */}
+      {pendingGroups.length > 0 && (
+        <section>
+          <h2 className="text-md font-semibold mb-3 text-yellow-600">
+            Pending Invites
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {pendingGroups.map((g) => (
+              <div
+                key={g._id}
+                className="relative overflow-hidden rounded-2xl p-5 text-white shadow-md 
+                         bg-gradient-to-r from-teal-500 to-green-600"
+              >
+                {/* Background Icon */}
+                <div className="absolute -right-3 -bottom-3 opacity-20 text-white">
+                  <Plus size={90} />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-lg font-semibold">{g.name}</h3>
+
+                <p className="text-sm mt-1 opacity-90">
+                  {g.description || "No description provided"}
+                </p>
+
+                {/* Invited By */}
+                <p className="mt-2 text-xs opacity-90">
+                  Invited by:{" "}
+                  <span className="font-semibold">
+                    {g.members.find((m) => m.userId === g.createdBy)?.email ||
+                      "Unknown"}
+                  </span>
+                </p>
+
+                {/* Actions */}
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                    Invite Pending
+                  </span>
+
+                  <div className="flex gap-2">
+                    {/* Reject Invite */}
+                    <button
+                      onClick={() =>
+                        acceptInvite.mutate({ groupId: g._id, reject: true })
+                      }
+                      className="px-3 py-1.5 rounded-md bg-red-600 text-white text-xs hover:bg-red-700"
+                    >
+                      Reject
+                    </button>
+
+                    {/* Accept Invite */}
+                    <button
+                      onClick={() => acceptInvite.mutate(g._id)}
+                      className="z-10 px-3 py-1.5 rounded-md bg-white text-orange-700 text-xs font-medium 
+                               hover:bg-gray-100"
+                    >
+                      Accept
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Tabs */}
       <Tab
         active={activeTab}
@@ -57,42 +123,6 @@ const GroupsPage = () => {
           { label: "Member", value: "member" },
         ]}
       />
-
-      {/* PENDING INVITES */}
-      {pendingGroups.length > 0 && (
-        <section>
-          <h2 className="text-lg font-semibold mb-3 text-yellow-600">
-            Pending Invites
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {pendingGroups.map((g) => (
-              <div
-                key={g._id}
-                className="rounded-xl border border-yellow-300 bg-yellow-50 p-4 dark:bg-yellow-900/20"
-              >
-                <h3 className="text-lg font-semibold">{g.name}</h3>
-                <p className="text-sm opacity-70 mt-1">
-                  {g.description || "No description"}
-                </p>
-
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                    Invite Pending
-                  </span>
-
-                  <button
-                    onClick={() => acceptInvite.mutate({ groupId: g._id })}
-                    className="btn-primary text-sm"
-                  >
-                    Accept Invite
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* OWNER TAB */}
       {activeTab === "owner" && (

@@ -44,6 +44,11 @@ export const Sidebar = () => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
+  const acceptedGroups = groups?.filter((grp) => {
+    const member = grp.members?.find((m) => m.userId === user?._id);
+    return member && member.status !== "pending";
+  });
+
   return (
     <>
       {/* Mobile Toggle Button */}
@@ -144,10 +149,11 @@ export const Sidebar = () => {
                 <Wallet size={18} /> My Portfolio
               </Link>
             </div>*/}
-            {!isGroupLoading && groups?.length > 0 && (
+
+            {!isGroupLoading && acceptedGroups?.length > 0 && (
               <div className="pt-4 border-t dark:border-gray-700">
                 <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
-                {groups?.map((grp) => (
+                {acceptedGroups?.map((grp) => (
                   <Link
                     key={grp?._id}
                     to={`/groups/${grp?._id}`}
