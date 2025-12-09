@@ -1,9 +1,11 @@
 import React from "react";
 import { useGroupSummary, useSettleUp } from "../../../services/groupApi";
-import { ArrowRight, Wallet } from "lucide-react";
+import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { uid } from "../../../shared/utils/generateUid";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { AvatarBubble } from "../../../shared/components/AvatarBubble";
+import { Wallet } from "lucide-react";
 
 const GroupSummary = ({ group, groupId }) => {
   const { addNotification } = useNotification();
@@ -20,10 +22,29 @@ const GroupSummary = ({ group, groupId }) => {
 
   if (!summary?.settlements?.length)
     return (
-      <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800 text-center">
-        <p className="text-gray-600 dark:text-gray-500">
-          No one owes anything 🎉
-        </p>
+      <div
+        className="relative overflow-hidden rounded-2xl p-6 text-white shadow-md 
+                   bg-gradient-to-r from-emerald-400 to-teal-500 dark:from-emerald-600 dark:to-green-700"
+      >
+        {/* Soft background icon */}
+        <Wallet
+          size={90}
+          className="absolute -right-4 -bottom-4 opacity-20 text-white"
+        />
+
+        <div className="flex flex-col items-start gap-2">
+          {/* Celebration badge */}
+          <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium shadow-sm">
+            🎉 All Settled!
+          </span>
+
+          {/* Main message */}
+          <p className="text-lg font-semibold">No pending balances</p>
+
+          <p className="text-sm opacity-90">
+            Everyone in this group is fully settled.
+          </p>
+        </div>
       </div>
     );
 
@@ -49,55 +70,83 @@ const GroupSummary = ({ group, groupId }) => {
     );
   };
 
+  const yourBalance = summary?.settlements?.reduce((acc, s) => {
+    if (s.from.id === user._id) return acc - s.amount; // you owe
+    if (s.to.id === user._id) return acc + s.amount; // you get
+    return acc;
+  }, 0);
+
   return (
-    <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800">
-      <h2 className="font-semibold mb-4 text-gray-800 dark:text-white">
-        Summary
-      </h2>
+    // <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800">
 
-      <div className="space-y-3">
-        {summary?.settlements.map((s, idx) => {
-          const isYouOwe = s.from.id === user._id;
-          const isYouGet = s.to.id === user._id;
-
-          return (
-            <div
-              key={idx}
-              className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-850"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 
-                flex items-center justify-center shadow-sm"
-                >
-                  <Wallet size={20} className="text-white" />
-                </div>
-
-                <div>
-                  <p className="font-medium text-gray-700 dark:text-gray-600">
-                    {isYouOwe ? "You" : getMemberName(s.from.id)}
-                    <ArrowRight className="inline mx-1" size={14} />
-                    {isYouGet ? "You" : getMemberName(s.to.id)}
-                  </p>
-
-                  <p className="text-sm text-gray-500">₹{s.amount}</p>
-                </div>
-              </div>
-
-              {(isYouOwe || isYouGet) && (
-                <button
-                  onClick={() => handleSettle(s.from.id, s.to.id, s.amount)}
-                  disabled={isPending}
-                  className="px-3 py-1 rounded bg-primary-600 text-white hover:bg-primary-700 text-sm"
-                >
-                  {isPending ? "Processing..." : "Settle Up"}
-                </button>
-              )}
-            </div>
-          );
-        })}
+    <div className="space-y-3">
+      <div className="rounded-2xl p-4 mb-4 bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow">
+        <p className="text-sm opacity-90">Your Balance in Group</p>
+        <p className="text-2xl font-bold mt-1">
+          {yourBalance === 0 && "All Settled 🎉"}
+          {yourBalance < 0 && `You owe ₹${Math.abs(yourBalance)}`}
+          {yourBalance > 0 && `You are owed ₹${yourBalance}`}
+        </p>
       </div>
+
+      {summary?.settlements.map((s, idx) => {
+        const isYouOwe = s.from.id === user._id;
+
+        return (
+          <motion.div
+            key={idx}
+            drag="x"
+            dragConstraints={{ left: -80, right: 0 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.x < -60 && isYouOwe) {
+                handleSettle(s.from.id, s.to.id, s.amount);
+              }
+            }}
+            className="flex items-center justify-between p-3 rounded-xl 
+             bg-gray-50 dark:bg-gray-850 border border-gray-200 
+             dark:border-gray-700 shadow-sm relative overflow-hidden"
+          >
+            {/* Swipe hint background */}
+            {isYouOwe && (
+              <div className="absolute right-0 top-0 bottom-0 w-20 flex items-center justify-center bg-green-600 text-white text-sm">
+                Settle →
+              </div>
+            )}
+
+            {/* LEFT SECTION */}
+            <div className="flex items-center gap-3">
+              <AvatarBubble
+                email={s.from.to}
+                name={getMemberName(s.from.id)}
+              />
+
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                  {isYouOwe
+                    ? `You owe ${getMemberName(s.to.id)}`
+                    : `${getMemberName(s.from.id)} owes You`}
+                </p>
+
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  ₹{s.amount}
+                </p>
+              </div>
+            </div>
+
+            {/* Right button — only if YOU owe */}
+            {isYouOwe && (
+              <button
+                onClick={() => handleSettle(s.from.id, s.to.id, s.amount)}
+                className="px-3 py-1 rounded bg-primary-600 text-white text-sm hover:bg-primary-700"
+              >
+                Settle
+              </button>
+            )}
+          </motion.div>
+        );
+      })}
     </div>
+    // </div>
   );
 };
 
