@@ -229,7 +229,7 @@ exports.settleUp = async (req, res) => {
       amount,
       category: "Settlement",
       categoryId,
-      date: new Date(),
+      date: new Date().toISOString().split("T")[0],
       notes: `Settlement between members`,
       splitDetails: [{ userId: to, shareAmount: amount }],
     });

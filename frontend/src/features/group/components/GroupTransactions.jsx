@@ -51,7 +51,7 @@ const GroupTransactions = ({ group, groupId }) => {
           No transactions yet
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[65vh] overflow-scroll">
           {transactions.map((tx) => {
             const payerName = getMemberName(tx.paidBy);
             const splitType = getSplitType(tx);

@@ -26,6 +26,7 @@ const GroupActivityList = ({ groupId }) => {
       case "invite":
         return { label: "Invite", cls: "bg-blue-100 text-blue-700" };
       case "transaction":
+      case "transaction_deleted":
         return { label: "Transaction", cls: "bg-emerald-100 text-emerald-700" };
       case "removed":
         return { label: "Removed", cls: "bg-red-100 text-red-700" };
@@ -48,7 +49,7 @@ const GroupActivityList = ({ groupId }) => {
         <p className="text-gray-500 dark:text-gray-600">No activity yet.</p>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 max-h-[30vh] overflow-scroll">
         {activities.map((act) => {
           const actor = getActorName(act);
 
@@ -63,6 +64,8 @@ const GroupActivityList = ({ groupId }) => {
           if (act.type === "left") text = `${actor} left the group`;
           if (act.type === "settle")
             text = `${actor} settled ₹${act.data.amount}`;
+          if (act.type === "transaction_deleted")
+            text = `${actor} deleted a transaction of ₹${act.data.amount}`;
 
           return (
             <div
