@@ -115,7 +115,9 @@ export function PlanPage() {
       </div>
 
       {/* --- No plan yet --- */}
-      {!isEditing && Object.keys(planData).length === 0 && <NoPlan />}
+      {!isEditing && Object.keys(planData).length === 0 && (
+        <NoPlan setIsEditing={setIsEditing} />
+      )}
 
       {/* --- Edit / Create Mode --- */}
       {isEditing && (
