@@ -23,8 +23,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.1",
-    "node-cron": "^4.2.1"
+    "mongoose": "^8.18.1"
   },
   "devDependencies": {
     "eslint": "^8.57.1"
