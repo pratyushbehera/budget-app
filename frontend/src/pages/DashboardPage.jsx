@@ -13,6 +13,9 @@ import { QuickAdd } from "../features/dashboard/components/QuickAdd";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import ChatWidget from "../features/dashboard/components/ChatWidget";
 import { PendingInviteBanner } from "../features/group/components/PendingInviteBanner";
+import { usePendingRecurring } from "../services/recurringApi";
+import { PendingRecurringCard } from "../features/recurring/components/PendingRecurringCard";
+
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -37,6 +40,7 @@ export function DashboardPage() {
   const selectedMonth = useSelector((state) => state.app.selectedMonth);
   const { data: dashboardData, isLoading: dashboardLoading } =
     useDashboard(selectedMonth);
+  const { data: pendingRecurring } = usePendingRecurring();
 
   // const insightHook = useInsights(selectedMonth, currentUser);
 
@@ -71,6 +75,10 @@ export function DashboardPage() {
           onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
         />
       </div>
+      {pendingRecurring?.length > 0 && (
+        <PendingRecurringCard items={pendingRecurring} />
+      )}
+
       {pendingInvites > 0 && (
         <PendingInviteBanner pendingCount={pendingInvites} />
       )}

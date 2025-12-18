@@ -9,6 +9,7 @@ import { useGroup } from "../../../services/groupApi";
 import { GroupSection } from "./GroupSection";
 import { SplitSection } from "./SplitSection";
 import { useSplitCalculation } from "../hooks/useSplitCalculation";
+import { useCreateRecurringRules } from "../../../services/recurringApi";
 
 export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   const { user: currentUser } = useSelector((s) => s.auth);
@@ -29,6 +30,8 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
     groupId: defaultGroupId || "",
     paidBy: currentUser?._id || "",
   });
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
 
   const updateFormField = (eOrObj) => {
     if (!eOrObj) return;
@@ -56,6 +59,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
 
   const { mutateAsync: addTx, isPending } = useAddTransaction();
   const { addNotification } = useNotification();
+  const { mutateAsync: addRecurringRule } = useCreateRecurringRules();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,6 +98,46 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
         email: s.email,
         shareAmount: Number(s.amount),
       }));
+    }
+
+    if (isRecurring) {
+      await addRecurringRule(
+        {
+          title: categoryList.find((c) => c._id === form.categoryId)?.name,
+          type: categoryList
+            .find((c) => c._id === form.categoryId)
+            ?.type.toLowerCase(),
+          amount: form.amount,
+          category: categoryList.find((c) => c._id === form.categoryId)?.name,
+          categoryId: form.categoryId,
+          frequency,
+          startDate: form.date,
+          groupId: form.groupId || null,
+        },
+        {
+          onSuccess: () => {
+            addNotification({
+              type: "success",
+              title: "Recurring set",
+              message:
+                "Recurring transaction created. Please approve it from dashboard.",
+            });
+
+            onClose();
+          },
+          onError: () => {
+            addNotification({
+              type: "error",
+              title: "Error creating Recurring set",
+              message: "Recurring transaction creation failed",
+            });
+
+            onClose();
+          },
+        }
+      );
+
+      return;
     }
 
     try {
@@ -239,6 +283,43 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
               paidBy={form.paidBy}
               onPaidByChange={updateFormField}
             />
+          )}
+
+          <div className="mt-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+              />
+              Make this recurring
+            </label>
+          </div>
+
+          {isRecurring && (
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-500">Frequency</label>
+                <select
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="input-field"
+                >
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-500">Starts on</label>
+                <input
+                  type="date"
+                  value={form.date}
+                  disabled
+                  className="input-field"
+                />
+              </div>
+            </div>
           )}
 
           {/* Actions */}

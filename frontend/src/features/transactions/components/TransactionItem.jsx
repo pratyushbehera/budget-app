@@ -1,5 +1,5 @@
 import React from "react";
-import { Pencil, Trash2, Wallet } from "lucide-react";
+import { CalendarDays, Pencil, Trash2, Wallet } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
 import { useSelector } from "react-redux";
@@ -39,15 +39,23 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
             {tx.notes || "—"}
           </p>
 
-          {/* Show group label if part of group */}
-          {tx.groupId && !isLoading && (
-            <span
-              className="text-xs px-2 py-0.5 rounded-md mt-1 inline-block 
+          <div className="flex items-center gap-2">
+            {/* Show group label if part of group */}
+            {tx.groupId && !isLoading && (
+              <span
+                className="text-xs px-2 py-0.5 rounded-md mt-1 inline-block 
                              bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
-            >
-              {groups?.find((grp) => grp?._id === tx.groupId)?.name}
-            </span>
-          )}
+              >
+                {groups?.find((grp) => grp?._id === tx.groupId)?.name}
+              </span>
+            )}
+
+            {tx.isRecurring && (
+              <span className="inline-block gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                <CalendarDays size={16} />
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

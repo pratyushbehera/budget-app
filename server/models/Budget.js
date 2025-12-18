@@ -33,6 +33,12 @@ const TransactionSchema = new mongoose.Schema({
       shareAmount: { type: Number, default: 0 }, // amount owed
     },
   ],
+  isRecurring: { type: Boolean, default: false },
+  recurringInstanceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "RecurringInstance",
+    default: null,
+  },
 });
 
 const PlanSchema = new mongoose.Schema({
