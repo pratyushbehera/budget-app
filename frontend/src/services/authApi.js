@@ -21,6 +21,15 @@ const updateUserProfile = (userData) => api.put("/api/auth/profile", userData);
 const forgotPassword = (email) =>
   api.post("/api/auth/forgot-password", { email });
 
+const resetPassword = async ({ token, password }) =>
+  api.post("/api/auth/reset-password", { token, password });
+
+// POST /auth/verify-email
+const verifyEmail = (payload) => api.post("/api/auth/verify-email", payload);
+
+// POST /auth/resend-email-otp
+const resendEmailOtp = (email) =>
+  api.post("/api/auth/resend-email-otp", { email });
 /* -----------------------------------------------------
    AUTH HOOKS
 ----------------------------------------------------- */
@@ -90,4 +99,30 @@ export const useLogout = () => {
     localStorage.removeItem("auth-token");
     qc.removeQueries(["currentUser"]);
   };
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: resetPassword,
+  });
+};
+
+export const useVerifyEmail = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: verifyEmail,
+    onSuccess: (data) => {
+      if (data.token) {
+        localStorage.setItem("auth-token", data.token);
+      }
+      qc.invalidateQueries(["currentUser"]);
+    },
+  });
+};
+
+export const useResendEmailOtp = () => {
+  return useMutation({
+    mutationFn: resendEmailOtp,
+  });
 };

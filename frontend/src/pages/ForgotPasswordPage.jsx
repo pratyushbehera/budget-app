@@ -59,19 +59,18 @@ export function ForgotPasswordPage() {
         <div>
           <Link to="/" className="flex justify-center">
             <h1 className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-              Budget Tracker
+              FinPal
             </h1>
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Reset Your Password
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Or{" "}
             <Link
               to="/login"
               className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500"
             >
-              return to login
+              Return to login
             </Link>
           </p>
         </div>

@@ -149,7 +149,7 @@ export function ProfilePage() {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                disabled
                 className="input-field mt-1"
                 required
                 autoComplete="email"

@@ -53,6 +53,29 @@ export function LoginPage() {
 
       navigate(from, { replace: true });
     } catch (err) {
+      if (err.status === 403 && err.data?.requiresVerification) {
+        dispatch(
+          loginFailure({
+            message: err.data.message,
+            requiresVerification: true,
+          })
+        );
+
+        addNotification({
+          type: "warning",
+          title: "Verify your email",
+          message: "Please verify your email to continue.",
+          autoHide: false,
+        });
+
+        navigate("/verify-email", {
+          state: { email },
+          replace: true,
+        });
+
+        return;
+      }
+
       const errorMsg = err.message || "Invalid email or password";
       dispatch(loginFailure(errorMsg));
       addNotification({

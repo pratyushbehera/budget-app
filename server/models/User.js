@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -15,8 +16,10 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: true },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-    // You can add an isVerified field for future email validation
-    // isVerified: { type: Boolean, default: false },
+
+    isVerified: { type: Boolean, default: false },
+    emailOtp: String,
+    emailOtpExpire: Date,
   },
   {
     timestamps: true,
@@ -53,6 +56,17 @@ UserSchema.methods.getResetPasswordToken = function () {
   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
+};
+
+//Generate OTP for email verification
+UserSchema.methods.generateEmailOtp = function () {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  this.emailOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+  this.emailOtpExpire = Date.now() + 10 * 60 * 1000;
+
+  return otp;
 };
 
 const User = mongoose.model("User", UserSchema);

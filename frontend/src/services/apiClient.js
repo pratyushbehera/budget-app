@@ -9,7 +9,6 @@ async function apiClient(path, options = {}) {
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
-  console.log("xxx", API_BASE_URL, path);
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers,
@@ -24,7 +23,10 @@ async function apiClient(path, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || `API error: ${response.status}`);
+    const error = new Error(data.message || "Request failed");
+    error.status = response.status;
+    error.data = data;
+    throw error;
   }
 
   return data;
