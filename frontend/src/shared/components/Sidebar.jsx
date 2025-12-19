@@ -34,6 +34,7 @@ export const Sidebar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem("auth-token");
     addNotification({
       type: "success",
       title: "Logged Out",
