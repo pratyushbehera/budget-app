@@ -75,7 +75,7 @@ export default function ChatWidget({ categoryPlanUsage }) {
 
   return (
     <div
-      className={`fixed z-50 ${
+      className={`fixed z-10 ${
         open ? "bottom-0 right-0" : "bottom-8 right-24"
       }`}
     >
