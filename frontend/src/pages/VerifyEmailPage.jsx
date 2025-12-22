@@ -72,6 +72,15 @@ export function VerifyEmailPage() {
         message: "A new OTP has been sent to your email.",
       });
     } catch {
+      if (err.status === 429) {
+        addNotification({
+          type: "warning",
+          title: "Slow down",
+          message: "Too many attempts. Please wait a few minutes.",
+          autoHide: false,
+        });
+        return;
+      }
       addNotification({
         type: "error",
         title: "Failed",

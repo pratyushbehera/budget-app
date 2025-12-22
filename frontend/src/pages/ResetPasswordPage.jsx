@@ -60,6 +60,13 @@ export function ResetPasswordPage() {
 
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
+      if (err.status === 429) {
+        addNotification({
+          type: "warning",
+          title: "Please wait",
+          message: "You’ve requested too many password resets.",
+        });
+      }
       addNotification({
         type: "error",
         title: "Reset Failed",

@@ -201,15 +201,8 @@ exports.resetPassword = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   const { email, otp } = req.body;
-  const crypto = require("crypto");
 
-  const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
-
-  const user = await User.findOne({
-    email,
-    emailOtp: hashedOtp,
-    emailOtpExpire: { $gt: Date.now() },
-  });
+  const user = await User.findOne({ email });
 
   if (!user) {
     return res.status(400).json({
@@ -217,9 +210,36 @@ exports.verifyEmail = async (req, res) => {
     });
   }
 
+  // Check OTP expiry
+  if (!user.emailOtpExpire || user.emailOtpExpire < Date.now()) {
+    return res.status(400).json({
+      message: "OTP has expired. Please request a new one.",
+    });
+  }
+
+  const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+  // ❌ Wrong OTP
+  if (user.emailOtp !== hashedOtp) {
+    user.emailOtpAttempts += 1;
+
+    // Invalidate OTP after 5 failed attempts
+    if (user.emailOtpAttempts >= 5) {
+      user.emailOtpExpire = Date.now();
+    }
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(400).json({
+      message: "Invalid OTP",
+    });
+  }
+
+  // ✅ Success
   user.isVerified = true;
   user.emailOtp = undefined;
   user.emailOtpExpire = undefined;
+  user.emailOtpAttempts = 0;
 
   await user.save();
 

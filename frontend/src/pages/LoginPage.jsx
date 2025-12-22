@@ -76,6 +76,16 @@ export function LoginPage() {
         return;
       }
 
+      if (err.status === 429) {
+        addNotification({
+          type: "warning",
+          title: "Too many attempts",
+          message: err.message,
+          autoHide: false,
+        });
+        return;
+      }
+
       const errorMsg = err.message || "Invalid email or password";
       dispatch(loginFailure(errorMsg));
       addNotification({
