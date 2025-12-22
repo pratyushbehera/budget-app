@@ -13,6 +13,9 @@ import { PlanPage } from "../../pages/PlanPage";
 import NotFoundPage from "../../pages/NotFoundPage";
 import GroupPage from "../../pages/GroupPage";
 import GroupsPage from "../../pages/GroupsPage";
+import { ForgotPasswordPage } from "../../pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "../../pages/ResetPasswordPage";
+import { VerifyEmailPage } from "../../pages/VerifyEmailPage";
 
 // Protected Route component
 function ProtectedRoute({ children }) {
@@ -25,6 +28,20 @@ function ProtectedRoute({ children }) {
 function PublicRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
   return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+}
+
+function VerificationRoute({ children }) {
+  const { isAuthenticated, requiresVerification } = useSelector(
+    (state) => state.auth
+  );
+
+  // If fully authenticated & verified → dashboard
+  if (isAuthenticated && !requiresVerification) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Otherwise allow access
+  return children;
 }
 
 export function AppRoutes() {
@@ -48,6 +65,33 @@ export function AppRoutes() {
           <PublicRoute>
             <SignupPage />
           </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPasswordPage />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/reset-password/:token"
+        element={
+          <PublicRoute>
+            <ResetPasswordPage />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/verify-email"
+        element={
+          <VerificationRoute>
+            <VerifyEmailPage />
+          </VerificationRoute>
         }
       />
 

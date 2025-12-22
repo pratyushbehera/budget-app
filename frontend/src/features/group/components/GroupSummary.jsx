@@ -96,14 +96,14 @@ const GroupSummary = ({ group, groupId }) => {
           <motion.div
             key={idx}
             drag="x"
-            dragConstraints={{ left: -80, right: 0 }}
+            dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={(e, info) => {
               if (info.offset.x < -60 && isYouOwe) {
                 handleSettle(s.from.id, s.to.id, s.amount);
               }
             }}
             className="flex items-center justify-between p-3 rounded-xl 
-             bg-gray-50 dark:bg-gray-850 border border-gray-200 
+             bg-indigo-400 dark:bg-blue-900 border border-gray-200 
              dark:border-gray-700 shadow-sm relative overflow-hidden"
           >
             {/* Swipe hint background */}
@@ -115,19 +115,16 @@ const GroupSummary = ({ group, groupId }) => {
 
             {/* LEFT SECTION */}
             <div className="flex items-center gap-3">
-              <AvatarBubble
-                email={s.from.to}
-                name={getMemberName(s.from.id)}
-              />
+              <AvatarBubble email={s.from.to} name={getMemberName(s.from.id)} />
 
               <div>
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-900">
                   {isYouOwe
                     ? `You owe ${getMemberName(s.to.id)}`
                     : `${getMemberName(s.from.id)} owes You`}
                 </p>
 
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-800">
                   ₹{s.amount}
                 </p>
               </div>
