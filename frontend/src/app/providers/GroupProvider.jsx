@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGroups } from "../../services/groupApi";
 import { setGroup } from "../store/groupSlice";
 
 export function GroupProvider({ children }) {
   const dispatch = useDispatch();
-  const { data: groupList, error } = useGroups();
+  const { user } = useSelector((state) => state.auth);
+  const { data: groupList, error } = useGroups(user?._id);
 
   useEffect(() => {
     if (groupList) {
