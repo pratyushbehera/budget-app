@@ -80,3 +80,31 @@ export const useStopRecurringRule = () => {
     },
   });
 };
+
+// 🔁 Enable inactive recurring rule
+export const useEnableRecurringRule = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id) => api.post(`/api/recurring-rules/${id}/enable`),
+
+    onSuccess: () => {
+      qc.invalidateQueries(["recurring", "rules"]);
+      qc.invalidateQueries(["recurring", "pending"]);
+    },
+  });
+};
+
+// ❌ Delete inactive recurring rule
+export const useDeleteRecurringRule = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id) => api.del(`/api/recurring-rules/${id}`),
+
+    onSuccess: () => {
+      qc.invalidateQueries(["recurring", "rules"]);
+      qc.invalidateQueries(["recurring", "pending"]);
+    },
+  });
+};

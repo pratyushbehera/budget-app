@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/authMiddleware");
-const { getRecurringInstances } = require("../controllers/recurringController");
+const { getRecurringInstances, enableRecurringRule, deleteRecurringRule } = require("../controllers/recurringController");
 const {
   approveRecurringInstance,
 } = require("../controllers/recurringController");
@@ -25,6 +25,18 @@ router.post("/recurring-instances/:id/skip", protect, skipRecurringInstance);
 router.post("/recurring-rules", protect, createRecurringRule);
 
 router.post("/recurring-rules/:id/stop", protect, stopRecurringRule);
+
+router.post(
+  "/recurring-rules/:id/enable",
+  protect,
+  enableRecurringRule
+);
+
+router.delete(
+  "/recurring-rules/:id",
+  protect,
+  deleteRecurringRule
+);
 
 //TODO: Keep it for dev testing
 router.post("/recurring-cron-run", protect, async (req, res) => {

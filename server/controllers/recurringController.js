@@ -265,3 +265,75 @@ exports.stopRecurringRule = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.enableRecurringRule = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const rule = await RecurringRule.findOne({ _id: id, userId });
+
+    if (!rule) {
+      return res.status(404).json({ message: "Rule not found" });
+    }
+
+    if (rule.isActive) {
+      return res.status(400).json({ message: "Rule already active" });
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    rule.isActive = true;
+    rule.nextRunAt = today; // 🔑 reset schedule
+    await rule.save();
+
+    res.json({ message: "Recurring rule enabled" });
+  } catch (err) {
+    console.error("Enable recurring rule error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.deleteRecurringRule = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const rule = await RecurringRule.findOne({ _id: id, userId });
+
+    if (!rule) {
+      return res.status(404).json({ message: "Rule not found" });
+    }
+
+    if (rule.isActive) {
+      return res.status(400).json({
+        message: "Stop the recurring rule before deleting",
+      });
+    }
+
+    // Safety: ensure no approved instances exist
+    const approvedCount = await RecurringInstance.countDocuments({
+      recurringRuleId: rule._id,
+      status: "approved",
+    });
+
+    if (approvedCount > 0) {
+      return res.status(400).json({
+        message: "Cannot delete rule with approved transactions",
+      });
+    }
+
+    // Delete instances
+    await RecurringInstance.deleteMany({
+      recurringRuleId: rule._id,
+    });
+
+    // Delete rule
+    await rule.deleteOne();
+
+    res.json({ message: "Recurring rule removed" });
+  } catch (err) {
+    console.error("Delete recurring rule error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};

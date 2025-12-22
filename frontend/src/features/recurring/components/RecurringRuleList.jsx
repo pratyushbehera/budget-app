@@ -1,28 +1,25 @@
-import { useStopRecurringRule } from "../../../services/recurringApi";
+import { useEnableRecurringRule } from "../../../services/recurringApi";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { useState } from "react";
+import { StopRecurringModal } from "./StopRecurringModal";
+import { DeleteRecurringModal } from "./DeleteRecurringModal";
 
 export function RecurringRuleList({ rules = [] }) {
-  const stopMutation = useStopRecurringRule();
+  const [stopTarget, setStopTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const enableMutation = useEnableRecurringRule();
   const { addNotification } = useNotification();
 
-  const handleStop = (rule) => {
-    if (
-      !window.confirm(
-        "This will stop future recurring transactions. Past transactions will not be affected.\n\nContinue?"
-      )
-    ) {
-      return;
-    }
-
-    stopMutation.mutate(rule._id, {
-      onSuccess: () => {
+  const handleEnable = (rule) => {
+    enableMutation.mutate(rule._id, {
+      onSuccess: () =>
         addNotification({
-          type: "warning",
-          title: "Recurring stopped",
-          message: `${rule.title} will no longer repeat.`,
-        });
-      },
-      onError: (err) => {
+          type: "success",
+          title: "Recurring enabled",
+          message: `${rule.title} will start again.`,
+        }),
+      onError: (err) =>
         addNotification({
           type: "error",
           title: "Action failed",
@@ -30,8 +27,7 @@ export function RecurringRuleList({ rules = [] }) {
             err?.response?.data?.message ||
             err.message ||
             "Something went wrong",
-        });
-      },
+        }),
     });
   };
 
@@ -59,7 +55,7 @@ export function RecurringRuleList({ rules = [] }) {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <span
               className={`text-xs px-2 py-1 rounded-full ${
                 r.isActive
@@ -70,18 +66,52 @@ export function RecurringRuleList({ rules = [] }) {
               {r.isActive ? "Active" : "Stopped"}
             </span>
 
+            {/* ACTIVE */}
             {r.isActive && (
               <button
-                onClick={() => handleStop(r)}
+                onClick={() => setStopTarget(r)}
                 className="btn-secondary text-xs"
-                disabled={stopMutation.isPending}
               >
                 Stop
               </button>
             )}
+
+            {/* INACTIVE */}
+            {!r.isActive && (
+              <>
+                <button
+                  onClick={() => handleEnable(r)}
+                  className="btn-primary text-xs"
+                  disabled={enableMutation.isPending}
+                >
+                  Enable
+                </button>
+
+                <button
+                  onClick={() => setDeleteTarget(r)}
+                  className="btn-primary bg-red-500 text-xs"
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </div>
         </div>
       ))}
+
+      {stopTarget && (
+        <StopRecurringModal
+          rule={stopTarget}
+          onClose={() => setStopTarget(null)}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteRecurringModal
+          rule={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
