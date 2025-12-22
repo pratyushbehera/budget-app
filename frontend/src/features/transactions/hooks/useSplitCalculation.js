@@ -20,8 +20,6 @@ export function useSplitCalculation(amount, groupMembers) {
           amount: 0,
         }))
       );
-    } else {
-      setSplitDetails([]);
     }
   }, [groupMembers]);
 
