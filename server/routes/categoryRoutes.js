@@ -5,9 +5,8 @@ const {
   getCategories,
   addCategory,
   deleteCategory,
+  syncDefaultsForUser,
 } = require("../controllers/categoryController");
-
-const { syncDefaultsForUser } = require("../controllers/categoryController");
 
 router.route("/").get(protect, getCategories).post(protect, addCategory);
 
