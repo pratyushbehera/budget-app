@@ -5,11 +5,12 @@ import { api } from "./apiClient";
    GROUP FETCHING
 ----------------------------------------------------- */
 
-export const useGroups = () =>
+export const useGroups = (userId) =>
   useQuery({
-    queryKey: ["groups"],
+    queryKey: ["groups", userId],
     queryFn: () => api.get("/api/groups"),
     staleTime: 5 * 60 * 1000,
+    enabled: !!localStorage.getItem("auth-token") && !!userId,
   });
 
 export const useGroup = (groupId) =>

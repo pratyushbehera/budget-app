@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegister } from "../services/authApi";
 import { useNotification } from "../contexts/NotificationContext";
+import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -93,162 +94,149 @@ export function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex lg:items-center justify-center bg-gray-50 dark:bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <Link to="/" className="flex justify-center">
-            <h1 className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-              FinPal
-            </h1>
+    <AuthLayout
+      title="Create your account"
+      subtitle={
+        <>
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            Sign in
           </Link>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Or{" "}
-            <Link
-              to="/login"
-              className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500"
-            >
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Full Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="input-field mt-1"
-                placeholder="Enter your full name"
-              />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field mt-1"
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="input-field mt-1"
-                placeholder="Create a password"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.password}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="input-field mt-1"
-                placeholder="Confirm your password"
-              />
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-          </div>
-
+        </>
+      }
+      footer={
+        <>
+          By creating an account, you agree to our{" "}
+          <Link to="/terms" className="text-primary-600 hover:underline">
+            Terms
+          </Link>{" "}
+          &{" "}
+          <Link to="/privacy" className="text-primary-600 hover:underline">
+            Privacy Policy
+          </Link>
+        </>
+      }
+    >
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <div className="space-y-4">
           <div>
-            <button
-              type="submit"
-              disabled={registerMutation.isPending}
-              className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              {registerMutation.isPending ? (
-                <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                  Creating account...
-                </div>
-              ) : (
-                "Create Account"
-              )}
-            </button>
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="Enter your full name"
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.name}
+              </p>
+            )}
           </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="Enter your email"
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.email}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="Create a password"
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.password}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="input-field mt-1"
+              placeholder="Confirm your password"
+            />
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+        </div>
 
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            By creating an account, you agree to our{" "}
-            <Link
-              to="/terms"
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-500"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/privacy"
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-500"
-            >
-              Privacy Policy
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div>
+          <button
+            type="submit"
+            disabled={registerMutation.isPending}
+            className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {registerMutation.isPending ? (
+              <div className="flex items-center justify-center">
+                <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                Creating account...
+              </div>
+            ) : (
+              "Create Account"
+            )}
+          </button>
+        </div>
+      </form>
+    </AuthLayout>
   );
 }

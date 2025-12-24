@@ -8,14 +8,7 @@ export default function NotFoundPage() {
       <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         {/* Illustration */}
         <div className="flex items-center justify-center">
-          {/* Put your downloaded unDraw SVG into public/undraw-404.svg */}
           <NotFound />
-          {/* <img
-            src="/undraw-404.svg"
-            alt="404 illustration"
-            className="w-full max-w-md"
-            loading="lazy"
-          /> */}
         </div>
 
         {/* Content */}

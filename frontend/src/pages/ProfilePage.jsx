@@ -71,6 +71,45 @@ export function ProfilePage() {
     }
   };
 
+  const shareText = `🎉 FinPal App is LIVE!
+
+Want to take control of your daily spending? 💸
+Track expenses, set budgets, and save smarter—all in one app.
+
+👉 Join here:
+https://budget-app-sigma-taupe.vercel.app
+
+Try it out and share your feedback! 📊
+#BudgetTracker #SaveMoney
+
+💡 Tip: Bookmark the link for easy access. Let’s build better financial habits together!
+`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "FinPal App",
+          text: shareText,
+          url: "https://budget-app-sigma-taupe.vercel.app",
+        });
+      } catch (err) {
+        // user cancelled – ignore
+      }
+    } else {
+      copyToClipboard();
+    }
+  };
+
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(shareText);
+    addNotification({
+      type: "success",
+      title: "Copied",
+      message: "Invite message copied to clipboard.",
+    });
+  };
+
   if (isLoading) {
     return <LoadingPage page="profile" />;
   }
@@ -105,6 +144,42 @@ export function ProfilePage() {
           <Pencil size={16} />
           Edit Profile
         </button>
+      </div>
+
+      {/* Invite & Share */}
+      <div className="card mt-6 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Invite friends to FinPal
+        </h3>
+
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          Help your friends track expenses and build better money habits.
+        </p>
+
+        <textarea
+          readOnly
+          value={shareText}
+          className="mt-4 w-full min-h-[160px] resize-none rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm text-gray-800 dark:text-gray-200"
+        />
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button className="btn-primary" onClick={handleShare}>
+            Share
+          </button>
+
+          <button className="btn-secondary" onClick={copyToClipboard}>
+            Copy message
+          </button>
+
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary"
+          >
+            WhatsApp
+          </a>
+        </div>
       </div>
 
       {/* Edit Modal */}

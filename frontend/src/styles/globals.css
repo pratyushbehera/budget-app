@@ -1,16 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Geom:wght@300;400;500;600;700&&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Geom', 'Inter', system-ui, sans-serif;
   }
   
   body {
     @apply antialiased;
   }
+  
 }
 
 @layer components {
@@ -33,4 +35,18 @@
   .table-head{
     @apply bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-800 sticky top-0
   }
+
+  .glass-card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(12px);
+  }
+  
+  .section-title {
+    @apply text-4xl font-bold text-center;
+  }
+  
+  .step-circle {
+    @apply w-12 h-12 mx-auto rounded-full bg-primary-600 text-white flex items-center justify-center;
+  }
+  
 }
