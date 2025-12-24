@@ -10,7 +10,7 @@ export function Testimonials() {
         <div className="grid md:grid-cols-2 gap-8 mt-12">
           <div className="glass-card p-6 rounded-2xl">
             “FinPal completely changed how I manage money.”
-            <span className="block mt-4 font-semibold">— Early User</span>
+            <span className="block mt-4 font-semibold">— Pratyush</span>
           </div>
         </div>
       </AnimatedSection>

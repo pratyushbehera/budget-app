@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 import { useVerifyEmail, useResendEmailOtp } from "../services/authApi";
 import { useNotification } from "../contexts/NotificationContext";
+import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function VerifyEmailPage() {
   const location = useLocation();
@@ -90,61 +91,50 @@ export function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <div className="max-w-md w-full space-y-6">
-        <div className="text-center">
-          <Link to="/" className="text-3xl font-bold text-primary-600">
-            FinPal
-          </Link>
-          <h2 className="mt-4 text-2xl font-extrabold text-gray-900 dark:text-white">
-            Verify your email
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Enter the 6-digit OTP sent to your email
-          </p>
-        </div>
+    <AuthLayout
+      title="Verify your email"
+      subtitle="Enter the 6-digit OTP sent to your email"
+    >
+      <form
+        onSubmit={handleVerify}
+        className="bg-white dark:bg-gray-900 shadow rounded-lg p-6 space-y-4"
+      >
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input-field"
+          placeholder="Email address"
+          required
+        />
 
-        <form
-          onSubmit={handleVerify}
-          className="bg-white dark:bg-gray-900 shadow rounded-lg p-6 space-y-4"
+        <input
+          type="text"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          className="input-field text-center tracking-widest"
+          placeholder="Enter OTP"
+          maxLength={6}
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={verifyMutation.isPending}
+          className="w-full btn-primary py-3 disabled:opacity-50"
         >
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input-field"
-            placeholder="Email address"
-            required
-          />
+          {verifyMutation.isPending ? "Verifying..." : "Verify Email"}
+        </button>
 
-          <input
-            type="text"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="input-field text-center tracking-widest"
-            placeholder="Enter OTP"
-            maxLength={6}
-            required
-          />
-
-          <button
-            type="submit"
-            disabled={verifyMutation.isPending}
-            className="w-full btn-primary py-3 disabled:opacity-50"
-          >
-            {verifyMutation.isPending ? "Verifying..." : "Verify Email"}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={resendMutation.isPending}
-            className="w-full btn-secondary"
-          >
-            {resendMutation.isPending ? "Resending..." : "Resend OTP"}
-          </button>
-        </form>
-      </div>
-    </div>
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={resendMutation.isPending}
+          className="w-full btn-secondary"
+        >
+          {resendMutation.isPending ? "Resending..." : "Resend OTP"}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
+    <nav className="sticky top-0 z-10 backdrop-blur bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/logo.png" className="w-7 h-7" alt="FinPal" />

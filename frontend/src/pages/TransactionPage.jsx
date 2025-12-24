@@ -88,9 +88,9 @@ export function TransactionPage() {
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div className="mt-6">
+      <div>
         {/* Header */}
-        <div className="flex items-start md:flex-row flex-col lg:items-center justify-between mb-4">
+        <div className="flex gap-4 items-start md:flex-row flex-col lg:items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
             Transactions
           </h1>
