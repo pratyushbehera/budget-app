@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/authMiddleware");
+const cronAuth = require("../middleware/cronAuth");
 const {
   getRecurringInstances,
   enableRecurringRule,
@@ -33,7 +34,7 @@ router.post("/recurring-rules/:id/enable", protect, enableRecurringRule);
 router.delete("/recurring-rules/:id", protect, deleteRecurringRule);
 
 //TODO: Keep it for dev testing
-router.post("/recurring-cron-run", protect, async (req, res) => {
+router.post("/recurring-cron-run", cronAuth, async (req, res) => {
   const { runRecurringCron } = require("../jobs/recurringCron");
   await runRecurringCron();
   res.json({ message: "Recurring cron executed" });
