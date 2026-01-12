@@ -73,7 +73,7 @@ export function SplitSection({
                 </label>
                 <input
                   id={`percent-${idx}`}
-                  type="number"
+                  type="text"
                   value={s.percent}
                   onChange={(e) => updatePercent(idx, e.target.value)}
                   className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-700"

@@ -7,79 +7,92 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 import { convertToShortForm } from "../../../shared/utils/formatCurrency";
 
-export const MonthlySpendCard = ({ monthlySpend = [], monthlyIncome = [] }) => {
-  const data = monthlySpend.map((spend, i) => ({
-    month: new Date(0, i).toLocaleString("default", { month: "short" }),
-    spend: spend,
-    income: monthlyIncome[i] || 0,
+export const MonthlySpendCard = ({ monthlyTrend }) => {
+  if (!monthlyTrend) return null;
+
+  const { labels, spend, income, yoy, trend } = monthlyTrend;
+
+  const data = labels.map((label, i) => ({
+    month: label,
+    spend: spend[i],
+    income: income[i],
   }));
 
-  const hasData = data.length > 0 && data.some((d) => d.spend > 0);
+  const trendIcon = (dir, isPositiveGood = true) => {
+    if (dir === "up")
+      return isPositiveGood ? (
+        <ArrowUpRight className="text-green-500" size={14} />
+      ) : (
+        <ArrowUpRight className="text-red-500" size={14} />
+      );
+    if (dir === "down")
+      return isPositiveGood ? (
+        <ArrowDownRight className="text-green-500" size={14} />
+      ) : (
+        <ArrowDownRight className="text-red-500" size={14} />
+      );
+    return <Minus size={14} className="text-gray-400" />;
+  };
 
   return (
     <div className="col-span-4 card p-4 shadow-sm flex flex-col">
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-        Monthly Income vs Spend
-      </h3>
+      {/* Header */}
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+          Monthly Income vs Spend
+        </h3>
 
-      {!hasData ? (
-        <div className="flex flex-col items-center justify-center h-40 text-gray-400 dark:text-gray-500">
-          <p className="text-sm mb-1">No monthly data yet</p>
-          <p className="text-xs">Start adding transactions to see trends</p>
+        <div className="text-xs space-y-1 text-right">
+          <div className="flex items-center gap-1 justify-end">
+            {trendIcon(trend.spend, false)}
+            <span className="text-gray-600 dark:text-gray-300">
+              Spend {trend.spend}
+            </span>
+          </div>
+          {yoy.spendChangePercent !== null && (
+            <div className="text-gray-400">YoY: {yoy.spendChangePercent}%</div>
+          )}
         </div>
-      ) : (
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
-            >
-              <XAxis
-                dataKey="month"
-                tick={{ fill: "#6b7280", fontSize: 11 }}
-                axisLine={false}
-              />
-              <YAxis
-                tickFormatter={(val) => `₹${convertToShortForm(val)}`}
-                tick={{ fill: "#6b7280", fontSize: 11 }}
-                axisLine={false}
-              />
-              <Tooltip
-                formatter={(val, name) => [`₹${val.toLocaleString()}`, name]}
-                contentStyle={{
-                  backgroundColor: "rgba(255,255,255,0.95)",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                }}
-              />
-              <Legend
-                wrapperStyle={{ fontSize: "12px", marginTop: 4 }}
-                verticalAlign="top"
-                height={24}
-              />
-              <Line
-                type="monotone"
-                dataKey="income"
-                stroke="#22c55e"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 5 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="spend"
-                stroke="#ef4444"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 5 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      </div>
+
+      {/* Chart */}
+      <div className="h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <XAxis
+              dataKey="month"
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={false}
+            />
+            <YAxis
+              tickFormatter={(v) => `₹${convertToShortForm(v)}`}
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={false}
+            />
+            <Tooltip
+              formatter={(val, name) => [`₹${val.toLocaleString()}`, name]}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="income"
+              stroke="#22c55e"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="spend"
+              stroke="#ef4444"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

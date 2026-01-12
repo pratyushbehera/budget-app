@@ -107,52 +107,128 @@ exports.getDashboard = async (req, res) => {
       }
     }
 
-    // ---- YEAR TO DATE (till selected month) ----
-    const yearStart = new Date(`${currentYear}-01-01`);
-    const yearEnd = new Date(`${currentYear}-12-31`);
+    // ---- LAST 12 MONTHS (rolling) ----
+    const endMonth = new Date(startDate); // selected month
+    endMonth.setMonth(endMonth.getMonth() + 1); // exclusive end
 
-    const yearTxns = await Transaction.find({
+    const startMonth = new Date(startDate);
+    startMonth.setMonth(startMonth.getMonth() - 11); // go back 11 months
+
+    const rollingTxns = await Transaction.find({
       $or: [
-        { paidBy: userId }, // new group-based expenses
+        { paidBy: userId },
         {
-          $and: [
-            // backward compatibility
-            { paidBy: { $exists: false } },
-            { userId: userId },
-          ],
+          $and: [{ paidBy: { $exists: false } }, { userId: userId }],
         },
       ],
       date: {
-        $gte: yearStart.toISOString().split("T")[0],
-        $lt: yearEnd.toISOString().split("T")[0],
+        $gte: startMonth.toISOString().split("T")[0],
+        $lt: endMonth.toISOString().split("T")[0],
       },
     });
 
     const monthlySpend = Array(12).fill(0);
     const monthlyIncome = Array(12).fill(0);
 
-    yearTxns.forEach((t) => {
+    // helper to compute month index in rolling window
+    const getMonthIndex = (date) => {
+      const diff =
+        (date.getFullYear() - startMonth.getFullYear()) * 12 +
+        (date.getMonth() - startMonth.getMonth());
+      return diff; // 0 → 11
+    };
+
+    rollingTxns.forEach((t) => {
       let categoryId = t.categoryId;
-      if (!categoryId)
+      if (!categoryId) {
         categoryId = categories.find((c) => c.name === t.category)?._id;
-      const type = catMap[categoryId]?.type || "Expense";
-      if (type === "Expense") {
-        const txnMonth = new Date(t.date).getMonth();
-        if (txnMonth <= currentMonthIndex) {
-          monthlySpend[txnMonth] += t.amount;
-        }
       }
+
+      const type = catMap[categoryId]?.type || "Expense";
+      const txnDate = new Date(t.date);
+      const idx = getMonthIndex(txnDate);
+
+      if (idx < 0 || idx > 11) return; // safety guard
+
+      if (type === "Expense") {
+        monthlySpend[idx] += t.amount;
+      }
+
       if (type === "Income") {
-        const txnMonth = new Date(t.date).getMonth();
-        if (txnMonth <= currentMonthIndex) {
-          monthlyIncome[txnMonth] += t.amount;
-        }
+        monthlyIncome[idx] += t.amount;
       }
     });
 
-    // Trim to show only till selected month (e.g. if November => Jan–Nov)
-    const monthlySpendYTD = monthlySpend.slice(0, currentMonthIndex + 1);
-    const monthlyIncomeYTD = monthlyIncome.slice(0, currentMonthIndex + 1);
+    const monthLabels = [];
+
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(startMonth);
+      d.setMonth(d.getMonth() + i);
+      monthLabels.push(
+        d.toLocaleString("en-US", { month: "short", year: "2-digit" })
+      );
+    }
+
+    const lastMonthSpend = monthlySpend[11];
+    const lastMonthIncome = monthlyIncome[11];
+
+    // Fetch same month last year
+    const prevYearStart = new Date(startMonth);
+    prevYearStart.setFullYear(prevYearStart.getFullYear() - 1);
+
+    const prevYearEnd = new Date(prevYearStart);
+    prevYearEnd.setMonth(prevYearEnd.getMonth() + 1);
+
+    const prevYearTxns = await Transaction.find({
+      $or: [
+        { paidBy: userId },
+        {
+          $and: [{ paidBy: { $exists: false } }, { userId: userId }],
+        },
+      ],
+      date: {
+        $gte: prevYearStart.toISOString().split("T")[0],
+        $lt: prevYearEnd.toISOString().split("T")[0],
+      },
+    });
+
+    let prevYearSpend = 0;
+    let prevYearIncome = 0;
+
+    prevYearTxns.forEach((t) => {
+      let categoryId = t.categoryId;
+      if (!categoryId)
+        categoryId = categories.find((c) => c.name === t.category)?._id;
+
+      const type = catMap[categoryId]?.type;
+
+      if (type === "Expense") prevYearSpend += t.amount;
+      if (type === "Income") prevYearIncome += t.amount;
+    });
+
+    const calcYoY = (current, previous) => {
+      if (!previous || previous === 0) return null;
+      return Number((((current - previous) / previous) * 100).toFixed(1));
+    };
+
+    const yoySpendChange = calcYoY(lastMonthSpend, prevYearSpend);
+    const yoyIncomeChange = calcYoY(lastMonthIncome, prevYearIncome);
+
+    const avg = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+
+    const spendTrend =
+      avg(monthlySpend.slice(9, 12)) > avg(monthlySpend.slice(6, 9))
+        ? "up"
+        : avg(monthlySpend.slice(9, 12)) < avg(monthlySpend.slice(6, 9))
+        ? "down"
+        : "flat";
+
+    const incomeTrend =
+      avg(monthlyIncome.slice(9, 12)) > avg(monthlyIncome.slice(6, 9))
+        ? "up"
+        : avg(monthlyIncome.slice(9, 12)) < avg(monthlyIncome.slice(6, 9))
+        ? "down"
+        : "flat";
 
     // Final response
     res.json({
@@ -165,8 +241,19 @@ exports.getDashboard = async (req, res) => {
       },
       categorySpend,
       categoryPlanUsage,
-      monthlySpend: monthlySpendYTD,
-      monthlyIncome: monthlyIncomeYTD,
+      monthlyTrend: {
+        labels: monthLabels,
+        spend: monthlySpend,
+        income: monthlyIncome,
+        yoy: {
+          spendChangePercent: yoySpendChange,
+          incomeChangePercent: yoyIncomeChange,
+        },
+        trend: {
+          spend: spendTrend,
+          income: incomeTrend,
+        },
+      },
     });
   } catch (err) {
     console.error(err);

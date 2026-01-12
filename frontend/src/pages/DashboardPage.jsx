@@ -151,10 +151,7 @@ export function DashboardPage() {
 
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
-            <MonthlySpendCard
-              monthlySpend={dashboardData?.monthlySpend}
-              monthlyIncome={dashboardData?.monthlyIncome}
-            />
+            <MonthlySpendCard monthlyTrend={dashboardData?.monthlyTrend} />
             <RecentTransaction month={selectedMonth} />
 
             <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
