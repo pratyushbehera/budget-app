@@ -103,7 +103,7 @@ const GroupSummary = ({ group, groupId }) => {
               }
             }}
             className="flex items-center justify-between p-3 rounded-xl 
-             bg-indigo-400 dark:bg-blue-900 border border-gray-200 
+             bg-orange-400 dark:bg-pink-400 border border-gray-200 
              dark:border-gray-700 shadow-sm relative overflow-hidden"
           >
             {/* Swipe hint background */}

@@ -5,6 +5,7 @@ import { useGroups, useAcceptInvite } from "../services/groupApi";
 import GroupCard from "../features/group/components/GroupCard";
 import CreateGroupModal from "../features/group/components/CreateGroup";
 import Tab from "../shared/components/Tab";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
 const GroupsPage = () => {
   const { user } = useSelector((s) => s.auth);
@@ -14,7 +15,7 @@ const GroupsPage = () => {
 
   const [activeTab, setActiveTab] = useState("owner");
 
-  if (isLoading) return <div className="p-6">Loading groups...</div>;
+  if (isLoading) return <LoadingPage page="group" />;
 
   // Split groups by status
   const pendingGroups = groups.filter((g) => {

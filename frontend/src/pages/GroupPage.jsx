@@ -7,6 +7,7 @@ import GroupSummary from "../features/group/components/GroupSummary";
 import GroupMembers from "../features/group/components/GroupMembers";
 import GroupTransactions from "../features/group/components/GroupTransactions";
 import GroupActivityList from "../features/group/components/GroupActivityList";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
 const GroupPage = () => {
   const { groupId } = useParams();
@@ -21,9 +22,7 @@ const GroupPage = () => {
   }, [group, user]);
 
   if (isLoading) {
-    return (
-      <div className="p-4 animate-pulse text-gray-500">Loading group...</div>
-    );
+    return <LoadingPage page="group" />;
   }
 
   if (isError || !group) {
