@@ -60,6 +60,10 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   const { mutateAsync: addTx, isPending } = useAddTransaction();
   const { addNotification } = useNotification();
   const { mutateAsync: addRecurringRule } = useCreateRecurringRules();
+  const hasGroup = !!form.groupId;
+
+  const canSubmit =
+    !!form.amount && !!form.categoryId && (!hasGroup || isSplitValid);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -327,7 +331,11 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
             <button type="button" className="btn-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary" disabled={isPending}>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={isPending || !canSubmit}
+            >
               {isPending ? "Saving..." : "Save"}
             </button>
           </div>
