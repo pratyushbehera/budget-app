@@ -8,7 +8,7 @@ export function HeroVisual() {
       <motion.div
         animate={{ y: [0, -20, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-10 top-24 glass-card p-5 rounded-2xl shadow-xl"
+        className="absolute left-0 sm:left-10 top-24 glass-card p-5 rounded-2xl shadow-xl z-10"
       >
         <IndianRupee className="text-primary-600 mb-2" />
         <p className="font-semibold">Monthly Spend</p>
@@ -32,9 +32,9 @@ export function HeroVisual() {
       <motion.div
         animate={{ y: [0, -18, 0] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-10 bottom-24 glass-card p-5 rounded-2xl shadow-xl"
+        className="absolute right-0 sm:right-10 bottom-24 glass-card p-5 rounded-2xl shadow-xl"
       >
-        <TrendingUp className="text-green-500 mb-2 z-10" />
+        <TrendingUp className="text-green-500 mb-2" />
         <p className="font-semibold">Savings ↑</p>
         <p className="text-2xl font-bold">+18%</p>
       </motion.div>

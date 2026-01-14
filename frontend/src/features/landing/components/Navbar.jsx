@@ -9,7 +9,7 @@ export function Navbar() {
           <span className="font-bold text-xl dark:text-white">FinPal</span>
         </div>
 
-        <div className="flex gap-4">
+        <div className="hidden md:flex gap-4">
           <Link to="/login" className="btn-secondary px-4 py-2 rounded-lg">
             Login
           </Link>

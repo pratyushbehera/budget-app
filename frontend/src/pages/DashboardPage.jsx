@@ -15,7 +15,7 @@ import ChatWidget from "../features/dashboard/components/ChatWidget";
 import { PendingInviteBanner } from "../features/group/components/PendingInviteBanner";
 import { usePendingRecurring } from "../services/recurringApi";
 import { PendingRecurringCard } from "../features/recurring/components/PendingRecurringCard";
-import { todayISO } from "../shared/utils/formatDate";
+import { todayISO, formatMonthYear } from "../shared/utils/formatDate";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -96,7 +96,8 @@ export function DashboardPage() {
         </p>
       ) : (
         <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
-          Here’s a summary of your finances for {selectedMonth}.
+          Here’s a summary of your finances for {formatMonthYear(selectedMonth)}
+          .
         </p>
       )}
 
