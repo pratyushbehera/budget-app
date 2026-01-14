@@ -84,8 +84,8 @@ const GroupSummary = ({ group, groupId }) => {
         <p className="text-sm opacity-90">Your Balance in Group</p>
         <p className="text-2xl font-bold mt-1">
           {yourBalance === 0 && "All Settled 🎉"}
-          {yourBalance < 0 && `You owe ₹${Math.abs(yourBalance)}`}
-          {yourBalance > 0 && `You are owed ₹${yourBalance}`}
+          {yourBalance < 0 && `You owe ₹${Math.abs(yourBalance.toFixed(2))}`}
+          {yourBalance > 0 && `You are owed ₹${yourBalance.toFixed(2)}`}
         </p>
       </div>
 
@@ -125,7 +125,7 @@ const GroupSummary = ({ group, groupId }) => {
                 </p>
 
                 <p className="text-sm text-gray-600 dark:text-gray-800">
-                  ₹{s.amount}
+                  ₹{s.amount.toFixed(2)}
                 </p>
               </div>
             </div>

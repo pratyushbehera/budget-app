@@ -7,12 +7,29 @@ export const CategorySpendChart = ({ data }) => {
 
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
-      const mappedData = Object.entries(data).map(([key, value]) => ({
-        category: key,
-        planned: value.plannedAmount || 0,
-        spent: value.spentAmount || 0,
-        percentUsed: value.percentUsed || 0,
-      }));
+      const mappedData = Object.entries(data).map(([key, value]) => {
+        const planned = Number(value.plannedAmount || 0);
+        const spent = Number(value.spentAmount || 0);
+
+        let percentUsed = 0;
+        let isUnplanned = false;
+
+        if (planned === 0 && spent > 0) {
+          percentUsed = 100; // ✅ force visible bar
+          isUnplanned = true;
+        } else if (planned > 0) {
+          percentUsed = (spent / planned) * 100;
+        }
+
+        return {
+          category: key,
+          planned,
+          spent,
+          percentUsed,
+          isUnplanned,
+        };
+      });
+
       setChartData(mappedData);
     } else {
       setChartData([]);
@@ -73,25 +90,30 @@ export const CategorySpendChart = ({ data }) => {
                 <div key={item.category}>
                   <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
                     <span>{item.category}</span>
-                    <span>{item.percentUsed.toFixed(1)}%</span>
+                    {item.isUnplanned
+                      ? "Unplanned"
+                      : `${item.percentUsed.toFixed(1)}%`}
                   </div>
 
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div
                       className="h-3 rounded-full transition-all duration-500"
                       style={{
-                        width: `${item.percentUsed}%`,
-                        background:
-                          item.percentUsed > 90
-                            ? "linear-gradient(to right, #f43f5e, #fb923c)"
-                            : "linear-gradient(to right, #3b82f6, #06b6d4)",
+                        width: `${Math.min(item.percentUsed, 100)}%`,
+                        background: item.isUnplanned
+                          ? "linear-gradient(to right, #7c2d12, #dc2626)" // dark red
+                          : item.percentUsed > 90
+                          ? "linear-gradient(to right, #f43f5e, #fb923c)"
+                          : "linear-gradient(to right, #3b82f6, #06b6d4)",
                       }}
                     ></div>
                   </div>
 
                   <div className="text-[11px] text-gray-400 mt-0.5">
-                    ₹{item.spent.toLocaleString()} / ₹
-                    {item.planned.toLocaleString()}
+                    ₹{item.spent.toLocaleString()}{" "}
+                    {item.planned > 0
+                      ? `/ ₹${item.planned.toLocaleString()}`
+                      : "(no plan)"}
                   </div>
                 </div>
               ))}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 import { useVerifyEmail, useResendEmailOtp } from "../services/authApi";
@@ -18,14 +18,36 @@ export function VerifyEmailPage() {
   const verifyMutation = useVerifyEmail();
   const resendMutation = useResendEmailOtp();
 
+  // ✅ Guard to prevent multiple auto-sends
+  const hasAutoSentRef = useRef(false);
+
+  /**
+   * Auto-send OTP once when page loads
+   * (for direct navigation / refresh / login redirect)
+   */
   useEffect(() => {
-    if (!email) {
-      addNotification({
-        type: "info",
-        title: "Email required",
-        message: "Please enter your email to verify your account.",
+    if (!email || hasAutoSentRef.current) return;
+
+    hasAutoSentRef.current = true;
+
+    resendMutation
+      .mutateAsync(email)
+      .then(() => {
+        addNotification({
+          type: "info",
+          title: "OTP Sent",
+          message: "We’ve sent a verification code to your email.",
+        });
+      })
+      .catch((err) => {
+        if (err.status === 429) {
+          addNotification({
+            type: "warning",
+            title: "Please wait",
+            message: "OTP was sent recently. Try again shortly.",
+          });
+        }
       });
-    }
   }, [email]);
 
   const handleVerify = async (e) => {
@@ -53,10 +75,20 @@ export function VerifyEmailPage() {
 
       navigate("/dashboard", { replace: true });
     } catch (err) {
+      if (err.status === 429) {
+        addNotification({
+          type: "warning",
+          title: "Too many attempts",
+          message: "Please wait before trying again.",
+          autoHide: false,
+        });
+        return;
+      }
+
       addNotification({
         type: "error",
         title: "Verification Failed",
-        message: err.message || "Invalid or expired OTP. Please try again.",
+        message: err.message || "Invalid or expired OTP.",
       });
     }
   };
@@ -72,16 +104,17 @@ export function VerifyEmailPage() {
         title: "OTP Sent",
         message: "A new OTP has been sent to your email.",
       });
-    } catch {
+    } catch (err) {
       if (err.status === 429) {
         addNotification({
           type: "warning",
           title: "Slow down",
-          message: "Too many attempts. Please wait a few minutes.",
+          message: "Too many requests. Please wait a few minutes.",
           autoHide: false,
         });
         return;
       }
+
       addNotification({
         type: "error",
         title: "Failed",
