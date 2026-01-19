@@ -16,6 +16,8 @@ import { PendingInviteBanner } from "../features/group/components/PendingInviteB
 import { usePendingRecurring } from "../services/recurringApi";
 import { PendingRecurringCard } from "../features/recurring/components/PendingRecurringCard";
 import { todayISO, formatMonthYear } from "../shared/utils/formatDate";
+import { useWeeklyInsightsQuery } from "../services/insightsApi";
+import { WeeklyInsightsList } from "../features/dashboard/components/WeeklyInsightsList";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,7 +50,8 @@ export function DashboardPage() {
     pendingRecurring?.filter(
       (r) => r.status === "pending" && r.dueDate <= today
     ) || [];
-  // const insightHook = useInsights(selectedMonth, currentUser);
+
+  // const weeklyInsightsQuery = useWeeklyInsightsQuery();
 
   const isLoading = userLoading || dashboardLoading;
 
@@ -144,11 +147,21 @@ export function DashboardPage() {
             ))}
           </motion.div>
 
-          {/* <h2 className="text-lg font-semibold mb-2">AI Insights</h2>
-          <InsightsCardList
-            selectedMonth={selectedMonth}
-            insightHook={insightHook}
-          /> */}
+          {/* <section className="mt-6">
+            <h2 className="text-lg font-semibold mb-2">
+              Weekly Spending Insights
+            </h2>
+
+            {weeklyInsightsQuery.isLoading && (
+              <p className="text-sm text-gray-500">
+                Analyzing your spending...
+              </p>
+            )}
+
+            {weeklyInsightsQuery.data && (
+              <WeeklyInsightsList insights={weeklyInsightsQuery.data.content} />
+            )}
+          </section> */}
 
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">

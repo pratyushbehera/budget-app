@@ -1,71 +1,52 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import { useQuery } from "@tanstack/react-query";
+import { api } from "./apiClient";
+import { fetchTransactionsByDateRange } from "./transactionApi";
+import { splitWeeklyTransactions } from "../shared/utils/weeklyTransactions";
 
-export const fetchInsights = async (year, month, token) => {
-  const response = await fetch(
-    `${API_BASE_URL}/api/insights/${year}/${month}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.json();
-};
+const ONE_DAY = 24 * 60 * 60 * 1000;
 
-export const generateInsights = async (payload, token) => {
-  console.log(payload);
-  const response = await fetch(`${API_BASE_URL}/api/insights/generate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+export const useWeeklyInsightsQuery = () => {
+  return useQuery({
+    queryKey: ["weekly-insights"],
+    queryFn: async () => {
+      const today = new Date();
+      const endDate = today.toISOString().split("T")[0];
+
+      const startDate = new Date();
+      startDate.setDate(today.getDate() - 14);
+      const startISO = startDate.toISOString().split("T")[0];
+
+      // 1️⃣ Fetch transactions
+      const res = await fetchTransactionsByDateRange({
+        startDate: startISO,
+        endDate,
+      });
+
+      const transactions = res || [];
+
+      const { currentWeekTransactions, previousWeekTransactions } =
+        splitWeeklyTransactions(transactions);
+      console.log(res);
+      // Guardrail: insufficient data
+      if (
+        currentWeekTransactions.length === 0 ||
+        previousWeekTransactions.length === 0
+      ) {
+        return { content: [] };
+      }
+
+      // 2️⃣ Generate insights
+      return api.post("/api/insights/generate", {
+        currentWeekTransactions,
+        previousWeekTransactions,
+      });
     },
-    body: JSON.stringify(payload),
+
+    // 🔐 Memoization controls
+    staleTime: ONE_DAY, // 24h fresh
+    cacheTime: ONE_DAY, // kept in memory
+    refetchOnMount: false, // route re-entry safe
+    refetchOnWindowFocus: false, // tab switch safe
+    retry: 1,
   });
-
-  return response.json();
-};
-
-export const useInsights = (selectedMonth, userProfile) => {
-  const [year, month] = selectedMonth?.split("-");
-  const token = localStorage.getItem("auth-token");
-  const queryClient = useQueryClient();
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["insights", year, month],
-    queryFn: () => fetchInsights(year, month, token),
-  });
-
-  const mutation = useMutation({
-    mutationFn: (budgets, transactions) =>
-      generateInsights(
-        {
-          year,
-          month,
-          userProfile,
-          transactions,
-          budgets,
-        },
-        token
-      ),
-    onSuccess: (response) => {
-      queryClient.setQueryData(["insights", year, month], response.content);
-    },
-  });
-
-  const ensureInsights = (budgets, transactions) => {
-    // If empty array, trigger generation
-    if (!data || data.length === 0) {
-      mutation.mutate(budgets, transactions);
-    }
-  };
-
-  return {
-    insights: data || [],
-    isLoading,
-    generate: (budgets, transactions) => ensureInsights(budgets, transactions),
-    refetch,
-  };
 };

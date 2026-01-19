@@ -70,3 +70,14 @@ export const useDeleteTransaction = () => {
     },
   });
 };
+
+// =============================
+// 🔹 GET Transactions by Date Range (for Insights)
+// =============================
+export const fetchTransactionsByDateRange = async ({ startDate, endDate }) => {
+  const params = new URLSearchParams();
+  params.append("startDate", startDate);
+  params.append("endDate", endDate);
+
+  return api.get(`/api/transactions?${params.toString()}`);
+};

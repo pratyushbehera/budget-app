@@ -1,177 +1,105 @@
-const { Insight } = require("../models/Budget");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const buildDashboardPrompt = (userProfile, transactions, budgets) => {
-  return `
-You are a financial insights assistant.
+const buildWeeklyPrompt = (weeklyData) => `
+You are a financial data summarizer.
 
-User Profile:
-${JSON.stringify(userProfile)}
+Below is weekly spending comparison data.
 
-Recent Transactions:
-${JSON.stringify(transactions)}
+${JSON.stringify(weeklyData, null, 2)}
 
-Monthly Budgets:
-${JSON.stringify(budgets)}
+Rules:
+- Do NOT invent categories
+- Do NOT give financial advice
+- Explain spending change factually
+- Max 20 words per insight
 
-Generate 3 concise insights. Each insight must include:
-- title (max 7 words)
-- summary (max 25 words)
-- suggestion (max 20 words)
-
-Return ONLY valid JSON array in this format:
+Return ONLY valid JSON array:
 [
-  { "title": "", "summary": "", "suggestion": "" },
-  { "title": "", "summary": "", "suggestion": "" },
-  { "title": "", "summary": "", "suggestion": "" }
+  {
+    "category": "",
+    "totalSpent": number,
+    "previousWeekSpent": number,
+    "changePercent": number,
+    "insight": ""
+  }
 ]
 `;
+
+const computeWeeklyDiff = (current, previous) => {
+  return Object.keys(current).map((category) => {
+    const currentSpent = current[category] || 0;
+    const previousSpent = previous[category] || 0;
+
+    const changePercent =
+      previousSpent === 0
+        ? 100
+        : Math.round(((currentSpent - previousSpent) / previousSpent) * 100);
+
+    return {
+      category,
+      totalSpent: currentSpent,
+      previousWeekSpent: previousSpent,
+      changePercent,
+    };
+  });
 };
 
-exports.saveInsight = async (req, res) => {
-  try {
-    const { year, month, content } = req.body;
+const aggregateByCategory = (transactions) => {
+  return transactions.reduce((acc, tx) => {
+    const category = tx.category || "Other";
+    acc[category] = (acc[category] || 0) + tx.amount;
+    return acc;
+  }, {});
+};
 
-    if (!year || !month || !content) {
+exports.generateWeeklyInsights = async (req, res) => {
+  try {
+    const { currentWeekTransactions, previousWeekTransactions } = req.body;
+
+    if (!currentWeekTransactions || !previousWeekTransactions) {
       return res.status(400).json({
-        message: "Year, month, and content are required.",
+        message: "Weekly transaction data required",
       });
     }
 
-    // Validate content is a JSON object/array
-    if (typeof content !== "object") {
-      return res.status(400).json({
-        message: "Content must be a JSON object or array.",
+    // 1️⃣ Aggregate
+    const currentWeekAgg = aggregateByCategory(currentWeekTransactions);
+    const previousWeekAgg = aggregateByCategory(previousWeekTransactions);
+
+    // 2️⃣ Compute diff
+    const weeklyComparison = computeWeeklyDiff(currentWeekAgg, previousWeekAgg);
+
+    // Guardrail: not enough data
+    if (weeklyComparison.length < 2) {
+      return res.json({
+        source: "insufficient-data",
+        content: [],
       });
     }
 
-    // Check if exists
-    let existingInsight = await Insight.findOne({
-      userId: req.user.id,
-      year,
-      month,
-    });
-
-    if (existingInsight) {
-      existingInsight.content = content;
-      const updated = await existingInsight.save();
-      return res.json(updated);
-    }
-
-    // Create new
-    const newInsight = await Insight.create({
-      userId: req.user.id,
-      year,
-      month,
-      content,
-    });
-
-    return res.status(201).json(newInsight);
-  } catch (err) {
-    console.error("Save Insight Error:", err);
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-exports.getInsight = async (req, res) => {
-  try {
-    const { year, month } = req.params;
-
-    if (!year || !month) {
-      return res.status(400).json({
-        message: "Year and month are required.",
-      });
-    }
-
-    const insight = await Insight.findOne({
-      userId: req.user.id,
-      year,
-      month,
-    });
-
-    // If no insights found, return empty list instead of ""
-    return res.json(insight ? insight.content : []);
-  } catch (err) {
-    console.error("Get Insight Error:", err);
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-exports.generateAIInsight = async (req, res) => {
-  try {
-    const { year, month, userProfile, transactions, budgets } = req.body;
-
-    if (!year || !month)
-      return res.status(400).json({ message: "Year and month are required." });
-
-    // 1️⃣ Check if insight already exists for this month (cached)
-    let existingInsight = await Insight.findOne({
-      userId: req.user.id,
-      year,
-      month,
-    });
-
-    // If exists AND less than 24 hours — return cached
-    if (existingInsight) {
-      const createdAt = new Date(existingInsight.createdAt);
-      const now = new Date();
-      const diffHours = (now - createdAt) / (1000 * 60 * 60);
-
-      if (diffHours < 24) {
-        return res.json({
-          source: "cache",
-          content: existingInsight.content,
-        });
-      }
-    }
-
-    // 2️⃣ Generate Gemini insight
+    // 3️⃣ AI explanation
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const prompt = buildDashboardPrompt(userProfile, transactions, budgets);
-
+    const prompt = buildWeeklyPrompt(weeklyComparison);
     const response = await model.generateContent(prompt);
-    const rawText = response.response.text();
 
-    const cleaned = rawText
+    const cleaned = response.response
+      .text()
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    let insightsJson;
-    try {
-      insightsJson = JSON.parse(cleaned);
-    } catch (err) {
-      return res.status(500).json({
-        message: "Failed to parse AI response",
-        raw: cleaned,
-      });
-    }
+    const insights = JSON.parse(cleaned);
 
-    // 3️⃣ Save or update in database (cache)
-    let savedInsight;
-    if (existingInsight) {
-      existingInsight.content = insightsJson;
-      savedInsight = await existingInsight.save();
-    } else {
-      savedInsight = await Insight.create({
-        userId: req.user.id,
-        year,
-        month,
-        content: insightsJson,
-      });
-    }
-
-    res.json({
+    return res.json({
       source: "fresh",
-      content: savedInsight.content,
+      content: insights,
     });
-  } catch (error) {
-    console.error("AI Error:", error);
-    res.status(500).json({
-      message: "AI insight generation failed",
-      error: error.message,
+  } catch (err) {
+    console.error("Weekly Insight Error:", err);
+    return res.status(500).json({
+      message: "Weekly insight generation failed",
     });
   }
 };

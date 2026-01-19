@@ -1,14 +1,7 @@
-const { Resend } = require("resend");
+const provider = process.env.EMAIL_PROVIDER;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const sendEmail = async ({ to, subject, html }) => {
-  await resend.emails.send({
-    from: "FinPal <onboarding@resend.dev>",
-    to,
-    subject,
-    html,
-  });
-};
-
-module.exports = sendEmail;
+if (provider === "brevo") {
+  module.exports = require("./sendEmail.brevo");
+} else {
+  throw new Error(`Invalid EMAIL_PROVIDER: ${provider}. Expected "brevo".`);
+}

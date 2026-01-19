@@ -48,26 +48,7 @@ const PlanSchema = new mongoose.Schema({
   data: { type: mongoose.Schema.Types.Mixed, default: {} },
 });
 
-const InsightSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    year: { type: String, required: true },
-    month: { type: String, required: true },
-    content: {
-      type: mongoose.Schema.Types.Mixed, // can hold array/object (JSON)
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
-InsightSchema.index({ userId: 1, year: 1, month: 1 }, { unique: true });
-
 const Transaction = mongoose.model("Transaction", TransactionSchema);
 const Plan = mongoose.model("Plan", PlanSchema);
-const Insight = mongoose.model("Insight", InsightSchema);
 
-module.exports = { Transaction, Plan, Insight };
+module.exports = { Transaction, Plan };
