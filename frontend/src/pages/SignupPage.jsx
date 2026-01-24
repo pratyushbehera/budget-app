@@ -1,78 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useRegister } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
+import { FormInput } from "../shared/components/FormInput";
+
+const signupSchema = yup.object().shape({
+  name: yup.string().required("Full Name is required"),
+  email: yup
+    .string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords do not match")
+    .required("Please confirm your password"),
+});
 
 export function SignupPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { addToast } = useToast();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(signupSchema),
+  });
+
   const registerMutation = useRegister();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    // Clear error when user starts typing
-    if (errors[e.target.name]) {
-      setErrors({
-        ...errors,
-        [e.target.name]: "",
-      });
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const { confirmPassword, ...registrationData } = formData;
-
       const registerData = {
-        firstName: registrationData.name.split(" ")[0],
-        lastName: registrationData.name.split(" ").slice(1).join(" ") || "",
-        email: registrationData.email,
-        password: registrationData.password,
+        firstName: data.name.split(" ")[0],
+        lastName: data.name.split(" ").slice(1).join(" ") || "",
+        email: data.email,
+        password: data.password,
       };
 
       await registerMutation.mutateAsync(registerData);
@@ -120,104 +92,47 @@ export function SignupPage() {
         </>
       }
     >
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="input-field mt-1"
-              placeholder="Enter your full name"
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.name}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="input-field mt-1"
-              placeholder="Enter your email"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.email}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              className="input-field mt-1"
-              placeholder="Create a password"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.password}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="input-field mt-1"
-              placeholder="Confirm your password"
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.confirmPassword}
-              </p>
-            )}
-          </div>
+          <FormInput
+            label="Full Name"
+            id="name"
+            type="text"
+            autoComplete="name"
+            placeholder="Enter your full name"
+            error={errors.name}
+            {...register("name")}
+          />
+
+          <FormInput
+            label="Email address"
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Enter your email"
+            error={errors.email}
+            {...register("email")}
+          />
+
+          <FormInput
+            label="Password"
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Create a password"
+            error={errors.password}
+            {...register("password")}
+          />
+
+          <FormInput
+            label="Confirm Password"
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Confirm your password"
+            error={errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
         </div>
 
         <div>

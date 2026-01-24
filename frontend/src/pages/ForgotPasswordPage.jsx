@@ -1,32 +1,41 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useForgotPassword } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
+import { FormInput } from "../shared/components/FormInput";
+
+const forgotPasswordSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+});
 
 export function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
   const { addToast } = useToast();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(forgotPasswordSchema),
+  });
 
   const forgotPasswordMutation = useForgotPassword();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!email) {
-      addToast({
-        type: "error",
-        title: "Error",
-        message: "Please enter your email address.",
-      });
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const result = await forgotPasswordMutation.mutateAsync(email);
+      const result = await forgotPasswordMutation.mutateAsync(data.email);
 
       setEmailSent(true);
+      setSentEmail(data.email);
 
       // Show development info in development mode
       if (import.meta.env.DEV && result.resetToken) {
@@ -67,29 +76,21 @@ export function ForgotPasswordPage() {
       }
     >
       {!emailSent ? (
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
               Enter your email address and we'll send you a link to reset your
               password.
             </p>
 
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email address
-            </label>
-            <input
+            <FormInput
+              label="Email address"
               id="email"
-              name="email"
               type="email"
               autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-field mt-1"
               placeholder="Enter your email address"
+              error={errors.email}
+              {...register("email")}
             />
           </div>
 
@@ -120,7 +121,7 @@ export function ForgotPasswordPage() {
               Check Your Email
             </h3>
             <p className="text-green-700 dark:text-green-300 text-sm mb-4">
-              We've sent password reset instructions to <strong>{email}</strong>
+              We've sent password reset instructions to <strong>{sentEmail}</strong>
             </p>
             <p className="text-green-600 dark:text-green-400 text-xs">
               The link will expire in 10 minutes.

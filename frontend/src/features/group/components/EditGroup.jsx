@@ -1,42 +1,47 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useToast } from "../../../contexts/ToastContext";
 import { Modal } from "../../../shared/components/Modal";
 import { useUpdateGroup } from "../../../services/groupApi";
+import { FormInput } from "../../../shared/components/FormInput";
+
+const groupSchema = yup.object().shape({
+  name: yup.string().required("Group name is required"),
+  description: yup.string().required("Description is required"),
+});
 
 export const EditGroup = ({ group, onClose }) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(groupSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
+
   useEffect(() => {
-    setForm({ ...group });
-  }, [group]);
+    if (group) {
+      reset({
+        name: group.name,
+        description: group.description,
+      });
+    }
+  }, [group, reset]);
+
   const { mutateAsync: editGroup, isPending } = useUpdateGroup(group?._id);
   const { addToast } = useToast();
 
-  const [form, setForm] = useState();
-
-  const setFormValue = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
-      const groupData = { ...form };
-      if (!groupData.name || !groupData.description) {
-        addToast({
-          type: "error",
-          title: "Validation error",
-          message: "Please fill required fields.",
-        });
-        return;
-      }
-
-      const group = {
-        name: form.name,
-        description: form.description,
-      };
-
       await editGroup(
-        { group },
+        { group: { name: data.name, description: data.description } },
         {
           onSuccess: () => {
             addToast({
@@ -67,22 +72,30 @@ export const EditGroup = ({ group, onClose }) => {
 
   return (
     <Modal title="Edit Group" onClose={onClose}>
-      <form className="space-y-3" onSubmit={handleSubmit}>
-        <input
-          id="group-name"
-          name="name"
-          value={form?.name}
-          onChange={setFormValue}
+      <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
+        <FormInput
+          label="Group Name"
           placeholder="Group name"
-          className="input-field"
+          error={errors.name}
+          {...register("name")}
         />
-        <textarea
-          placeholder="Group description"
-          name="description"
-          value={form?.description}
-          onChange={setFormValue}
-          className="input-field"
-        />
+
+        <div>
+          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            Description
+          </label>
+          <textarea
+            placeholder="Group description"
+            className={`input-field ${errors.description ? "border-red-500" : ""}`}
+            {...register("description")}
+          />
+          {errors.description && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" className="btn-secondary" onClick={onClose}>
             Cancel
