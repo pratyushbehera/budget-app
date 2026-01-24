@@ -39,7 +39,7 @@ export const useGroupActivity = (groupId) =>
     queryKey: ["group-activity", groupId],
     queryFn: () => api.get(`/api/groups/${groupId}/activity`),
     enabled: !!groupId,
-    refetchInterval: 15000,
+    refetchInterval: 1000 * 60 * 60,
   });
 
 /* -----------------------------------------------------

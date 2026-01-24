@@ -1,0 +1,17 @@
+name: Recurring Cron
+
+on:
+  schedule:
+    - cron: "30 21 * * *" # Daily at 21:30 UTC
+  workflow_dispatch: # manual trigger (VERY useful)
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger recurring cron
+        run: |
+          curl -X POST "${{ secrets.BACKEND_URL }}/api/recurring-cron-run" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"

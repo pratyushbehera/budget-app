@@ -77,8 +77,6 @@ const GroupSummary = ({ group, groupId }) => {
   }, 0);
 
   return (
-    // <div className="bg-white dark:bg-gray-950 rounded-xl p-4 border dark:border-gray-800">
-
     <div className="space-y-3">
       <div className="rounded-2xl p-4 mb-4 bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow">
         <p className="text-sm opacity-90">Your Balance in Group</p>
