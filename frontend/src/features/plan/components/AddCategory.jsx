@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Modal } from "../../../shared/components/Modal";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useAddCategory } from "../../../services/categoryApi";
 
 export const AddCategory = ({ onClose }) => {
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { mutateAsync: addCategory, isPending } = useAddCategory();
 
   const [form, setForm] = useState({
@@ -19,7 +19,7 @@ export const AddCategory = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.group) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Validation Error",
         message: "Please fill category name and group.",
@@ -32,7 +32,7 @@ export const AddCategory = ({ onClose }) => {
         { category: form },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Success",
               message: "Category added successfully.",
@@ -40,7 +40,7 @@ export const AddCategory = ({ onClose }) => {
             onClose();
           },
           onError: (err) => {
-            addNotification({
+            addToast({
               type: "error",
               title: "Failure",
               message: err?.message || "Error adding category.",
@@ -49,7 +49,7 @@ export const AddCategory = ({ onClose }) => {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err.message || "Error saving category.",

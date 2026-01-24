@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Calendar, IndianRupee } from "lucide-react";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import {
   useApproveRecurring,
   useSkipRecurring,
@@ -10,7 +10,7 @@ export function PendingRecurringRow({ item }) {
   const [amount, setAmount] = useState(item.amount);
   const [date, setDate] = useState(item.dueDate);
 
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const approveMutation = useApproveRecurring();
   const skipMutation = useSkipRecurring();
 
@@ -23,14 +23,14 @@ export function PendingRecurringRow({ item }) {
       },
       {
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Recurring Approved",
             message: `${item.title || "Transaction"} has been added.`,
           });
         },
         onError: (err) => {
-          addNotification({
+          addToast({
             type: "error",
             title: "Approval Failed",
             message:
@@ -46,14 +46,14 @@ export function PendingRecurringRow({ item }) {
   const handleSkip = () => {
     skipMutation.mutate(item._id, {
       onSuccess: () => {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Recurring Skipped",
           message: `${item.title || "Transaction"} was skipped.`,
         });
       },
       onError: (err) => {
-        addNotification({
+        addToast({
           type: "error",
           title: "Skip Failed",
           message:

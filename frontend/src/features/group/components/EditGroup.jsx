@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { Modal } from "../../../shared/components/Modal";
 import { useUpdateGroup } from "../../../services/groupApi";
 
@@ -8,7 +8,7 @@ export const EditGroup = ({ group, onClose }) => {
     setForm({ ...group });
   }, [group]);
   const { mutateAsync: editGroup, isPending } = useUpdateGroup(group?._id);
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const [form, setForm] = useState();
 
@@ -22,7 +22,7 @@ export const EditGroup = ({ group, onClose }) => {
     try {
       const groupData = { ...form };
       if (!groupData.name || !groupData.description) {
-        addNotification({
+        addToast({
           type: "error",
           title: "Validation error",
           message: "Please fill required fields.",
@@ -39,7 +39,7 @@ export const EditGroup = ({ group, onClose }) => {
         { group },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Success",
               message: "Group updated successfully.",
@@ -47,7 +47,7 @@ export const EditGroup = ({ group, onClose }) => {
             onClose();
           },
           onError: (err) => {
-            addNotification({
+            addToast({
               type: "error",
               title: "Failure",
               message: err?.message || "Error updating group.",
@@ -56,7 +56,7 @@ export const EditGroup = ({ group, onClose }) => {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err.message || "Failed to update group.",

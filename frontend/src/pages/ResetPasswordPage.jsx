@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useResetPassword } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,7 +19,7 @@ export function ResetPasswordPage() {
     e.preventDefault();
 
     if (!password || !confirmPassword) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Error",
         message: "Please fill in all fields.",
@@ -28,7 +28,7 @@ export function ResetPasswordPage() {
     }
 
     if (password.length < 6) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Weak Password",
         message: "Password must be at least 6 characters long.",
@@ -37,7 +37,7 @@ export function ResetPasswordPage() {
     }
 
     if (password !== confirmPassword) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Mismatch",
         message: "Passwords do not match.",
@@ -53,7 +53,7 @@ export function ResetPasswordPage() {
 
       setSuccess(true);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Password Updated",
         message: "Your password has been reset successfully.",
@@ -62,13 +62,13 @@ export function ResetPasswordPage() {
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Please wait",
           message: "You’ve requested too many password resets.",
         });
       }
-      addNotification({
+      addToast({
         type: "error",
         title: "Reset Failed",
         message:

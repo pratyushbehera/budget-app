@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { usePlan, useSavePlan } from "../services/planApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { Edit, Plus, Save, X, Trash2 } from "lucide-react";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { categoryIconMap } from "../shared/utils/categoryIconMap";
@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 export function PlanPage() {
   const { category: categoryList } = useSelector((state) => state.category);
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { data: planData, isLoading } = usePlan();
   const { mutateAsync: savePlan, isPending } = useSavePlan();
 
@@ -35,7 +35,7 @@ export function PlanPage() {
   const handleSavePlan = async () => {
     const plan = editableData;
     if (Object.keys(plan).length === 0) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Validation failed",
         message: "Please add at least one category.",
@@ -47,7 +47,7 @@ export function PlanPage() {
         { plan },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Success",
               message: "Plan saved successfully.",
@@ -55,7 +55,7 @@ export function PlanPage() {
             setIsEditing(false);
           },
           onError: (err) => {
-            addNotification({
+            addToast({
               type: "error",
               title: "Failure",
               message: err?.message || "Error adding transaction.",
@@ -64,7 +64,7 @@ export function PlanPage() {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err?.message || "Error saving plan.",

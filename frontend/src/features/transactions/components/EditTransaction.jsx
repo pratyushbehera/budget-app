@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Modal } from "../../../shared/components/Modal";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useEditTransaction } from "../../../services/transactionApi";
 import { useGroup } from "../../../services/groupApi";
 
@@ -16,7 +16,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     (s) => s.category
   );
   const { groups = [] } = useSelector((s) => s.group || {});
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { mutateAsync: editTx, isPending } = useEditTransaction();
 
   const [form, setForm] = useState(null);
@@ -112,7 +112,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     e.preventDefault();
 
     if (!form.amount || !form.categoryId) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Validation error",
         message: "Category & Amount are required.",
@@ -130,7 +130,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
 
     if (form.groupId) {
       if (!isSplitValid) {
-        addNotification({
+        addToast({
           type: "error",
           title: "Invalid split",
           message: "Split values must total the transaction amount.",
@@ -152,7 +152,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
         { id: form.id, updates },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Updated",
               message: "Transaction updated successfully.",
@@ -160,7 +160,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
             onClose();
           },
           onError: (err) =>
-            addNotification({
+            addToast({
               type: "error",
               title: "Error updating",
               message: err?.message || "Something went wrong.",
@@ -168,7 +168,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err?.message || "Failed to update transaction.",

@@ -1,12 +1,12 @@
 import React from "react";
-import { useNotification } from "../../contexts/NotificationContext";
+import { useToast } from "../../contexts/ToastContext";
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
-export function NotificationContainer() {
-  const { notifications, removeNotification } = useNotification();
+export function ToastContainer() {
+  const { toasts, removeToast } = useToast();
 
-  if (notifications.length === 0) return null;
+  if (toasts.length === 0) return null;
 
   const getStyles = (type) => {
     switch (type) {
@@ -40,12 +40,12 @@ export function NotificationContainer() {
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm flex flex-col gap-3">
       <AnimatePresence initial={false}>
-        {notifications.map((notification) => {
-          const { gradient, Icon, text } = getStyles(notification.type);
+        {toasts.map((toast) => {
+          const { gradient, Icon, text } = getStyles(toast.type);
 
           return (
             <motion.div
-              key={notification.id}
+              key={toast.id}
               layout
               initial={{ opacity: 0, x: 40, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -59,17 +59,17 @@ export function NotificationContainer() {
 
                 <div className="flex-1">
                   <h4 className="font-semibold leading-tight">
-                    {notification.title}
+                    {toast.title}
                   </h4>
-                  {notification.message && (
+                  {toast.message && (
                     <p className="text-sm mt-1 opacity-90">
-                      {notification.message}
+                      {toast.message}
                     </p>
                   )}
                 </div>
 
                 <button
-                  onClick={() => removeNotification(notification.id)}
+                  onClick={() => removeToast(toast.id)}
                   className="opacity-70 hover:opacity-100 transition"
                 >
                   <X size={18} />

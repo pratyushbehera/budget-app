@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useUpdateProfile } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { Modal } from "../shared/components/Modal";
 import { Pencil } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
@@ -10,7 +10,7 @@ import { LoadingPage } from "../shared/components/LoadingPage";
 export function ProfilePage() {
   const { user, loading: isLoading } = useSelector((state) => state.auth);
   const updateProfileMutation = useUpdateProfile();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,7 +54,7 @@ export function ProfilePage() {
 
       await updateProfileMutation.mutateAsync(updateData);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Profile Updated",
         message: "Your profile has been updated successfully.",
@@ -63,7 +63,7 @@ export function ProfilePage() {
       setFormData((prev) => ({ ...prev, password: "" }));
       setIsModalOpen(false);
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Update Failed",
         message: err.message || "Failed to update profile.",
@@ -103,7 +103,7 @@ Try it out and share your feedback! 📊
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(shareText);
-    addNotification({
+    addToast({
       type: "success",
       title: "Copied",
       message: "Invite message copied to clipboard.",

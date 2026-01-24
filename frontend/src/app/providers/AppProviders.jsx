@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 import { store } from '../store/store';
 import { AuthProvider } from '../../contexts/AuthContext';
-import { NotificationProvider } from '../../contexts/NotificationContext';
+import { ToastProvider } from '../../contexts/ToastContext';
 import { ErrorBoundary } from '../../shared/components/ErrorBoundary';
 import { ThemeProvider } from '../../contexts/ThemeContext';
 
@@ -33,10 +33,10 @@ export function AppProviders({ children }) {
             <ThemeProvider>
               <BrowserRouter>
                 <AuthProvider>
-                  <NotificationProvider>
+                  <ToastProvider>
                     {children}
                     <ReactQueryDevtools initialIsOpen={false} />
-                  </NotificationProvider>
+                  </ToastProvider>
                 </AuthProvider>
               </BrowserRouter>
             </ThemeProvider>

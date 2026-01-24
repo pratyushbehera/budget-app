@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAddTransaction } from "../../../services/transactionApi";
 import { Modal } from "../../../shared/components/Modal";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { uid } from "../../../shared/utils/generateUid";
 import { useSelector } from "react-redux";
 import { useGroup } from "../../../services/groupApi";
@@ -58,7 +58,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   } = useSplitCalculation(form.amount, selectedGroup?.members || []);
 
   const { mutateAsync: addTx, isPending } = useAddTransaction();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { mutateAsync: addRecurringRule } = useCreateRecurringRules();
   const hasGroup = !!form.groupId;
 
@@ -68,7 +68,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.amount || !form.categoryId) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Validation error",
         message: "Please fill category and amount.",
@@ -77,7 +77,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
     }
 
     if (form.groupId && !isSplitValid) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Split mismatch",
         message: "Split amounts do not add up to total.",
@@ -120,7 +120,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
         },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Recurring set",
               message:
@@ -130,7 +130,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
             onClose();
           },
           onError: () => {
-            addNotification({
+            addToast({
               type: "error",
               title: "Error creating Recurring set",
               message: "Recurring transaction creation failed",
@@ -149,7 +149,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
         { transaction },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Success",
               message: "Transaction added successfully.",
@@ -157,7 +157,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
             onClose();
           },
           onError: (err) =>
-            addNotification({
+            addToast({
               type: "error",
               title: "Error",
               message: err?.message || "Failed to add transaction.",
@@ -165,7 +165,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Error",
         message: err?.message || "Failed to add transaction.",

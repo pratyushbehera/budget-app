@@ -1,16 +1,16 @@
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useDeleteTransaction } from "../../../services/transactionApi";
 import { Modal } from "../../../shared/components/Modal";
 
 export const DeleteTransaction = ({ transaction, onClose }) => {
   const { mutateAsync: deleteTx, isPending } = useDeleteTransaction();
 
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const handleDelete = async () => {
     try {
       deleteTx(transaction.id, {
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Success",
             message: "Transaction deleted successfully.",
@@ -18,7 +18,7 @@ export const DeleteTransaction = ({ transaction, onClose }) => {
           onClose();
         },
         onError: (err) => {
-          addNotification({
+          addToast({
             type: "error",
             title: "Failure",
             message: err?.message || "Error deleting transaction.",
@@ -26,7 +26,7 @@ export const DeleteTransaction = ({ transaction, onClose }) => {
         },
       });
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err.message || "Failed to delete transaction.",

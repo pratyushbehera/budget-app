@@ -1,12 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useRemoveMember, useLeaveGroup } from "../../../services/groupApi";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import MemberRow from "./MemberRow";
 
 const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
   const user = useSelector((s) => s.auth.user);
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { mutateAsync: removeMember } = useRemoveMember(groupId);
   const { mutateAsync: leaveGroup } = useLeaveGroup(groupId);
 
@@ -15,7 +15,7 @@ const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
       { memberId: member?._id },
       {
         onSuccess: () =>
-          addNotification({
+          addToast({
             type: "success",
             title: "Success",
             message: "Member removed successfully.",
@@ -27,7 +27,7 @@ const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
   const leaveHandler = () => {
     leaveGroup(null, {
       onSuccess: () => {
-        addNotification({
+        addToast({
           type: "success",
           title: "Success",
           message: "You left the group.",

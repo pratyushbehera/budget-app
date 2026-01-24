@@ -1,5 +1,5 @@
 import { useEnableRecurringRule } from "../../../services/recurringApi";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useState } from "react";
 import { StopRecurringModal } from "./StopRecurringModal";
 import { DeleteRecurringModal } from "./DeleteRecurringModal";
@@ -9,18 +9,18 @@ export function RecurringRuleList({ rules = [] }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const enableMutation = useEnableRecurringRule();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const handleEnable = (rule) => {
     enableMutation.mutate(rule._id, {
       onSuccess: () =>
-        addNotification({
+        addToast({
           type: "success",
           title: "Recurring enabled",
           message: `${rule.title} will start again.`,
         }),
       onError: (err) =>
-        addNotification({
+        addToast({
           type: "error",
           title: "Action failed",
           message:

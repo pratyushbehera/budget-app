@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForgotPassword } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const forgotPasswordMutation = useForgotPassword();
 
@@ -15,7 +15,7 @@ export function ForgotPasswordPage() {
     e.preventDefault();
 
     if (!email) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Error",
         message: "Please enter your email address.",
@@ -30,7 +30,7 @@ export function ForgotPasswordPage() {
 
       // Show development info in development mode
       if (import.meta.env.DEV && result.resetToken) {
-        addNotification({
+        addToast({
           type: "info",
           title: "Development Info",
           message: `Reset token: ${result.resetToken}`,
@@ -38,7 +38,7 @@ export function ForgotPasswordPage() {
         });
       }
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Email Sent",
         message:
@@ -46,7 +46,7 @@ export function ForgotPasswordPage() {
           "If an account with that email exists, a password reset link has been sent.",
       });
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Request Failed",
         message: err.message || "Failed to send password reset email.",

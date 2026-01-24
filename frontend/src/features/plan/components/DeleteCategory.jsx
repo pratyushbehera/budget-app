@@ -1,4 +1,4 @@
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useDeleteCategory } from "../../../services/categoryApi";
 import { Modal } from "../../../shared/components/Modal";
 
@@ -6,12 +6,12 @@ export const DeleteCategory = ({ category, onClose }) => {
   console.log(category);
   const { mutateAsync: deleteCat, isPending } = useDeleteCategory();
 
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const handleDelete = async () => {
     try {
       deleteCat(category._id, {
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Success",
             message: "Category deleted successfully.",
@@ -19,7 +19,7 @@ export const DeleteCategory = ({ category, onClose }) => {
           onClose();
         },
         onError: (err) => {
-          addNotification({
+          addToast({
             type: "error",
             title: "Failure",
             message: err?.message || "Error deleting category.",
@@ -27,7 +27,7 @@ export const DeleteCategory = ({ category, onClose }) => {
         },
       });
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err.message || "Failed to delete category.",

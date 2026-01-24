@@ -8,7 +8,7 @@ import {
   clearError,
 } from "../features/auth/authSlice";
 import { useLogin } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function LoginPage() {
@@ -17,7 +17,7 @@ export function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { error } = useSelector((state) => state.auth);
 
   const from = location.state?.from?.pathname || "/dashboard";
@@ -46,7 +46,7 @@ export function LoginPage() {
 
       dispatch(loginSuccess(userData));
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Login Successful",
         message: `Welcome back, ${userData?.firstName}!`,
@@ -62,7 +62,7 @@ export function LoginPage() {
           })
         );
 
-        addNotification({
+        addToast({
           type: "warning",
           title: "Verify your email",
           message: "Please verify your email to continue.",
@@ -78,7 +78,7 @@ export function LoginPage() {
       }
 
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Too many attempts",
           message: err.message,
@@ -89,7 +89,7 @@ export function LoginPage() {
 
       const errorMsg = err.message || "Invalid email or password";
       dispatch(loginFailure(errorMsg));
-      addNotification({
+      addToast({
         type: "error",
         title: "Login Failed",
         message: errorMsg,

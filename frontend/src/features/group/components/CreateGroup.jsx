@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useCreateGroup } from "../../../services/groupApi";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { Modal } from "../../../shared/components/Modal";
 
 const CreateGroupModal = ({ onClose }) => {
@@ -8,13 +8,13 @@ const CreateGroupModal = ({ onClose }) => {
   const [desc, setDesc] = useState("");
 
   const createGroup = useCreateGroup();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Validation error",
         message: "Group name is required",
@@ -26,7 +26,7 @@ const CreateGroupModal = ({ onClose }) => {
       { name, description: desc, members: [] },
       {
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Success",
             message: "Group created successfully",

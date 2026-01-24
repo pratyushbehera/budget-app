@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegister } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function SignupPage() {
@@ -13,7 +13,7 @@ export function SignupPage() {
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const registerMutation = useRegister();
 
@@ -77,7 +77,7 @@ export function SignupPage() {
 
       await registerMutation.mutateAsync(registerData);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Account Created Successfully!",
         message: "You can now login with your credentials.",
@@ -85,7 +85,7 @@ export function SignupPage() {
 
       navigate("/login");
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Signup Failed",
         message: err.message || "Something went wrong. Please try again.",
