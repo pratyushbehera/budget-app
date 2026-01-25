@@ -1,22 +1,22 @@
 import { Modal } from "../../../shared/components/Modal";
 import { useStopRecurringRule } from "../../../services/recurringApi";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 
 export const StopRecurringModal = ({ rule, onClose }) => {
   const { mutateAsync: stopRule, isPending } = useStopRecurringRule();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const handleStop = async () => {
     try {
       await stopRule(rule._id);
-      addNotification({
+      addToast({
         type: "warning",
         title: "Recurring stopped",
         message: `${rule.title} will no longer repeat.`,
       });
       onClose();
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Action failed",
         message:

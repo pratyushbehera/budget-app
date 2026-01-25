@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node server.js",
     "build": "echo \"No build step required for server\"",
-    "dev": "nodemon server.js",
     "lint": "eslint . --ext js --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext js --fix",
     "test": "echo \"Error: no test specified\" && exit 1"

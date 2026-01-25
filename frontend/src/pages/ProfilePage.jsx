@@ -1,23 +1,50 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useUpdateProfile } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { Modal } from "../shared/components/Modal";
 import { Pencil } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
+import { FormInput } from "../shared/components/FormInput";
+import { ThemeToggle } from "../features/dashboard/components/ThemeToggle";
+
+const profileSchema = yup.object().shape({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .test(
+      "len",
+      "Password must be at least 6 characters",
+      (val) => !val || val.length >= 6
+    ),
+});
 
 export function ProfilePage() {
   const { user, loading: isLoading } = useSelector((state) => state.auth);
   const updateProfileMutation = useUpdateProfile();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(profileSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
   });
 
   // Gravatar image for user's email
@@ -29,41 +56,32 @@ export function ProfilePage() {
   // Populate form once user data is available
   useEffect(() => {
     if (user) {
-      setFormData({
+      reset({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
         password: "",
       });
     }
-  }, [user]);
+  }, [user, reset]);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
-      const updateData = { ...formData };
+      const updateData = { ...data };
       if (!updateData.password) delete updateData.password;
 
       await updateProfileMutation.mutateAsync(updateData);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Profile Updated",
         message: "Your profile has been updated successfully.",
       });
 
-      setFormData((prev) => ({ ...prev, password: "" }));
+      reset((prev) => ({ ...prev, password: "" }));
       setIsModalOpen(false);
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Update Failed",
         message: err.message || "Failed to update profile.",
@@ -103,7 +121,7 @@ Try it out and share your feedback! 📊
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(shareText);
-    addNotification({
+    addToast({
       type: "success",
       title: "Copied",
       message: "Invite message copied to clipboard.",
@@ -146,6 +164,19 @@ Try it out and share your feedback! 📊
         </button>
       </div>
 
+      {/* Settings */}
+      <div className="card mt-6 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Appearance
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Customize the look and feel of the app
+          </p>
+        </div>
+        <ThemeToggle />
+      </div>
+
       {/* Invite & Share */}
       <div className="card mt-6 p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -185,66 +216,43 @@ Try it out and share your feedback! 📊
       {/* Edit Modal */}
       {isModalOpen && (
         <Modal title="Edit Profile" onClose={() => setIsModalOpen(false)}>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="input-field mt-1"
-                  required
-                />
-              </div>
+              <FormInput
+                label="First Name"
+                id="firstName"
+                placeholder="Enter first name"
+                error={errors.firstName}
+                {...register("firstName")}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="input-field mt-1"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                disabled
-                className="input-field mt-1"
-                required
-                autoComplete="email"
+              <FormInput
+                label="Last Name"
+                id="lastName"
+                placeholder="Enter last name"
+                error={errors.lastName}
+                {...register("lastName")}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                New Password (leave blank to keep current)
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input-field mt-1"
-                placeholder="Enter new password"
-                autoComplete="current-password"
-              />
-            </div>
+            <FormInput
+              label="Email"
+              id="email"
+              type="email"
+              disabled
+              error={errors.email}
+              {...register("email")}
+            />
+
+            <FormInput
+              label="New Password (leave blank to keep current)"
+              id="password"
+              type="password"
+              placeholder="Enter new password"
+              autoComplete="new-password"
+              error={errors.password}
+              {...register("password")}
+            />
 
             <div className="flex justify-end gap-3 pt-2">
               <button

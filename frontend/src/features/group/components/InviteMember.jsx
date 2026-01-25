@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Modal } from "../../../shared/components/Modal";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useInviteMember } from "../../../services/groupApi";
 
 const InviteMemberModal = ({ groupId, onClose }) => {
   const [email, setEmail] = useState("");
   const invite = useInviteMember(groupId);
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const handleSubmit = () => {
     if (!email) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Email required",
         message: "Please enter an email address",
@@ -22,7 +22,7 @@ const InviteMemberModal = ({ groupId, onClose }) => {
       { email },
       {
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Invite Sent",
             message: "Member has been invited",
@@ -30,7 +30,7 @@ const InviteMemberModal = ({ groupId, onClose }) => {
           onClose();
         },
         onError: (err) => {
-          addNotification({
+          addToast({
             type: "error",
             title: "Failed",
             message: err?.message || "Failed to send invite",

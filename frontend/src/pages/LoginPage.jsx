@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import {
   loginStart,
   loginSuccess,
@@ -8,45 +11,58 @@ import {
   clearError,
 } from "../features/auth/authSlice";
 import { useLogin } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
+import { FormInput } from "../shared/components/FormInput";
+
+const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required"),
+});
 
 export function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { error } = useSelector((state) => state.auth);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
 
   const from = location.state?.from?.pathname || "/dashboard";
 
   const loginMutation = useLogin();
 
-  // Clear errors when component unmounts or when user starts typing
+  // Clear errors when component unmounts
   useEffect(() => {
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      dispatch(loginFailure("Please fill in all fields"));
-      return;
-    }
-
+  const onSubmit = async (data) => {
     dispatch(loginStart());
 
     try {
-      const userData = await loginMutation.mutateAsync({ email, password });
+      const userData = await loginMutation.mutateAsync({
+        email: data.email,
+        password: data.password,
+      });
 
       dispatch(loginSuccess(userData));
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Login Successful",
         message: `Welcome back, ${userData?.firstName}!`,
@@ -62,7 +78,7 @@ export function LoginPage() {
           })
         );
 
-        addNotification({
+        addToast({
           type: "warning",
           title: "Verify your email",
           message: "Please verify your email to continue.",
@@ -70,7 +86,7 @@ export function LoginPage() {
         });
 
         navigate("/verify-email", {
-          state: { email },
+          state: { email: data.email },
           replace: true,
         });
 
@@ -78,7 +94,7 @@ export function LoginPage() {
       }
 
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Too many attempts",
           message: err.message,
@@ -89,7 +105,7 @@ export function LoginPage() {
 
       const errorMsg = err.message || "Invalid email or password";
       dispatch(loginFailure(errorMsg));
-      addNotification({
+      addToast({
         type: "error",
         title: "Login Failed",
         message: errorMsg,
@@ -120,52 +136,33 @@ export function LoginPage() {
         </Link>
       }
     >
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) dispatch(clearError());
-              }}
-              className="input-field mt-1"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (error) dispatch(clearError());
-              }}
-              className="input-field mt-1"
-              placeholder="Enter your password"
-            />
-          </div>
+          <FormInput
+            label="Email address"
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Enter your email"
+            error={errors.email}
+            {...register("email")}
+            onChange={() => {
+              if (error) dispatch(clearError());
+            }}
+          />
+
+          <FormInput
+            label="Password"
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="Enter your password"
+            error={errors.password}
+            {...register("password")}
+            onChange={() => {
+              if (error) dispatch(clearError());
+            }}
+          />
         </div>
 
         {error && (

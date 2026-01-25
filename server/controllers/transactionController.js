@@ -165,6 +165,29 @@ exports.deleteTransaction = async (req, res) => {
           notes: transaction.notes,
         },
       });
+
+      // 🔔 Notify group members about deletion
+      try {
+        const group = await Group.findById(transaction.groupId);
+        if (group) {
+          const Notification = require("../models/Notification");
+          const notifications = group.members
+            .filter((m) => m.userId?.toString() !== req.user.id)
+            .map((m) => ({
+              recipient: m.userId,
+              type: "Group",
+              title: "Transaction Deleted 🗑️",
+              message: `${req.user.firstName} deleted a transaction of ₹${transaction.amount}`,
+              relatedId: transaction.groupId,
+            }));
+
+          if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
+          }
+        }
+      } catch (notifyErr) {
+        console.error("Delete notification error:", notifyErr);
+      }
     }
 
     res.json({ message: "Transaction deleted" });
@@ -264,6 +287,39 @@ exports.editTransaction = async (req, res) => {
           changes,
         },
       });
+
+      // 🔔 Notify group members about edit
+      try {
+        // We need to fetch the group to get members list if we don't have it
+        // Reuse 'group' if we fetched it for validation, or fetch again if needed
+        let membersToNotify = [];
+        if (newGroupId) {
+          const grp = await Group.findById(newGroupId);
+          if (grp) membersToNotify = grp.members;
+        } else if (oldGroupId) {
+          const grp = await Group.findById(oldGroupId);
+          if (grp) membersToNotify = grp.members;
+        }
+
+        if (membersToNotify.length > 0) {
+          const Notification = require("../models/Notification");
+          const notifications = membersToNotify
+            .filter((m) => m.userId?.toString() !== req.user.id)
+            .map((m) => ({
+              recipient: m.userId,
+              type: "Group",
+              title: "Transaction Updated ✏️",
+              message: `${req.user.firstName} updated a transaction in the group.`,
+              relatedId: activityGroupId,
+            }));
+
+          if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
+          }
+        }
+      } catch (notifyErr) {
+        console.error("Edit notification error:", notifyErr);
+      }
     }
 
     res.json(updated);

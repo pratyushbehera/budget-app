@@ -32,6 +32,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/groups", groupRoutes);
+app.use("/api/notifications", require("./routes/notificationRoutes"));
 app.use("/api", recurringRoutes);
 
 (async () => {

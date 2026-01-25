@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useNotification } from "../../contexts/NotificationContext";
+import { useToast } from "../../contexts/ToastContext";
 import { logout } from "../../features/auth/authSlice";
-import { ThemeToggle } from "../../features/dashboard/components/ThemeToggle";
+import { NotificationPopover } from "../../features/notifications/components/NotificationPopover";
 import {
   LayoutDashboard,
   CreditCard,
@@ -21,7 +21,7 @@ export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { user } = useSelector((state) => state.auth);
   const { groups, loading: isGroupLoading } = useSelector(
     (state) => state.group
@@ -35,7 +35,7 @@ export const Sidebar = () => {
   const handleLogout = () => {
     dispatch(logout());
     localStorage.removeItem("auth-token");
-    addNotification({
+    addToast({
       type: "success",
       title: "Logged Out",
       message: "You have been successfully logged out.",
@@ -96,7 +96,7 @@ export const Sidebar = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-3">
-              <ThemeToggle />
+              <NotificationPopover />
               <button
                 onClick={toggleSidebar}
                 aria-label="Close menu"

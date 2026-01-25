@@ -2,34 +2,69 @@
 
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { Modal } from "../../../shared/components/Modal";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { useEditTransaction } from "../../../services/transactionApi";
 import { useGroup } from "../../../services/groupApi";
 
 import { GroupSection } from "./GroupSection";
 import { SplitSection } from "./SplitSection";
 import { useSplitCalculation } from "../hooks/useSplitCalculation";
+import { FormInput } from "../../../shared/components/FormInput";
+
+const transactionSchema = yup.object().shape({
+  date: yup.string().required("Date is required"),
+  categoryId: yup.string().required("Category is required"),
+  amount: yup
+    .number()
+    .typeError("Amount must be a number")
+    .positive("Amount must be positive")
+    .required("Amount is required"),
+  notes: yup.string(),
+});
 
 export const EditTransaction = ({ transaction, onClose }) => {
   const { category: categoryList, loading: isCatLoading } = useSelector(
     (s) => s.category
   );
   const { groups = [] } = useSelector((s) => s.group || {});
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { mutateAsync: editTx, isPending } = useEditTransaction();
 
-  const [form, setForm] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(transactionSchema),
+    defaultValues: {
+      date: "",
+      category: "",
+      categoryId: "",
+      amount: "",
+      notes: "",
+      groupId: "",
+      paidBy: "",
+    },
+  });
 
-  // flexible updater — supports event or {name, value}
+  const formValues = watch();
+
+  // Flexible updater for custom components
   const updateFormField = (eOrObj) => {
     if (!eOrObj) return;
 
     if (eOrObj.target?.name) {
       const { name, value } = eOrObj.target;
-      setForm((f) => ({ ...f, [name]: value }));
+      setValue(name, value);
     } else if (eOrObj.name) {
-      setForm((f) => ({ ...f, [eOrObj.name]: eOrObj.value }));
+      setValue(eOrObj.name, eOrObj.value);
     }
   };
 
@@ -44,16 +79,16 @@ export const EditTransaction = ({ transaction, onClose }) => {
       )?._id;
     }
 
-    setForm({
+    reset({
       ...transaction,
       categoryId,
       groupId: transaction.groupId || "",
       paidBy: transaction.paidBy || transaction.userId,
     });
-  }, [transaction, categoryList]);
+  }, [transaction, categoryList, reset]);
 
-  const { data: selectedGroup } = useGroup(form?.groupId, {
-    enabled: !!form?.groupId,
+  const { data: selectedGroup } = useGroup(formValues?.groupId, {
+    enabled: !!formValues?.groupId,
   });
 
   // Split calculation hook
@@ -66,11 +101,12 @@ export const EditTransaction = ({ transaction, onClose }) => {
     totalSplit,
     isSplitValid,
     setSplitDetails,
-  } = useSplitCalculation(form?.amount, selectedGroup?.members);
+  } = useSplitCalculation(formValues?.amount, selectedGroup?.members);
 
   // Initialize split details when editing
   useEffect(() => {
-    if (!selectedGroup || !form?.amount || !transaction?.splitDetails) return;
+    if (!selectedGroup || !formValues?.amount || !transaction?.splitDetails)
+      return;
 
     const initialized = selectedGroup.members.map((m) => {
       const existing = transaction.splitDetails.find(
@@ -88,7 +124,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     setSplitDetails(initialized);
 
     // Detect mode
-    const total = Number(form.amount);
+    const total = Number(formValues.amount);
     const equalAmt = total / initialized.length;
 
     const isEqual = initialized.every(
@@ -101,36 +137,25 @@ export const EditTransaction = ({ transaction, onClose }) => {
     if (Math.abs(percentSum - 100) < 1) return setSplitMode("percent");
 
     setSplitMode("exact");
-  }, [selectedGroup, transaction, form?.amount]);
+  }, [selectedGroup, transaction, formValues?.amount, setSplitDetails, setSplitMode]);
 
-  if (isCatLoading || !form) return "Loading...";
+  if (isCatLoading) return "Loading...";
 
   // -------------------------
   // Submit Handler
   // -------------------------
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!form.amount || !form.categoryId) {
-      addNotification({
-        type: "error",
-        title: "Validation error",
-        message: "Category & Amount are required.",
-      });
-      return;
-    }
-
+  const onSubmit = async (data) => {
     const updates = {
-      date: form.date,
-      categoryId: form.categoryId,
-      category: categoryList.find((ct) => ct._id === form.categoryId)?.name,
-      amount: Number(form.amount),
-      notes: form.notes,
+      date: data.date,
+      categoryId: data.categoryId,
+      category: categoryList.find((ct) => ct._id === data.categoryId)?.name,
+      amount: Number(data.amount),
+      notes: data.notes,
     };
 
-    if (form.groupId) {
+    if (data.groupId) {
       if (!isSplitValid) {
-        addNotification({
+        addToast({
           type: "error",
           title: "Invalid split",
           message: "Split values must total the transaction amount.",
@@ -138,8 +163,8 @@ export const EditTransaction = ({ transaction, onClose }) => {
         return;
       }
 
-      updates.groupId = form.groupId;
-      updates.paidBy = form.paidBy;
+      updates.groupId = data.groupId;
+      updates.paidBy = data.paidBy;
       updates.splitDetails = splitDetails.map((s) => ({
         userId: s.userId,
         email: s.email,
@@ -149,10 +174,10 @@ export const EditTransaction = ({ transaction, onClose }) => {
 
     try {
       await editTx(
-        { id: form.id, updates },
+        { id: transaction.id, updates },
         {
           onSuccess: () => {
-            addNotification({
+            addToast({
               type: "success",
               title: "Updated",
               message: "Transaction updated successfully.",
@@ -160,7 +185,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
             onClose();
           },
           onError: (err) =>
-            addNotification({
+            addToast({
               type: "error",
               title: "Error updating",
               message: err?.message || "Something went wrong.",
@@ -168,7 +193,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
         }
       );
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Failure",
         message: err?.message || "Failed to update transaction.",
@@ -181,32 +206,21 @@ export const EditTransaction = ({ transaction, onClose }) => {
   // -------------------------
   return (
     <Modal title="Edit Transaction" onClose={onClose}>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         {/* ---------------- Transaction Fields ---------------- */}
         <div>
           <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
             Transaction Details
           </h3>
 
-          {/* Date */}
-          <div className="space-y-2">
-            <label
-              htmlFor="edit-date"
-              className="text-xs font-medium text-gray-500 dark:text-gray-400"
-            >
-              Date
-            </label>
-            <input
-              id="edit-date"
-              name="date"
-              type="date"
-              className="input-field"
-              value={form.date}
-              onChange={updateFormField}
-            />
-          </div>
+          <FormInput
+            label="Date"
+            id="edit-date"
+            type="date"
+            error={errors.date}
+            {...register("date")}
+          />
 
-          {/* Category */}
           <div className="space-y-2 mt-3">
             <label
               htmlFor="edit-category"
@@ -216,10 +230,9 @@ export const EditTransaction = ({ transaction, onClose }) => {
             </label>
             <select
               id="edit-category"
-              name="categoryId"
-              className="input-field"
-              value={form.categoryId}
-              onChange={updateFormField}
+              className={`input-field ${errors.categoryId ? "border-red-500" : ""
+                }`}
+              {...register("categoryId")}
             >
               <option value="">Select Category</option>
               {categoryList?.map((c) => (
@@ -228,30 +241,23 @@ export const EditTransaction = ({ transaction, onClose }) => {
                 </option>
               ))}
             </select>
+            {errors.categoryId && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.categoryId.message}
+              </p>
+            )}
           </div>
 
-          {/* Amount */}
-          <div className="space-y-2 mt-3">
-            <label
-              htmlFor="edit-amount"
-              className="text-xs font-medium text-gray-500 dark:text-gray-400"
-            >
-              Amount
-            </label>
-            <input
-              id="edit-amount"
-              type="number"
-              name="amount"
-              className="input-field"
-              value={form.amount}
-              onChange={updateFormField}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-            />
-          </div>
+          <FormInput
+            label="Amount"
+            id="edit-amount"
+            type="number"
+            placeholder="0.00"
+            step="0.01"
+            error={errors.amount}
+            {...register("amount")}
+          />
 
-          {/* Notes */}
           <div className="space-y-2 mt-3">
             <label
               htmlFor="edit-notes"
@@ -261,12 +267,10 @@ export const EditTransaction = ({ transaction, onClose }) => {
             </label>
             <textarea
               id="edit-notes"
-              name="notes"
               className="input-field resize-none"
               rows={3}
-              value={form.notes}
-              onChange={updateFormField}
               placeholder="Optional"
+              {...register("notes")}
             />
           </div>
         </div>
@@ -274,13 +278,13 @@ export const EditTransaction = ({ transaction, onClose }) => {
         {/* ---------------- Group Section ---------------- */}
         <GroupSection
           groups={groups}
-          form={form}
+          form={formValues}
           updateFormField={updateFormField}
-          disabled={false} // editing allows changing group
+          disabled={false}
         />
 
         {/* ---------------- Split Section ---------------- */}
-        {form.groupId && selectedGroup && (
+        {formValues.groupId && selectedGroup && (
           <SplitSection
             splitMode={splitMode}
             setSplitMode={setSplitMode}
@@ -289,9 +293,9 @@ export const EditTransaction = ({ transaction, onClose }) => {
             updateExact={updateExact}
             isSplitValid={isSplitValid}
             totalSplit={totalSplit}
-            amount={form.amount}
+            amount={formValues.amount}
             selectedGroup={selectedGroup}
-            paidBy={form.paidBy}
+            paidBy={formValues.paidBy}
             onPaidByChange={updateFormField}
           />
         )}

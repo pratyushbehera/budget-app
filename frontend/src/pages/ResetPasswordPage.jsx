@@ -1,59 +1,50 @@
 import React, { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useResetPassword } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
+import { FormInput } from "../shared/components/FormInput";
+
+const resetPasswordSchema = yup.object().shape({
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords do not match")
+    .required("Please confirm your password"),
+});
 
 export function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
-  const { addNotification } = useNotification();
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const { addToast } = useToast();
   const [success, setSuccess] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(resetPasswordSchema),
+  });
 
   const resetPasswordMutation = useResetPassword();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!password || !confirmPassword) {
-      addNotification({
-        type: "error",
-        title: "Error",
-        message: "Please fill in all fields.",
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      addNotification({
-        type: "error",
-        title: "Weak Password",
-        message: "Password must be at least 6 characters long.",
-      });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      addNotification({
-        type: "error",
-        title: "Mismatch",
-        message: "Passwords do not match.",
-      });
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
       await resetPasswordMutation.mutateAsync({
         token,
-        password,
+        password: data.password,
       });
 
       setSuccess(true);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Password Updated",
         message: "Your password has been reset successfully.",
@@ -62,13 +53,13 @@ export function ResetPasswordPage() {
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Please wait",
           message: "You’ve requested too many password resets.",
         });
       }
-      addNotification({
+      addToast({
         type: "error",
         title: "Reset Failed",
         message:
@@ -84,34 +75,24 @@ export function ResetPasswordPage() {
       subtitle="Choose a strong password for your account"
     >
       {!success ? (
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              New Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-field mt-1"
-              placeholder="Enter new password"
-              required
-            />
-          </div>
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+          <FormInput
+            label="New Password"
+            id="password"
+            type="password"
+            placeholder="Enter new password"
+            error={errors.password}
+            {...register("password")}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="input-field mt-1"
-              placeholder="Confirm new password"
-              required
-            />
-          </div>
+          <FormInput
+            label="Confirm Password"
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm new password"
+            error={errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
 
           <button
             type="submit"

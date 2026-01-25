@@ -1,22 +1,22 @@
 import { Modal } from "../../../shared/components/Modal";
 import { useDeleteRecurringRule } from "../../../services/recurringApi";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 
 export const DeleteRecurringModal = ({ rule, onClose }) => {
   const { mutateAsync: deleteRule, isPending } = useDeleteRecurringRule();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const handleDelete = async () => {
     try {
       await deleteRule(rule._id);
-      addNotification({
+      addToast({
         type: "success",
         title: "Recurring removed",
         message: `${rule.title} has been deleted.`,
       });
       onClose();
     } catch (err) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Delete failed",
         message:

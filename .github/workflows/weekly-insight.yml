@@ -1,0 +1,17 @@
+name: Weekly Insight Cron
+
+on:
+  schedule:
+    # Runs at 09:00 UTC every Monday
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  weekly-insight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Weekly Insight API
+        run: |
+          curl -X POST "${{ secrets.BACKEND_URL }}/api/notifications/cron/weekly-insight" \
+          -H "Content-Type: application/json" \
+          -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"

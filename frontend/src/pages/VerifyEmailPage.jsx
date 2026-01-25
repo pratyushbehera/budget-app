@@ -3,14 +3,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 import { useVerifyEmail, useResendEmailOtp } from "../services/authApi";
-import { useNotification } from "../contexts/NotificationContext";
+import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
 export function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
 
   const [email, setEmail] = useState(location.state?.email || "");
   const [otp, setOtp] = useState("");
@@ -33,7 +33,7 @@ export function VerifyEmailPage() {
     resendMutation
       .mutateAsync(email)
       .then(() => {
-        addNotification({
+        addToast({
           type: "info",
           title: "OTP Sent",
           message: "We’ve sent a verification code to your email.",
@@ -41,7 +41,7 @@ export function VerifyEmailPage() {
       })
       .catch((err) => {
         if (err.status === 429) {
-          addNotification({
+          addToast({
             type: "warning",
             title: "Please wait",
             message: "OTP was sent recently. Try again shortly.",
@@ -54,7 +54,7 @@ export function VerifyEmailPage() {
     e.preventDefault();
 
     if (!email || !otp) {
-      addNotification({
+      addToast({
         type: "error",
         title: "Missing fields",
         message: "Email and OTP are required.",
@@ -67,7 +67,7 @@ export function VerifyEmailPage() {
 
       dispatch(loginSuccess(data));
 
-      addNotification({
+      addToast({
         type: "success",
         title: "Email Verified",
         message: "Your email has been verified successfully.",
@@ -76,7 +76,7 @@ export function VerifyEmailPage() {
       navigate("/dashboard", { replace: true });
     } catch (err) {
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Too many attempts",
           message: "Please wait before trying again.",
@@ -85,7 +85,7 @@ export function VerifyEmailPage() {
         return;
       }
 
-      addNotification({
+      addToast({
         type: "error",
         title: "Verification Failed",
         message: err.message || "Invalid or expired OTP.",
@@ -99,14 +99,14 @@ export function VerifyEmailPage() {
     try {
       await resendMutation.mutateAsync(email);
 
-      addNotification({
+      addToast({
         type: "success",
         title: "OTP Sent",
         message: "A new OTP has been sent to your email.",
       });
     } catch (err) {
       if (err.status === 429) {
-        addNotification({
+        addToast({
           type: "warning",
           title: "Slow down",
           message: "Too many requests. Please wait a few minutes.",
@@ -115,7 +115,7 @@ export function VerifyEmailPage() {
         return;
       }
 
-      addNotification({
+      addToast({
         type: "error",
         title: "Failed",
         message: "Could not resend OTP. Try again later.",

@@ -3,12 +3,12 @@ import { useGroupSummary, useSettleUp } from "../../../services/groupApi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { uid } from "../../../shared/utils/generateUid";
-import { useNotification } from "../../../contexts/NotificationContext";
+import { useToast } from "../../../contexts/ToastContext";
 import { AvatarBubble } from "../../../shared/components/AvatarBubble";
 import { Wallet } from "lucide-react";
 
 const GroupSummary = ({ group, groupId }) => {
-  const { addNotification } = useNotification();
+  const { addToast } = useToast();
   const { user } = useSelector((state) => state.auth);
   const { data: summary, isLoading } = useGroupSummary(groupId);
   const { mutate: settleUp, isPending } = useSettleUp(groupId);
@@ -53,14 +53,14 @@ const GroupSummary = ({ group, groupId }) => {
       { settlements: { id: uid(), from, to, amount } },
       {
         onError: (err) => {
-          addNotification({
+          addToast({
             type: "error",
             title: "Failure",
             message: err?.message || "Error deleting member.",
           });
         },
         onSuccess: () => {
-          addNotification({
+          addToast({
             type: "success",
             title: "Success",
             message: "Transactions settled.",
