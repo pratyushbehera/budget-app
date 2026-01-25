@@ -10,6 +10,7 @@ import { useGravatar } from "../shared/hooks/useGravatar";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import { FormInput } from "../shared/components/FormInput";
+import { ThemeToggle } from "../features/dashboard/components/ThemeToggle";
 
 const profileSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -161,6 +162,19 @@ Try it out and share your feedback! 📊
           <Pencil size={16} />
           Edit Profile
         </button>
+      </div>
+
+      {/* Settings */}
+      <div className="card mt-6 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Appearance
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Customize the look and feel of the app
+          </p>
+        </div>
+        <ThemeToggle />
       </div>
 
       {/* Invite & Share */}

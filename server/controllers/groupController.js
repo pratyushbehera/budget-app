@@ -359,6 +359,16 @@ exports.removeMember = async (req, res) => {
       data: { removedUserId: memberId },
     });
 
+    // 🔔 Notification for Removed User
+    const Notification = require("../models/Notification");
+    await Notification.create({
+      recipient: memberId,
+      type: "Group",
+      title: "Removed from Group 🚫",
+      message: `You were removed from "${group.name}"`,
+      relatedId: group._id, // Keep ID reference even if removed, or null
+    });
+
     res.json({ message: "Member removed" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -403,6 +413,18 @@ exports.inviteMember = async (req, res) => {
       actorId: inviterId,
       data: { email },
     });
+
+    // 🔔 Notification for Invited User
+    if (user) {
+      const Notification = require("../models/Notification");
+      await Notification.create({
+        recipient: user._id,
+        type: "Group",
+        title: "Group Invite ✉️",
+        message: `${req.user.firstName} invited you to join "${group.name}"`,
+        relatedId: group._id,
+      });
+    }
 
     // TODO: send email later
 
