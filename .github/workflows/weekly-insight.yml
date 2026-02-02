@@ -3,7 +3,7 @@ name: Weekly Insight Cron
 on:
   schedule:
     # Runs at 09:00 UTC every Monday
-    - cron: '0 9 * * 1'
+    - cron: '0 9 * * 1' # Runs at 09:00 UTC (14:30 IST) every Monday - Refreshed
   workflow_dispatch:
 
 jobs:

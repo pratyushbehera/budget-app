@@ -3,7 +3,7 @@ name: Daily Reminder Cron
 on:
   schedule:
     # Runs at 20:00 UTC every day
-    - cron: '0 20 * * *'
+    - cron: '0 20 * * *' # Runs at 20:00 UTC (1:30 AM IST) - Refreshed
   workflow_dispatch:
 
 jobs:
