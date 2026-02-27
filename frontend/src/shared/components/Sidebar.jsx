@@ -71,6 +71,7 @@ export const Sidebar = () => {
             <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400">
               FinPal
             </h1>
+            <NotificationPopover />
           </div>
         </div>
       )}
@@ -96,7 +97,9 @@ export const Sidebar = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-3">
-              <NotificationPopover />
+              <div className="hidden md:block">
+                <NotificationPopover />
+              </div>
               <button
                 onClick={toggleSidebar}
                 aria-label="Close menu"
