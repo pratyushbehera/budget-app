@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useUpdateProfile } from "../services/authApi";
+import { useUpdateProfile, useGenerateDeveloperKey } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { Modal } from "../shared/components/Modal";
-import { Pencil } from "lucide-react";
+import { Pencil, Terminal, Copy, Check, ExternalLink, Key } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
@@ -24,6 +24,159 @@ const profileSchema = yup.object().shape({
       (val) => !val || val.length >= 6
     ),
 });
+
+function DeveloperSettings() {
+  const [devKey, setDevKey] = useState("");
+  const [copied, setCopied] = useState(false);
+  const { addToast } = useToast();
+  const generateKeyMutation = useGenerateDeveloperKey();
+
+  const handleGenerateKey = async () => {
+    try {
+      const response = await generateKeyMutation.mutateAsync();
+      setDevKey(response.token);
+      addToast({
+        type: "success",
+        title: "Key Generated",
+        message: "A new long-lived developer key has been created.",
+      });
+    } catch (err) {
+      addToast({
+        type: "error",
+        title: "Generation Failed",
+        message: err.message || "Could not generate key.",
+      });
+    }
+  };
+
+  const copyConfig = async () => {
+    const config = {
+      mcpServers: {
+        finpal: {
+          command: "npx",
+          args: ["-y", "mcp-remote", "https://budget-app-sigma-taupe.vercel.app/api/mcp/sse"],
+          env: {
+            API_TOKEN: devKey || "YOUR_DEVELOPER_KEY_HERE"
+          }
+        }
+      }
+    };
+    await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    addToast({
+      type: "success",
+      title: "Config Copied",
+      message: "Claude Desktop configuration copied to clipboard.",
+    });
+  };
+
+  return (
+    <div className="card mt-6 p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg">
+          <Terminal size={20} />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Developer Settings (MCP)
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Connect FinPal to Claude AI using the Model Context Protocol.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg p-4 mb-6">
+        <p className="text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2">
+          <Key className="shrink-0 mt-0.5" size={16} />
+          <span>
+            Generate a long-lived API key to allow external tools like Claude Desktop to access your data.
+            <strong> Keep this key private!</strong> It grants full access to your account for 1 year.
+          </span>
+        </p>
+      </div>
+
+      {!devKey ? (
+        <button
+          className="btn-primary flex items-center gap-2"
+          onClick={handleGenerateKey}
+          disabled={generateKeyMutation.isPending}
+        >
+          {generateKeyMutation.isPending ? "Generating..." : "Generate Developer Key"}
+        </button>
+      ) : (
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1 block">
+              Your Developer Key
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={devKey}
+                className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2 text-sm font-mono"
+              />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(devKey);
+                  addToast({ type: "success", title: "Key Copied", message: "Key copied to clipboard." });
+                }}
+                className="btn-secondary px-3"
+              >
+                <Copy size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Claude Desktop Setup
+            </h4>
+            <ol className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-4 list-decimal pl-4">
+              <li>Install Claude Desktop on your computer.</li>
+              <li>Open <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS).</li>
+              <li>Paste the configuration snippet below into the <code>mcpServers</code> section.</li>
+              <li>Restart Claude Desktop.</li>
+            </ol>
+
+            <div className="relative group">
+              <pre className="p-4 rounded-lg bg-gray-900 text-gray-100 text-xs overflow-x-auto font-mono">
+                {JSON.stringify({
+                  mcpServers: {
+                    finpal: {
+                      command: "npx",
+                      args: ["-y", "mcp-remote", "https://finpal-mcp.vercel.app/api/mcp/sse"],
+                      env: {
+                        API_URL: "https://budget-app-be.vercel.app",
+                        API_TOKEN: devKey
+                      }
+                    }
+                  }
+                }, null, 2)}
+              </pre>
+              <button
+                onClick={copyConfig}
+                className="absolute top-3 right-3 p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded border border-gray-700 flex items-center gap-2 transition-colors"
+              >
+                {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                <span className="text-[10px] uppercase font-bold tracking-tight">Copy JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+            onClick={handleGenerateKey}
+          >
+            Regenerate key (replaces existing)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ProfilePage() {
   const { user, loading: isLoading } = useSelector((state) => state.auth);
@@ -212,6 +365,8 @@ Try it out and share your feedback! 📊
           </a>
         </div>
       </div>
+
+      <DeveloperSettings />
 
       {/* Edit Modal */}
       {isModalOpen && (

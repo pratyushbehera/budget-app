@@ -10,6 +10,7 @@ const {
   resetPassword,
   verifyEmail,
   resendEmailOtp,
+  generateDeveloperKey,
 } = require("../controllers/authController");
 
 const {
@@ -23,6 +24,7 @@ router.post("/signup", registerUser);
 router.post("/login", loginLimiter, loginUser);
 router.get("/me", protect, getProfile);
 router.put("/profile", protect, updateProfile);
+router.post("/dev-key", protect, generateDeveloperKey);
 router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 router.post("/reset-password", resetPassword);
 
