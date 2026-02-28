@@ -13,6 +13,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const recurringRoutes = require("./routes/recurringRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -32,7 +33,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/groups", groupRoutes);
-app.use("/api/notifications", require("./routes/notificationRoutes"));
+app.use("/api/notifications", notificationRoutes);
 app.use("/api", recurringRoutes);
 
 (async () => {

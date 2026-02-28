@@ -2,7 +2,7 @@ name: Recurring Cron
 
 on:
   schedule:
-    - cron: "30 21 * * *" # Daily at 21:30 UTC
+    - cron: "30 21 * * *" # Daily at 21:30 UTC (3:00 AM IST) - Refreshed
   workflow_dispatch: # manual trigger (VERY useful)
 
 jobs:
