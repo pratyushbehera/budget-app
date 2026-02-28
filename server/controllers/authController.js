@@ -266,3 +266,16 @@ exports.resendEmailOtp = async (req, res) => {
 
   res.json({ message: "OTP sent" });
 };
+
+exports.generateDeveloperKey = async (req, res) => {
+  try {
+    const token = jwt.sign({ id: req.user.id }, JWT_SECRET, { expiresIn: "365d" });
+    res.json({
+      token,
+      expiresIn: "1 year",
+      message: "This key is long-lived. Please keep it secure."
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

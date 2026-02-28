@@ -126,3 +126,11 @@ export const useResendEmailOtp = () => {
     mutationFn: resendEmailOtp,
   });
 };
+
+const generateDeveloperKey = () => api.post("/api/auth/dev-key");
+
+export const useGenerateDeveloperKey = () => {
+  return useMutation({
+    mutationFn: generateDeveloperKey,
+  });
+};
