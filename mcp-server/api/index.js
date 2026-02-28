@@ -5,7 +5,7 @@ import { getServer } from '../src/server.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const app = createMcpExpressApp();
+const app = createMcpExpressApp({ host: '0.0.0.0' });
 app.use(cors());
 
 // Store transports by session ID (Note: Vercel serverless has caveats for stateful maps!)
