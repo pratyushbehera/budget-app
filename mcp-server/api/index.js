@@ -5,7 +5,7 @@ import { getServer } from '../src/server.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const app = createMcpExpressApp({ host: '0.0.0.0' });
+const app = createMcpExpressApp();
 app.use(cors());
 
 // Store transports by session ID (Note: Vercel serverless has caveats for stateful maps!)
@@ -59,11 +59,10 @@ app.post('/api/mcp/messages', async (req, res) => {
     }
 });
 
-// For local testing
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(3001, () => {
-        console.log('MCP server running locally on port 3001');
-    });
-}
+// Always start the express server (necessary for persistent environments like Railway)
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`MCP server running on port ${PORT}`);
+});
 
 export default app;
