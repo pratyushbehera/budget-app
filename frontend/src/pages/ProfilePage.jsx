@@ -147,7 +147,7 @@ function DeveloperSettings() {
                   mcpServers: {
                     finpal: {
                       command: "npx",
-                      args: ["-y", "mcp-remote", "https://finpal-mcp-production.up.railway.app/api/mcp/sse"],
+                      args: ["-y", "mcp-remote", "https://budget-app-production-6630.up.railway.app/api/mcp/sse"],
                       env: {
                         API_URL: "https://budget-app-be.vercel.app",
                         API_TOKEN: devKey
