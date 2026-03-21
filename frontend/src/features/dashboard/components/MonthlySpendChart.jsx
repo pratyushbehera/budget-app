@@ -38,57 +38,73 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
   };
 
   return (
-    <div className="col-span-4 card p-4 shadow-sm flex flex-col">
+    <div className="col-span-4 rounded-3xl bg-white dark:bg-gray-800/40 p-6 shadow-md border-none backdrop-blur-sm flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-          Monthly Income vs Spend
-        </h3>
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+            Monthly Income vs Spend
+          </h3>
+          <p className="text-xs text-gray-500 font-medium mt-1">Last 6 months overview</p>
+        </div>
 
-        <div className="text-xs space-y-1 text-right">
-          <div className="flex items-center gap-1 justify-end">
+        <div className="text-xs space-y-2 text-right">
+          <div className="flex items-center gap-2 justify-end bg-gray-100 dark:bg-gray-700/50 px-3 py-1.5 rounded-full">
             {trendIcon(trend.spend, false)}
-            <span className="text-gray-600 dark:text-gray-300">
+            <span className="font-bold text-gray-700 dark:text-gray-200">
               Spend {trend.spend}
             </span>
           </div>
           {yoy.spendChangePercent !== null && (
-            <div className="text-gray-400">YoY: {yoy.spendChangePercent}%</div>
+            <div className="text-gray-400 font-medium px-2">YoY: {yoy.spendChangePercent}%</div>
           )}
         </div>
       </div>
 
       {/* Chart */}
-      <div className="h-48">
+      <div className="h-64 mt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
             <XAxis
               dataKey="month"
-              tick={{ fill: "#6b7280", fontSize: 11 }}
+              tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 500 }}
               axisLine={false}
+              tickLine={false}
+              dy={10}
             />
             <YAxis
               tickFormatter={(v) => `₹${convertToShortForm(v)}`}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
+              tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 500 }}
               axisLine={false}
+              tickLine={false}
+              dx={-10}
             />
             <Tooltip
-              formatter={(val, name) => [`₹${val.toLocaleString()}`, name]}
+              contentStyle={{ 
+                borderRadius: '16px', 
+                border: 'none', 
+                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(8px)'
+              }}
+              formatter={(val, name) => [`₹${val.toLocaleString()}`, name.charAt(0).toUpperCase() + name.slice(1)]}
             />
-            <Legend />
+            <Legend verticalAlign="top" height={36}/>
             <Line
               type="monotone"
               dataKey="income"
-              stroke="#22c55e"
-              strokeWidth={2}
-              dot={false}
+              stroke="#10b981" // Primary M3 Emerald
+              strokeWidth={4}
+              dot={{ r: 4, fill: "#10b981", strokeWidth: 2, stroke: "#fff" }}
+              activeDot={{ r: 6, strokeWidth: 0 }}
             />
             <Line
               type="monotone"
               dataKey="spend"
-              stroke="#ef4444"
-              strokeWidth={2}
-              dot={false}
+              stroke="#f43f5e" // Tertiary M3 Rose
+              strokeWidth={4}
+              dot={{ r: 4, fill: "#f43f5e", strokeWidth: 2, stroke: "#fff" }}
+              activeDot={{ r: 6, strokeWidth: 0 }}
             />
           </LineChart>
         </ResponsiveContainer>

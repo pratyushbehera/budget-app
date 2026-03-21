@@ -7,10 +7,11 @@ export const QuickAdd = () => {
   return (
     <>
       <button
-        className="fixed btn-primary bottom-8 right-8 flex items-center gap-2 font-semibold px-4 py-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
+        className="fixed btn-primary bottom-10 right-10 flex items-center justify-center w-16 h-16 rounded-[2rem] shadow-2xl transition-all duration-300 hover:scale-110 active:scale-90 animate-fade-in group"
         onClick={() => setShowAddModal(true)}
+        aria-label="Quick Add Transaction"
       >
-        <Plus size={20} />
+        <Plus size={32} strokeWidth={3} className="group-hover:rotate-90 transition-transform duration-300" />
       </button>
 
       {showAddModal && (

@@ -54,25 +54,25 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed flex space-x-2 w-full  z-50 bg-white dark:bg-gray-950 border pl-4 py-4">
+        <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between p-4 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
           <button
             onClick={toggleSidebar}
             aria-label="Open menu"
-            className="p-2 border top-4 left-4 rounded-md bg-gray-200 dark:bg-gray-300 text-gray-800 dark:text-white"
+            className="p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white active:scale-95 transition-transform"
           >
-            <Menu size={20} />
+            <Menu size={24} />
           </button>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-3">
             <img
               src="/logo.png"
               alt="FinPal Logo"
-              className="w-7 h-7 object-contain"
+              className="w-8 h-8 object-contain"
             />
-            <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400">
+            <h1 className="text-2xl font-black text-primary-500 tracking-tighter">
               FinPal
             </h1>
-            <NotificationPopover />
           </div>
+          <NotificationPopover />
         </div>
       )}
 
@@ -80,30 +80,32 @@ export const Sidebar = () => {
       <aside
         role="navigation"
         aria-label="Main Sidebar"
-        className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 z-50 h-full w-72 bg-white dark:bg-gray-950 border-r-0 md:border-r border-gray-100 dark:border-gray-800 shadow-2xl md:shadow-none transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full p-6">
           {/* Header */}
-          <div className="relative flex items-center justify-between p-4 border-b dark:border-gray-700">
-            <div className="flex items-center space-x-2">
-              <img
-                src="/logo.png"
-                alt="FinPal Logo"
-                className="w-7 h-7 object-contain"
-              />
-              <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400">
+          <div className="flex items-center justify-between mb-10 px-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary-500 rounded-2xl shadow-lg shadow-primary-500/20">
+                <img
+                  src="/logo.png"
+                  alt="FinPal Logo"
+                  className="w-7 h-7 object-contain brightness-0 invert"
+                />
+              </div>
+              <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter">
                 FinPal
               </h1>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-2">
               <div className="hidden md:block">
                 <NotificationPopover />
               </div>
               <button
                 onClick={toggleSidebar}
                 aria-label="Close menu"
-                className="md:hidden p-1 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="md:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -111,96 +113,97 @@ export const Sidebar = () => {
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-1 text-gray-700 dark:text-gray-300">
-            <Link
-              to="/dashboard"
-              onClick={toggleSidebar}
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <LayoutDashboard size={18} /> Overview
-            </Link>
-            <Link
-              to="/transactions"
-              onClick={toggleSidebar}
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <CreditCard size={18} /> Transactions
-            </Link>
-            <Link
-              to="/plan"
-              onClick={toggleSidebar}
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <FileText size={18} /> Plan
-            </Link>
-            <Link
-              to="/groups"
-              onClick={toggleSidebar}
-              className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Group size={18} /> Groups
-            </Link>
-
-            {/* <div className="pt-4 border-t dark:border-gray-700">
-              <p className="text-xs uppercase text-gray-400 mb-2">
-                Stocks & Mutual funds
-              </p>
+          <nav className="flex-1 overflow-y-auto space-y-2 py-2">
+            {[
+              { to: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+              { to: "/transactions", icon: CreditCard, label: "Transactions" },
+              { to: "/plan", icon: FileText, label: "Budget Plan" },
+              { to: "/groups", icon: Group, label: "Social Groups" },
+            ].map((item) => (
               <Link
-                to="/portfolio"
+                key={item.to}
+                to={item.to}
                 onClick={toggleSidebar}
-                className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+                  ${window.location.pathname === item.to 
+                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" 
+                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"}`}
               >
-                <Wallet size={18} /> My Portfolio
+                <item.icon size={22} className={`transition-transform duration-300 group-hover:scale-110 ${window.location.pathname === item.to ? 'text-white' : 'text-gray-400 group-hover:text-primary-500'}`} />
+                <span className="tracking-tight">{item.label}</span>
               </Link>
-            </div>*/}
+            ))}
 
+            {/* Groups Section */}
             {!isGroupLoading && acceptedGroups?.length > 0 && (
-              <div className="pt-4 border-t dark:border-gray-700">
-                <p className="text-xs uppercase text-gray-400 mb-2">Group</p>
-                {acceptedGroups?.map((grp) => (
-                  <Link
-                    key={grp?._id}
-                    to={`/groups/${grp?._id}`}
-                    onClick={toggleSidebar}
-                    className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <TicketCheck size={18} /> {grp.name}
-                  </Link>
-                ))}
+              <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
+                <p className="px-4 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4">
+                  Your Groups
+                </p>
+                <div className="space-y-1">
+                  {acceptedGroups?.map((grp) => (
+                    <Link
+                      key={grp?._id}
+                      to={`/groups/${grp?._id}`}
+                      onClick={toggleSidebar}
+                      className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all group
+                        ${window.location.pathname.includes(grp?._id)
+                          ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
+                          : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"}`}
+                    >
+                      <TicketCheck size={20} className={`${window.location.pathname.includes(grp?._id) ? 'text-white' : 'text-gray-400 group-hover:text-secondary-500'}`} />
+                      <span className="text-sm truncate tracking-tight">{grp.name}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </nav>
 
-          {/* Footer */}
-          <div className="border-t dark:border-gray-700 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 w-full">
-              {error || !avatarUrl || loading ? (
-                <UserIcon
-                  size={18}
-                  className="text-primary-600 dark:text-primary-400"
-                />
-              ) : (
-                <img
-                  src={avatarUrl}
-                  alt="Profile"
-                  className="rounded-full w-8"
-                />
-              )}
+          {/* Footer Card */}
+          <div className="mt-auto pt-6">
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-3xl p-4 border border-gray-100/50 dark:border-gray-800/50">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative">
+                  {error || !avatarUrl || loading ? (
+                    <div className="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                      <UserIcon size={24} className="text-primary-600 dark:text-primary-400" />
+                    </div>
+                  ) : (
+                    <img
+                      src={avatarUrl}
+                      alt="Profile"
+                      className="w-12 h-12 rounded-2xl object-cover shadow-md"
+                    />
+                  )}
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full shadow-sm"></div>
+                </div>
 
-              <Link
-                to="/profile"
-                className="text-sm w-32 font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 overflow-hidden whitespace-nowrap text-ellipsis"
-              >
-                {user?.firstName}
-              </Link>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-gray-900 dark:text-white truncate tracking-tight">
+                    {user?.firstName}
+                  </p>
+                  <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 truncate opacity-70">
+                    Active Session
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/profile"
+                  className="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors shadow-sm"
+                >
+                  <UserIcon size={18} />
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-rose-500 transition-colors shadow-sm"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
             </div>
-            <button
-              onClick={handleLogout}
-              aria-label="Logout"
-              className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500"
-            >
-              <LogOut size={16} /> Logout
-            </button>
           </div>
         </div>
       </aside>
@@ -209,7 +212,7 @@ export const Sidebar = () => {
       {isOpen && (
         <div
           onClick={toggleSidebar}
-          className="fixed inset-0 bg-black bg-opacity-40 md:hidden z-30"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden z-40 transition-opacity duration-300"
         />
       )}
     </>

@@ -87,116 +87,126 @@ export function TransactionPage() {
   if (error) return <p>{error.message}</p>;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div>
-        {/* Header */}
-        <div className="flex gap-4 items-start md:flex-row flex-col lg:items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Transactions
-          </h1>
+    <div className="min-h-screen max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="space-y-12">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-2">
+            <h1 className="text-6xl font-black text-gray-900 dark:text-white tracking-tighter">
+              Transactions
+            </h1>
+            <p className="text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight">
+              Manage and track your financial flow
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-2">
-            {/* Month selector */}
-            <input
-              name="month"
-              type="month"
-              className="input-field w-full sm:w-48"
-              value={selectedMonth}
-              onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
-            />
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="relative group">
+              <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5 transition-transform group-focus-within:scale-110" />
+              <input
+                name="month"
+                type="month"
+                className="input-field pl-12 w-full sm:w-56 font-bold text-gray-700 bg-white dark:bg-gray-900 border-2 border-transparent focus:border-primary-500 shadow-sm"
+                value={selectedMonth}
+                onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
+              />
+            </div>
 
-            {/* Buttons container */}
-            <div className="flex gap-2 w-full sm:w-auto">
+            <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setIsRecurringOpen(true)}
-                className="btn-secondary flex items-center gap-2 flex-1 sm:flex-none"
+                className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 group"
               >
-                <CalendarDays size={16} /> Recurring
+                <CalendarDays size={20} className="group-hover:rotate-12 transition-transform" />
+                <span>Recurring</span>
               </button>
 
               <button
                 onClick={() => setShowAddModal(true)}
-                className="btn-primary flex items-center gap-2 flex-1 sm:flex-none"
+                className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 group"
               >
-                <Plus size={16} />
-                Add Transaction
+                <Plus size={24} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
+                <span>Add New</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Filters Row */}
-        <div className="flex flex-col md:flex-row justify-between gap-3 mb-6">
-          <div className="relative w-full md:w-1/2">
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search by category or notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field pl-9"
-            />
-          </div>
-
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="input-field md:w-48"
-          >
-            {categoryOptions.map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
-
-        {shouldShowSummary && (
-          <div className="mb-6">
-            <div className="flex items-center justify-between bg-white dark:bg-gray-950 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-              {/* Left: Icon + Label */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                  <Wallet className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    Total for filtered results
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {filteredTransactions.length} transactions
-                  </p>
-                </div>
-              </div>
-
-              {/* Right: Total Amount */}
-              <p
-                className={`text-sm font-semibold ${
-                  summary.total >= 0
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {summary.total >= 0 ? "+" : "-"}
-                {formatCurrency(Math.abs(summary.total))}
-              </p>
+        {/* Filters & Summary Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Search & Filter */}
+          <div className="lg:col-span-2 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search history..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-field pl-12 bg-white dark:bg-gray-900 font-semibold"
+              />
             </div>
+
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="input-field md:w-56 bg-white dark:bg-gray-900 font-bold border-r-[16px] border-transparent"
+            >
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
-        )}
+
+          {/* Mini Summary Card */}
+          {shouldShowSummary && (
+            <div className="bg-primary-500 rounded-3xl p-6 text-white shadow-2xl shadow-primary-500/20 flex items-center justify-between group overflow-hidden relative">
+              <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                <Wallet size={120} strokeWidth={1} />
+              </div>
+              <div className="relative z-10">
+                <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Filtered Balance</p>
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-3xl font-black tracking-tighter">
+                    {summary.total >= 0 ? "+" : "-"}
+                    {formatCurrency(Math.abs(summary.total))}
+                  </h2>
+                </div>
+                <p className="text-[11px] font-bold opacity-70 mt-1 uppercase tracking-wider">
+                  {filteredTransactions.length} records found
+                </p>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center relative z-10">
+                <Wallet className="w-6 h-6" />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Transaction List */}
         {!filteredTransactions?.length ? (
-          <div className="flex flex-col items-center justify-center h-60 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <Wallet className="w-8 h-8 mb-2" />
-            <p className="text-sm">No transactions found.</p>
+          <div className="flex flex-col items-center justify-center py-24 px-6 bg-gray-50 dark:bg-gray-900/50 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-gray-800 text-center animate-fade-in">
+            <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-4xl shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Wallet className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">No History Found</h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-xs font-medium">
+              We couldn't find any transactions for the selected period or filters.
+            </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-12">
             {Object.entries(groupedTransactions).map(([date, txList]) => (
-              <div key={date}>
-                <h3 className="text-xs uppercase text-gray-500 dark:text-gray-400 mb-2 ml-1">
-                  {date}
-                </h3>
+              <div key={date} className="animate-fade-in">
+                <div className="flex items-center gap-4 mb-6 ml-2">
+                  <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-400">
+                    {date}
+                  </h3>
+                  <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                </div>
 
-                <ul className="space-y-2">
+                <div className="grid grid-cols-1 gap-4">
                   {txList.map((tx) => (
                     <TransactionItem
                       key={tx._id}
@@ -205,7 +215,7 @@ export function TransactionPage() {
                       onDelete={(t) => setDeleteTarget(t)}
                     />
                   ))}
-                </ul>
+                </div>
               </div>
             ))}
           </div>
@@ -218,17 +228,15 @@ export function TransactionPage() {
         rules={recurringRules || []}
       />
 
-      {/* ➕ Add Modal */}
+      {/* Modals */}
       {showAddModal && (
         <AddTransaction onClose={() => setShowAddModal(false)} />
       )}
 
-      {/* ✏️ Edit Modal */}
       {editTx && (
         <EditTransaction transaction={editTx} onClose={() => setEditTx(null)} />
       )}
 
-      {/* ⚠️ Delete Confirmation */}
       {deleteTarget && (
         <DeleteTransaction
           transaction={deleteTarget}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
+import { LoadingPage } from "../shared/components/LoadingPage";
 
-export function CategoyPage() {
+export function CategoryPage() {
   const {
     category: data,
     loading: isLoading,
@@ -13,89 +14,82 @@ export function CategoyPage() {
   const [deleteCategory, setDeleteCategory] = useState(null);
   const [editCategory, setEditCategory] = useState(null);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>{error.message}</p>;
+  if (isLoading) return <LoadingPage page="categories" />;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center p-20 space-y-4">
+      <div className="text-6xl font-black text-rose-500 tracking-tighter">Oops!</div>
+      <p className="text-xl text-gray-400 font-medium">{error.message}</p>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen">
-      <main className="max-w-7xl mx-auto py-6 px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Category
-          </h1>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-lg transition-colors"
-          >
-            <Plus size={16} />
-            Add Category
-          </button>
-        </div>
+    <div className="max-w-7xl mx-auto py-12 px-6 lg:px-10 space-y-10 animate-fade-in relative">
+      {/* Decorative Background */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
-        {/* Scrollable Table */}
-        <div className="card overflow-x-auto max-h-[65vh] border border-gray-200 dark:border-gray-700 rounded-lg">
-          <table className="min-w-full text-sm">
-            <thead className="table-head">
-              <tr>
-                <th className="px-4 py-2 text-left font-medium">Category</th>
-                <th className="px-4 py-2 text-center font-medium">Action</th>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h1 className="text-7xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
+            Categories
+          </h1>
+          <p className="text-xl text-gray-400 dark:text-gray-500 font-medium tracking-tight mt-4">
+            Organize your transactions with precision
+          </p>
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="btn-primary flex items-center gap-3 px-8 py-4 text-lg font-black rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+        >
+          <Plus size={20} />
+          New Category
+        </button>
+      </div>
+
+      {/* Categories Table Card */}
+      <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[3rem] border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none overflow-hidden animate-slide-in-bottom">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 dark:border-gray-800">
+                <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Label</th>
+                <th className="px-10 py-8 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">Controls</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {data?.map((cat) => {
-                return (
-                  <tr
-                    key={cat._id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="px-4 py-2">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${"border border-gray-200 text-gray-700 dark:border-gray-700 dark:text-gray-300"}`}
-                      >
-                        {cat.name}
-                      </span>
-                    </td>
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+              {data?.map((cat) => (
+                <tr
+                  key={cat._id}
+                  className="group hover:bg-gray-50/50 dark:hover:bg-primary-500/5 transition-colors"
+                >
+                  <td className="px-10 py-6">
+                    <span className="inline-flex items-center px-6 py-2 rounded-full text-sm font-black tracking-tight bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border border-primary-100 dark:border-primary-800 shadow-sm group-hover:scale-105 transition-transform origin-left">
+                      {cat.name}
+                    </span>
+                  </td>
 
-                    <td className="px-4 py-2 text-center">
-                      <div className="flex justify-center gap-3">
-                        <button
-                          onClick={() => setEditCategory(cat)}
-                          className="text-blue-500 hover:text-blue-600"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteCategory(cat)}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                  <td className="px-10 py-6">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => setEditCategory(cat)}
+                        className="p-3 rounded-xl bg-white dark:bg-gray-800 shadow-lg hover:bg-primary-500 hover:text-white transition-all hover:scale-110"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={() => setDeleteCategory(cat)}
+                        className="p-3 rounded-xl bg-white dark:bg-gray-800 shadow-lg hover:bg-rose-500 hover:text-white transition-all hover:scale-110"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      </main>
-
-      {/* 
-      {showAddModal && (
-        <AddTransaction onClose={() => setShowAddModal(false)} />
-      )}
-
-      {editTx && (
-        <EditTransaction transaction={editTx} onClose={() => setEditTx(null)} />
-      )}
-
-      {deleteTarget && (
-        <DeleteTransaction
-          transaction={deleteTarget}
-          onClose={() => setDeleteTarget(null)}
-        />
-      )} */}
+      </div>
     </div>
   );
 }

@@ -22,8 +22,9 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
 
   return (
     <div
-      className="flex items-center justify-between rounded-xl px-4 py-3 
-                 bg-gray-50 dark:bg-gray-850 hover:shadow-sm transition-all"
+      className="flex items-center justify-between rounded-2xl p-4 
+                 bg-white dark:bg-gray-800/20 border border-gray-100 dark:border-gray-800 
+                 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-none transition-all duration-300 group"
     >
       {/* Left Section */}
       <div className="flex items-center gap-4">
@@ -31,58 +32,61 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
           <img
             src={avatarUrl}
             alt="avatar"
-            className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 object-cover"
+            className="w-12 h-12 rounded-2xl border-2 border-white dark:border-gray-700 shadow-sm object-cover transition-transform group-hover:scale-110"
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
+          <div className="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-primary-600 dark:text-primary-300 font-black text-lg shadow-sm group-hover:scale-110 transition-transform">
             {initials}
           </div>
         )}
 
-        <div>
-          <p className="font-medium text-gray-500 dark:text-gray-800 flex items-center gap-2">
-            {userObj?.firstName || email.split("@")[0]}
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <p className="font-black text-gray-900 dark:text-white tracking-tight">
+              {userObj?.firstName || email.split("@")[0]}
+            </p>
             {isYou && (
-              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-primary-50 text-primary-600 px-2 py-0.5 rounded-lg border border-primary-100">
                 You
               </span>
             )}
-          </p>
+          </div>
 
-          <p className="text-xs text-gray-500 dark:text-gray-800">{email}</p>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-tight">{email}</p>
         </div>
       </div>
 
       {/* Right Section */}
       <div className="flex items-center gap-3">
         {userObj?._id === owner && (
-          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md flex items-center gap-1">
-            <Shield size={12} /> Admin
+          <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-emerald-100">
+            <Shield size={12} strokeWidth={3} /> Admin
           </span>
         )}
 
         {member.status === "pending" && (
-          <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-black uppercase tracking-widest bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg border border-amber-100">
             Pending
           </span>
         )}
 
         {!isAdmin && isYou && (
           <button
-            className="text-red-500 text-xs flex items-center gap-1 hover:underline"
+            className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
             onClick={onLeave}
+            title="Leave group"
           >
-            <LogOut size={14} /> Leave
+            <LogOut size={16} strokeWidth={2.5} />
           </button>
         )}
 
         {isAdmin && !isYou && (
           <button
-            className="text-red-500 text-xs flex items-center gap-1 hover:underline"
+            className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
             onClick={() => onRemove(userObj)}
+            title={member.status === "pending" ? "Cancel Invite" : "Remove member"}
           >
-            <XCircle size={14} />
-            {member.status === "pending" ? "Cancel Invite" : "Remove"}
+            <XCircle size={16} strokeWidth={2.5} />
           </button>
         )}
       </div>

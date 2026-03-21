@@ -71,48 +71,54 @@ export function DashboardPage() {
   }).length;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8">
-      <div className="flex justify-between px-4 py-4 sm:px-0">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Hi {currentUser?.firstName} 👋
-        </h2>
-        <input
-          name="month"
-          type="month"
-          className="input-field h-10 w-48"
-          value={selectedMonth}
-          onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
-        />
-      </div>
+    <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-10 sm:px-0 gap-6">
+        <div>
+          <motion.h1 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight"
+          >
+            Hi {currentUser?.firstName} <span className="inline-block animate-bounce-subtle">👋</span>
+          </motion.h1>
+          <p className="text-lg text-gray-500 dark:text-gray-400">
+            {!hasData 
+              ? "Welcome to FinPal. Let's start your financial journey."
+              : `Here’s your financial pulse for ${formatMonthYear(selectedMonth)}.`}
+          </p>
+        </div>
+        <div className="relative group">
+          <input
+            name="month"
+            type="month"
+            className="input-field h-12 w-56 rounded-full px-6 border-2 border-transparent bg-gray-100 dark:bg-gray-800 focus:border-primary-500 transition-all font-medium text-gray-700 dark:text-white"
+            value={selectedMonth}
+            onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
+          />
+        </div>
+      </header>
+
       {actionableRecurring?.length > 0 && (
-        <PendingRecurringCard items={actionableRecurring} />
+        <div className="px-4 sm:px-0 mb-8">
+          <PendingRecurringCard items={actionableRecurring} />
+        </div>
       )}
 
       {pendingInvites > 0 && (
-        <PendingInviteBanner pendingCount={pendingInvites} />
-      )}
-      {!hasData ? (
-        <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
-          Welcome to your budgeting dashboard. You haven’t added any
-          transactions yet — start by recording your income or expenses to see
-          your financial summary come alive!
-        </p>
-      ) : (
-        <p className="text-gray-600 dark:text-gray-300 px-5 sm:px-0">
-          Here’s a summary of your finances for {formatMonthYear(selectedMonth)}
-          .
-        </p>
+        <div className="px-4 sm:px-0 mb-8">
+          <PendingInviteBanner pendingCount={pendingInvites} />
+        </div>
       )}
 
       {/* 👇 Dashboard Content */}
       {hasData ? (
-        <>
+        <div className="space-y-10">
           {/* Info Tiles */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="grid lg:grid-cols-4 grid-cols-2 gap-4 px-4 py-3 sm:px-0"
+            className="grid lg:grid-cols-4 grid-cols-2 gap-6 px-4 py-3 sm:px-0"
           >
             {[
               {
@@ -170,20 +176,21 @@ export function DashboardPage() {
 
             <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
           </div>
-        </>
+        </div>
       ) : (
         /* Empty state with gentle guidance */
-        <div className="card p-8 mt-8 flex flex-col">
-          <NoBackground />
-          <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
-            Your dashboard is waiting for data
+        <div className="card p-12 mt-8 flex flex-col items-center text-center rounded-[3rem] bg-gray-50/50 dark:bg-gray-800/30 border-none shadow-none">
+          <div className="w-64 h-64 mb-8 grayscale opacity-50 contrast-125">
+            <NoBackground />
+          </div>
+          <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+            Your financial story starts here
           </h3>
-          <p className="mb-4 text-gray-600 dark:text-gray-300">
-            Once you start adding your income and expenses, this space will show
-            your budget progress, top spending categories, and insights.
+          <p className="mb-10 text-lg text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed">
+            Once you start adding your income and expenses, this space will transform into a vibrant dashboard of your budget progress and spending insights.
           </p>
-          <Link to="/transactions" className="btn-primary self-end flex gap-2">
-            Explore Transactions
+          <Link to="/transactions" className="btn-primary flex items-center gap-3 text-lg px-10">
+            Start Adding Transactions
           </Link>
         </div>
       )}

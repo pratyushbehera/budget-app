@@ -12,8 +12,8 @@ const InviteMemberModal = ({ groupId, onClose }) => {
     if (!email) {
       addToast({
         type: "error",
-        title: "Email required",
-        message: "Please enter an email address",
+        title: "Email Required",
+        message: "Please enter a valid email address.",
       });
       return;
     }
@@ -25,7 +25,7 @@ const InviteMemberModal = ({ groupId, onClose }) => {
           addToast({
             type: "success",
             title: "Invite Sent",
-            message: "Member has been invited",
+            message: `Invitation successfully sent to ${email}.`,
           });
           onClose();
         },
@@ -33,7 +33,7 @@ const InviteMemberModal = ({ groupId, onClose }) => {
           addToast({
             type: "error",
             title: "Failed",
-            message: err?.message || "Failed to send invite",
+            message: err?.message || "Failed to send invitation.",
           });
         },
       }
@@ -42,21 +42,36 @@ const InviteMemberModal = ({ groupId, onClose }) => {
 
   return (
     <Modal title="Invite Member" onClose={onClose}>
-      <div className="space-y-4">
-        <input
-          type="email"
-          className="input-field"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <div className="space-y-8 pt-4">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
+            Email Recipient
+          </label>
+          <input
+            type="email"
+            className="input-field bg-gray-50/50 dark:bg-gray-800/20 text-lg py-4 placeholder:text-gray-300"
+            placeholder="e.g. friend@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <p className="text-[10px] font-medium text-gray-400 px-1">
+            They'll receive an email to join your group.
+          </p>
+        </div>
 
-        <div className="flex justify-end gap-2">
-          <button className="btn-secondary" onClick={onClose}>
+        <div className="flex justify-end gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+          <button 
+            className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:white transition-colors" 
+            onClick={onClose}
+          >
             Cancel
           </button>
-          <button className="btn-primary" onClick={handleSubmit}>
-            Send Invite
+          <button 
+            className="btn-primary px-8" 
+            onClick={handleSubmit}
+            disabled={invite.isPending}
+          >
+            {invite.isPending ? "Sending..." : "Send Invite"}
           </button>
         </div>
       </div>
