@@ -2,8 +2,8 @@ import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { Wallet, TrendingUp, PiggyBank, ListChecks } from "lucide-react";
 
 const gradientMap = {
-  "Total Income": "from-emerald-500 to-emerald-600",
-  "This Month's Spend": "from-rose-500 to-rose-600",
+  "Income": "from-emerald-500 to-emerald-600",
+  "Spend": "from-rose-500 to-rose-600",
   Savings: "from-violet-500 to-violet-600",
   "Top Category": "from-amber-500 to-orange-600",
 };
@@ -21,11 +21,11 @@ export const InfoTile = ({ title, amount, helperText }) => {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl md:min-h-[128px] p-6 text-white shadow-xl bg-gradient-to-br ${gradient} hover:scale-[1.02] transition-transform duration-300`}
+      className={`relative overflow-hidden rounded-2xl sm:rounded-3xl md:min-h-[128px] p-4 sm:p-6 text-white shadow-xl bg-gradient-to-br ${gradient} hover:scale-[1.02] transition-transform duration-300`}
     >
       {/* Background Glyph */}
       <Icon
-        className="absolute -right-4 -bottom-4 w-24 h-24 opacity-20 text-white pointer-events-none rotate-12"
+        className="absolute -right-2 -bottom-2 w-16 h-16 sm:w-24 sm:h-24 opacity-20 text-white pointer-events-none rotate-12"
         strokeWidth={1}
       />
 

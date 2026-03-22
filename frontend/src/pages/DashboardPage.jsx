@@ -72,26 +72,26 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-10 sm:px-0 gap-6">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-6 sm:py-10 sm:px-0 gap-6">
         <div>
           <motion.h1 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight"
           >
             Hi {currentUser?.firstName} <span className="inline-block animate-bounce-subtle">👋</span>
           </motion.h1>
-          <p className="text-lg text-gray-500 dark:text-gray-400">
+          <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 font-medium">
             {!hasData 
               ? "Welcome to FinPal. Let's start your financial journey."
               : `Here’s your financial pulse for ${formatMonthYear(selectedMonth)}.`}
           </p>
         </div>
-        <div className="relative group">
+        <div className="relative group w-full md:w-56">
           <input
             name="month"
             type="month"
-            className="input-field h-12 w-56 rounded-full px-6 border-2 border-transparent bg-gray-100 dark:bg-gray-800 focus:border-primary-500 transition-all font-medium text-gray-700 dark:text-white"
+            className="input-field h-12 w-full rounded-full px-6 border-2 border-transparent bg-gray-100 dark:bg-gray-800 focus:border-primary-500 transition-all font-bold text-gray-700 dark:text-white"
             value={selectedMonth}
             onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
           />
@@ -112,21 +112,21 @@ export function DashboardPage() {
 
       {/* 👇 Dashboard Content */}
       {hasData ? (
-        <div className="space-y-10">
+        <div className="space-y-6 sm:space-y-10">
           {/* Info Tiles */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="grid lg:grid-cols-4 grid-cols-2 gap-6 px-4 py-3 sm:px-0"
+            className="grid lg:grid-cols-4 grid-cols-2 gap-4 sm:gap-6 px-4 py-3 sm:px-0"
           >
             {[
               {
-                title: "Total Income",
+                title: "Income",
                 amount: dashboardData?.overview?.totalIncome,
               },
               {
-                title: "This Month's Spend",
+                title: "Spend",
                 amount: dashboardData?.overview?.totalExpense,
               },
               {
@@ -140,7 +140,7 @@ export function DashboardPage() {
                           dashboardData?.overview?.totalIncome) *
                         100
                       ).toFixed(1)
-                }% of income`,
+                }%`,
               },
               {
                 title: "Top Category",
@@ -179,17 +179,17 @@ export function DashboardPage() {
         </div>
       ) : (
         /* Empty state with gentle guidance */
-        <div className="card p-12 mt-8 flex flex-col items-center text-center rounded-[3rem] bg-gray-50/50 dark:bg-gray-800/30 border-none shadow-none">
-          <div className="w-64 h-64 mb-8 grayscale opacity-50 contrast-125">
+        <div className="card p-8 sm:p-12 mt-8 flex flex-col items-center text-center rounded-2xl sm:rounded-3xl md:rounded-[3rem] bg-gray-50/50 dark:bg-gray-800/30 border-none shadow-none">
+          <div className="w-48 h-48 sm:w-64 sm:h-64 mb-8 grayscale opacity-50 contrast-125">
             <NoBackground />
           </div>
-          <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight leading-tight">
             Your financial story starts here
           </h3>
-          <p className="mb-10 text-lg text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed">
-            Once you start adding your income and expenses, this space will transform into a vibrant dashboard of your budget progress and spending insights.
+          <p className="mb-10 text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed font-medium">
+            Once you start adding your income and expenses, this space will transform into a vibrant dashboard of your budget progress.
           </p>
-          <Link to="/transactions" className="btn-primary flex items-center gap-3 text-lg px-10">
+          <Link to="/transactions" className="btn-primary flex items-center gap-3 text-lg px-8 sm:px-10 py-4 h-auto shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
             Start Adding Transactions
           </Link>
         </div>

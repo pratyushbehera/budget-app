@@ -87,21 +87,21 @@ export function TransactionPage() {
   if (error) return <p>{error.message}</p>;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="space-y-12">
+    <div className="min-h-screen max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="space-y-8 sm:space-y-12">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
           <div className="space-y-2">
-            <h1 className="text-6xl font-black text-gray-900 dark:text-white tracking-tighter">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
               Transactions
             </h1>
-            <p className="text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight">
+            <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight mt-1">
               Manage and track your financial flow
             </p>
           </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative group">
+ 
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="relative group flex-1 sm:flex-none">
               <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5 transition-transform group-focus-within:scale-110" />
               <input
                 name="month"
@@ -111,22 +111,22 @@ export function TransactionPage() {
                 onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
               />
             </div>
-
-            <div className="flex gap-3 w-full sm:w-auto">
+ 
+            <div className="flex gap-3">
               <button
                 onClick={() => setIsRecurringOpen(true)}
-                className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 group"
+                className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl"
               >
-                <CalendarDays size={20} className="group-hover:rotate-12 transition-transform" />
-                <span>Recurring</span>
+                <CalendarDays size={18} className="group-hover:rotate-12 transition-transform" />
+                <span className="text-sm font-black uppercase tracking-widest leading-none">Recurring</span>
               </button>
-
+ 
               <button
                 onClick={() => setShowAddModal(true)}
-                className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 group"
+                className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
               >
-                <Plus size={24} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
-                <span>Add New</span>
+                <Plus size={22} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
+                <span className="text-sm font-black uppercase tracking-widest leading-none">Add New</span>
               </button>
             </div>
           </div>
