@@ -6,7 +6,7 @@ export default function ChatWidget() {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-28 right-8 z-50">
       <button
         onClick={() => navigate("/ai-chat")}
         className="group relative flex items-center justify-center w-16 h-16 rounded-full bg-primary-500 text-white shadow-[0_8px_30px_rgb(59,130,246,0.3)] hover:shadow-[0_8px_30px_rgb(59,130,246,0.5)] transition-all duration-300 hover:scale-110 active:scale-95 overflow-hidden"

@@ -54,7 +54,7 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between p-4 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between p-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
           <button
             onClick={toggleSidebar}
             aria-label="Open menu"
@@ -80,7 +80,7 @@ export const Sidebar = () => {
       <aside
         role="navigation"
         aria-label="Main Sidebar"
-        className={`fixed top-0 left-0 z-50 h-full w-72 bg-white dark:bg-gray-950 border-r-0 md:border-r border-gray-100 dark:border-gray-800 shadow-2xl md:shadow-none transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+        className={`fixed top-0 left-0 z-20 h-full w-72 bg-white dark:bg-gray-950 border-r-0 md:border-r border-gray-100 dark:border-gray-800 shadow-2xl md:shadow-none transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         <div className="flex flex-col h-full p-6">
@@ -125,8 +125,8 @@ export const Sidebar = () => {
                 to={item.to}
                 onClick={toggleSidebar}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-                  ${window.location.pathname === item.to 
-                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" 
+                  ${window.location.pathname === item.to
+                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
                     : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"}`}
               >
                 <item.icon size={22} className={`transition-transform duration-300 group-hover:scale-110 ${window.location.pathname === item.to ? 'text-white' : 'text-gray-400 group-hover:text-primary-500'}`} />
