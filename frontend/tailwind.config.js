@@ -17,6 +17,14 @@ export default {
           800: "var(--color-primary-800)",
           900: "var(--color-primary-900)",
         },
+        secondary: {
+          50: "var(--color-secondary-50)",
+          500: "var(--color-secondary-500)",
+        },
+        tertiary: {
+          50: "var(--color-tertiary-50)",
+          500: "var(--color-tertiary-500)",
+        },
         gray: {
           50: "var(--color-gray-50)",
           100: "var(--color-gray-100)",
@@ -31,14 +39,17 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Geom", "Inter", "system-ui", "sans-serif"],
       },
       borderRadius: {
+        "3xl": "1.5rem",
         "4xl": "2rem",
+        "5xl": "3rem",
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",
         "slide-in": "slideIn 0.3s ease-out",
+        "bounce-subtle": "bounceSubtle 2s infinite ease-in-out",
       },
       keyframes: {
         fadeIn: {
@@ -48,6 +59,10 @@ export default {
         slideIn: {
           "0%": { transform: "translateY(-10px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        bounceSubtle: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
         },
       },
     },

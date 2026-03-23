@@ -99,39 +99,54 @@ exports.getGroupSummary = async (req, res) => {
     const { groupId } = req.params;
     const userId = req.user.id;
 
-    // 1. Load group
-    const group = await Group.findById(groupId);
+    // 1. Load group with populated members
+    const group = await Group.findById(groupId).populate("members.userId", "firstName email");
     if (!group) return res.status(404).json({ message: "Group not found" });
 
     // Ensure requester is group member
     const isMember = group.members.some(
-      (m) => m.userId?.toString() === userId.toString()
+      (m) => m.userId?._id?.toString() === userId.toString()
     );
     if (!isMember) return res.status(403).json({ message: "Not authorized" });
 
     // 2. Load all group transactions
     const transactions = await Transaction.find({ groupId });
 
-    // 3. Initialize balances
+    // 3. Initialize balances and totalPaid tracking
     const balances = {};
+    const totalPaid = {};
     group.members.forEach((m) => {
-      const key = m.userId?.toString() || m.email;
+      const key = m.userId?._id?.toString() || m.email;
       balances[key] = 0;
+      totalPaid[key] = {
+        id: key,
+        name: m.userId?.firstName || m.email,
+        email: m.email,
+        amount: 0,
+      };
     });
 
     // 4. Process each transaction
     transactions.forEach((tx) => {
       const payer = tx.paidBy?.toString() || tx.userId?.toString();
 
-      if (!balances[payer]) balances[payer] = 0;
-      balances[payer] += tx.amount;
+      if (balances[payer] !== undefined) balances[payer] += tx.amount;
+      else balances[payer] = tx.amount;
+
+      if (totalPaid[payer]) totalPaid[payer].amount += tx.amount;
+      else {
+        totalPaid[payer] = { id: payer, name: "Unknown", amount: tx.amount };
+      }
 
       // subtract participant shares
       tx.splitDetails.forEach((s) => {
         const memberKey = s.userId?.toString() || s.email;
 
-        if (!balances[memberKey]) balances[memberKey] = 0;
-        balances[memberKey] -= Number(s.shareAmount);
+        if (balances[memberKey] !== undefined) {
+          balances[memberKey] -= Number(s.shareAmount);
+        } else {
+          balances[memberKey] = -Number(s.shareAmount);
+        }
       });
     });
 
@@ -151,9 +166,6 @@ exports.getGroupSummary = async (req, res) => {
     // 6. Compute settlements
     const settlements = [];
 
-    let ci = 1 - 1; // creditor index
-    let di = 1 - 1; // debtor index
-
     let cPointer = 0;
     let dPointer = 0;
 
@@ -165,20 +177,21 @@ exports.getGroupSummary = async (req, res) => {
 
       const findMember = (idOrEmail) =>
         group.members.find(
-          (m) => m.userId?.toString() === idOrEmail || m.email === idOrEmail
+          (m) => m.userId?._id?.toString() === idOrEmail || m.email === idOrEmail
         );
+
       settlements.push({
         from: {
           id: debtor.user,
           name:
             findMember(debtor.user)?.userId?.firstName ||
-            findMember(debtor.user)?.email,
+            findMember(debtor.user)?.email || "Unknown",
         },
         to: {
           id: creditor.user,
           name:
             findMember(creditor.user)?.userId?.firstName ||
-            findMember(creditor.user)?.email,
+            findMember(creditor.user)?.email || "Unknown",
         },
         amount: settledAmt,
       });
@@ -193,6 +206,7 @@ exports.getGroupSummary = async (req, res) => {
 
     res.json({
       rawBalances: balances,
+      totalPaid: Object.values(totalPaid),
       settlements,
     });
   } catch (err) {

@@ -115,35 +115,35 @@ export function LoginPage() {
 
   return (
     <AuthLayout
-      title="Sign in to your account"
+      title="Welcome Back"
       subtitle={
-        <>
-          Or{" "}
+        <div className="mt-2">
+          New to FinPal?{" "}
           <Link
             to="/signup"
-            className="text-primary-600 dark:text-primary-400 hover:underline"
+            className="text-primary-500 font-black hover:underline underline-offset-4"
           >
-            create a new account
+            Create account
           </Link>
-        </>
+        </div>
       }
       footer={
         <Link
           to="/forgot-password"
-          className="text-primary-600 dark:text-primary-400 hover:underline"
+          className="hover:text-gray-900 dark:hover:text-white transition-colors"
         >
-          Forgot your password?
+          Recover Password
         </Link>
       }
     >
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-4">
+      <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-6">
           <FormInput
-            label="Email address"
+            label="Your Email"
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="Enter your email"
+            placeholder="name@email.com"
             error={errors.email}
             {...register("email")}
             onChange={() => {
@@ -152,11 +152,11 @@ export function LoginPage() {
           />
 
           <FormInput
-            label="Password"
+            label="Secret Key"
             id="password"
             type="password"
             autoComplete="current-password"
-            placeholder="Enter your password"
+            placeholder="••••••••"
             error={errors.password}
             {...register("password")}
             onChange={() => {
@@ -166,8 +166,8 @@ export function LoginPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+          <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-[1.5rem] p-5 animate-shake">
+            <p className="text-rose-600 dark:text-rose-400 text-xs font-black uppercase tracking-widest">{error}</p>
           </div>
         )}
 
@@ -175,15 +175,15 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={loginMutation.isPending}
-            className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50"
           >
             {loginMutation.isPending ? (
               <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                Signing in...
+                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                Verifying...
               </div>
             ) : (
-              "Sign in"
+              "Authorize Access"
             )}
           </button>
         </div>

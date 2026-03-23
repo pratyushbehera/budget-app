@@ -4,12 +4,14 @@ import { api } from "./apiClient";
 // =============================
 // 🔹 GET Transactions
 // =============================
-export const useTransaction = ({ month, limit } = {}) => {
+export const useTransaction = ({ month, startDate, endDate, limit } = {}) => {
   return useQuery({
-    queryKey: ["transactions", month || "all", limit || "no-limit"],
+    queryKey: ["transactions", month, startDate, endDate, limit],
     queryFn: () => {
       const params = new URLSearchParams();
       if (month) params.append("month", month);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
       if (limit) params.append("limit", limit);
 
       const queryString = params.toString();

@@ -51,77 +51,81 @@ export const CategorySpendChart = ({ data }) => {
       )}
 
       <div
-        className={`card p-4 transition-all duration-300 ${
+        className={`card p-6 transition-all duration-300 ${
           isFullscreen
-            ? "fixed inset-4 z-50 bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto"
-            : "col-span-4 md:col-span-2"
+            ? "fixed inset-4 z-50 bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto rounded-3xl"
+            : "col-span-4 md:col-span-2 rounded-3xl shadow-md border-none bg-gray-50/50 dark:bg-gray-800/50 backdrop-blur-sm"
         }`}
       >
         {/* Header */}
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
             Planned vs Actual Spend
           </h3>
 
           <button
             onClick={() => setIsFullscreen((prev) => !prev)}
-            className="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-all"
           >
             {isFullscreen ? (
-              <Minimize2 size={18} strokeWidth={1.8} />
+              <Minimize2 size={20} strokeWidth={2} />
             ) : (
-              <Maximize2 size={18} strokeWidth={1.8} />
+              <Maximize2 size={20} strokeWidth={2} />
             )}
           </button>
         </div>
 
         {!hasData ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-            <p className="text-sm mb-2">No spending data available yet</p>
-            <p className="text-xs max-w-xs">
+          <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500 dark:text-gray-400">
+            <p className="text-base font-medium mb-2">No spending data available yet</p>
+            <p className="text-sm max-w-xs opacity-70">
               Once you set your budget and record expenses, you’ll see how your
               spending compares to your plan.
             </p>
           </div>
         ) : (
           <>
-            <div className={`space-y-3 ${isFullscreen ? "mx-4 mt-4" : ""}`}>
+            <div className={`space-y-6 ${isFullscreen ? "mx-4 mt-4" : ""}`}>
               {visibleData.map((item) => (
-                <div key={item.category}>
-                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
-                    <span>{item.category}</span>
-                    {item.isUnplanned
-                      ? "Unplanned"
-                      : `${item.percentUsed.toFixed(1)}%`}
+                <div key={item.category} className="group">
+                  <div className="flex justify-between text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                    <span className="tracking-tight">{item.category}</span>
+                    <span className={item.percentUsed > 100 ? "text-tertiary-500" : "text-primary-500"}>
+                      {item.isUnplanned
+                        ? "Unplanned"
+                        : `${item.percentUsed.toFixed(0)}%`}
+                    </span>
                   </div>
 
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
                     <div
-                      className="h-3 rounded-full transition-all duration-500"
+                      className="h-4 rounded-full transition-all duration-700 ease-out group-hover:brightness-110"
                       style={{
                         width: `${Math.min(item.percentUsed, 100)}%`,
                         background: item.isUnplanned
-                          ? "linear-gradient(to right, #7c2d12, #dc2626)" // dark red
+                          ? "linear-gradient(to right, #be123c, #fb7185)" // Rose/Rose
                           : item.percentUsed > 90
-                          ? "linear-gradient(to right, #f43f5e, #fb923c)"
-                          : "linear-gradient(to right, #3b82f6, #06b6d4)",
+                          ? "linear-gradient(to right, #f59e0b, #f43f5e)" // Amber to Rose
+                          : "linear-gradient(to right, #10b981, #6366f1)", // Emerald to Indigo
                       }}
                     ></div>
                   </div>
 
-                  <div className="text-[11px] text-gray-400 mt-0.5">
-                    ₹{item.spent.toLocaleString()}{" "}
-                    {item.planned > 0
-                      ? `/ ₹${item.planned.toLocaleString()}`
-                      : "(no plan)"}
+                  <div className="flex justify-between text-[12px] font-medium text-gray-400 mt-2">
+                    <span>Spent: ₹{item.spent.toLocaleString()}</span>
+                    <span>
+                      {item.planned > 0
+                        ? `Goal: ₹${item.planned.toLocaleString()}`
+                        : "(no plan)"}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {!isFullscreen && (
-              <p className="text-[11px] text-gray-400 mt-3 text-right">
-                Showing top 5 categories
+            {!isFullscreen && chartData.length > 5 && (
+              <p className="text-[12px] font-semibold text-primary-500 mt-6 text-center cursor-pointer hover:underline" onClick={() => setIsFullscreen(true)}>
+                View all {chartData.length} categories
               </p>
             )}
           </>

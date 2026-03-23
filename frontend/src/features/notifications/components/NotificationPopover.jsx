@@ -36,13 +36,13 @@ export const NotificationPopover = () => {
     const getTypeColor = (type) => {
         switch (type) {
             case "Reminder":
-                return "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400";
+                return "bg-amber-100/50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
             case "Insight":
-                return "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400";
+                return "bg-purple-100/50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300";
             case "Group":
-                return "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400";
+                return "bg-blue-100/50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
             default:
-                return "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
+                return "bg-gray-100/50 text-gray-700 dark:bg-gray-800/40 dark:text-gray-300";
         }
     };
 
@@ -51,12 +51,12 @@ export const NotificationPopover = () => {
             {/* Bell Icon */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
+                className="group relative p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 transition-all duration-300 hover:scale-110 active:scale-95"
                 aria-label="Notifications"
             >
-                <Bell size={20} />
+                <Bell size={22} className="group-hover:rotate-12 transition-transform duration-300" />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-[10px] font-black text-white shadow-[0_0_10px_rgba(59,130,246,0.5)] border-2 border-white dark:border-gray-950 animate-bounce">
                         {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                 )}
@@ -67,44 +67,47 @@ export const NotificationPopover = () => {
                 <>
                     {/* Backdrop for mobile to close on click outside more reliably */}
                     <div className="fixed inset-0 z-40 md:hidden" onClick={() => setIsOpen(false)}></div>
-                    <div className="fixed z-50 w-[90vw] md:w-96 right-auto left-1/2 -translate-x-1/2 top-20 md:translate-x-0 md:left-[17rem] md:top-4 bg-white dark:bg-gray-950 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden ring-1 ring-black ring-opacity-5">
+                    <div className="fixed z-50 w-[95vw] md:w-[28rem] right-auto left-1/2 -translate-x-1/2 top-20 md:translate-x-0 md:left-[17rem] md:top-4 bg-white/90 dark:bg-gray-950/90 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-white/10 overflow-hidden">
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100/50 dark:border-white/5">
+                            <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
                                 Notifications
                             </h3>
                             {unreadCount > 0 && (
                                 <button
                                     onClick={() => markAllRead()}
-                                    className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium flex items-center gap-1"
+                                    className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-black uppercase tracking-widest flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
                                 >
-                                    Mark all read <Check size={14} />
+                                    Clear All <Check size={14} strokeWidth={3} />
                                 </button>
                             )}
                         </div>
 
                         {/* List */}
-                        <div className="max-h-[400px] overflow-y-auto">
+                        <div className="max-h-[480px] overflow-y-auto no-scrollbar">
                             {isLoading ? (
-                                <div className="p-4 text-center text-gray-500 text-sm">
+                                <div className="p-10 text-center text-gray-500 font-bold animate-pulse">
                                     Loading...
                                 </div>
                             ) : notifications.length === 0 ? (
-                                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                                    <p className="text-sm">No notifications yet 🎉</p>
+                                <div className="p-12 text-center">
+                                    <div className="w-16 h-16 bg-gray-50 dark:bg-gray-900 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                        <Bell size={24} className="text-gray-300" />
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400">All caught up! 🎉</p>
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <ul className="p-2 space-y-1">
                                     {notifications.map((n) => (
                                         <li
                                             key={n._id}
-                                            className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${!n.isRead ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
+                                            className={`group relative p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-300 ${!n.isRead ? "bg-primary-50/50 dark:bg-primary-900/10" : ""
                                                 }`}
                                         >
-                                            <div className="flex gap-3">
+                                            <div className="flex gap-4">
                                                 <div className="mt-1">
                                                     <span
-                                                        className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${getTypeColor(
+                                                        className={`flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-black shadow-sm ${getTypeColor(
                                                             n.type
                                                         )}`}
                                                     >
@@ -112,24 +115,27 @@ export const NotificationPopover = () => {
                                                     </span>
                                                 </div>
                                                 <div className="flex-1 space-y-1">
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                                                         {n.title}
                                                     </p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                                                         {n.message}
                                                     </p>
-                                                    <p className="text-[10px] text-gray-400 pt-1">
+                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-tighter pt-1 opacity-60">
                                                         {format(new Date(n.createdAt), "MMM d, h:mm a")}
                                                     </p>
                                                 </div>
                                                 {!n.isRead && (
                                                     <button
                                                         onClick={(e) => handleMarkRead(n._id, e)}
-                                                        className="text-primary-600 hover:text-primary-700 h-fit"
+                                                        className="self-center p-2 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 transition-all scale-0 group-hover:scale-100"
                                                         title="Mark as read"
                                                     >
-                                                        <div className="w-2 h-2 rounded-full bg-primary-600"></div>
+                                                        <Check size={16} strokeWidth={3} />
                                                     </button>
+                                                )}
+                                                {!n.isRead && (
+                                                    <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] group-hover:hidden" />
                                                 )}
                                             </div>
                                         </li>

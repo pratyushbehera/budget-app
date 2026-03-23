@@ -8,7 +8,7 @@ import { DashboardPage } from "../../pages/DashboardPage";
 import { ProfilePage } from "../../pages/ProfilePage";
 import ProtectedLayout from "../layouts/ProtectedLayout";
 import { TransactionPage } from "../../pages/TransactionPage";
-import { CategoyPage } from "../../pages/CategoryPage";
+import { CategoryPage } from "../../pages/CategoryPage";
 import { PlanPage } from "../../pages/PlanPage";
 import NotFoundPage from "../../pages/NotFoundPage";
 import GroupPage from "../../pages/GroupPage";
@@ -16,6 +16,7 @@ import GroupsPage from "../../pages/GroupsPage";
 import { ForgotPasswordPage } from "../../pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "../../pages/ResetPasswordPage";
 import { VerifyEmailPage } from "../../pages/VerifyEmailPage";
+import { ChatPage } from "../../pages/ChatPage";
 
 // Protected Route component
 function ProtectedRoute({ children }) {
@@ -107,9 +108,10 @@ export function AppRoutes() {
         <Route path="/plan" element={<PlanPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/transactions" element={<TransactionPage />} />
-        <Route path="/categories" element={<CategoyPage />} />
+        <Route path="/categories" element={<CategoryPage />} />
         <Route path="/groups" element={<GroupsPage />} />
         <Route path="/groups/:groupId" element={<GroupPage />} />
+        <Route path="/ai-chat" element={<ChatPage />} />
       </Route>
 
       {/* Fallback route */}

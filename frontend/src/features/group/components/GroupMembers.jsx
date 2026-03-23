@@ -38,10 +38,16 @@ const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-950 rounded-xl shadow p-6 border dark:border-gray-800">
-      <h2 className="font-semibold mb-4 text-md text-gray-800 dark:text-white">
-        Members
-      </h2>
+    <div className="bg-white dark:bg-gray-900/40 rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none p-8 border border-gray-100 dark:border-gray-800 animate-fade-in">
+      <div className="flex items-center gap-4 mb-8">
+        <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter">
+          Group Members
+        </h2>
+        <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+          {members.length} Total
+        </span>
+      </div>
 
       <div className="space-y-4">
         {members.map((m) => (

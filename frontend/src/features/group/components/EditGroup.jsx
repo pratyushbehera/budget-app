@@ -71,37 +71,46 @@ export const EditGroup = ({ group, onClose }) => {
   };
 
   return (
-    <Modal title="Edit Group" onClose={onClose}>
-      <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
+    <Modal title="Group Settings" onClose={onClose}>
+      <form className="space-y-6 pt-4" onSubmit={handleSubmit(onSubmit)}>
         <FormInput
-          label="Group Name"
-          placeholder="Group name"
+          label="Display Name"
+          placeholder="e.g. Vacation 2024"
           error={errors.name}
           {...register("name")}
         />
 
-        <div>
-          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            Description
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
+            About this Group
           </label>
           <textarea
-            placeholder="Group description"
-            className={`input-field ${errors.description ? "border-red-500" : ""}`}
+            placeholder="What's this group for?"
+            rows={4}
+            className={`input-field min-h-[120px] resize-none ${errors.description ? "border-rose-500 bg-rose-50/10" : "bg-gray-50/50 dark:bg-gray-800/20"}`}
             {...register("description")}
           />
           {errors.description && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            <p className="mt-1.5 text-xs font-bold text-rose-500 px-1">
               {errors.description.message}
             </p>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
-          <button type="button" className="btn-secondary" onClick={onClose}>
-            Cancel
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <button 
+            type="button" 
+            className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" 
+            onClick={onClose}
+          >
+            Go Back
           </button>
-          <button type="submit" className="btn-primary" disabled={isPending}>
-            Update
+          <button 
+            type="submit" 
+            className="btn-primary px-8" 
+            disabled={isPending}
+          >
+            {isPending ? "Updating..." : "Save Changes"}
           </button>
         </div>
       </form>

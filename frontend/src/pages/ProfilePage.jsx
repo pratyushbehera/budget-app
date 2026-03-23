@@ -72,82 +72,97 @@ function DeveloperSettings() {
   };
 
   return (
-    <div className="card mt-6 p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-lg">
-          <Terminal size={20} />
+    <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] mt-8 p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10">
+        <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 rotate-3">
+          <Terminal size={32} className="text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Developer Settings (MCP)
+          <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">
+            Developer Access
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Connect FinPal to Claude AI using the Model Context Protocol.
+          <p className="text-lg text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+            Connect FinPal to Claude AI via MCP
           </p>
         </div>
       </div>
 
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg p-4 mb-6">
-        <p className="text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2">
-          <Key className="shrink-0 mt-0.5" size={16} />
+      <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/40 rounded-3xl p-6 mb-10 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <Key size={80} />
+        </div>
+        <p className="text-sm text-amber-900 dark:text-amber-200 font-medium leading-relaxed relative z-10 flex items-start gap-3">
+          <Key className="shrink-0 mt-0.5 text-amber-500" size={20} />
           <span>
             Generate a long-lived API key to allow external tools like Claude Desktop to access your data.
-            <strong> Keep this key private!</strong> It grants full access to your account for 1 year.
+            <strong className="font-black text-amber-600 dark:text-amber-400"> Keep this key private!</strong> It grants full access to your account for one year.
           </span>
         </p>
       </div>
 
       {!devKey ? (
         <button
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary flex items-center gap-3 px-8 py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95"
           onClick={handleGenerateKey}
           disabled={generateKeyMutation.isPending}
         >
           {generateKeyMutation.isPending ? "Generating..." : "Generate Developer Key"}
         </button>
       ) : (
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1 block">
-              Your Developer Key
+        <div className="space-y-10">
+          <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
+              Your Secret API Key
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <input
                 type="text"
                 readOnly
                 value={devKey}
-                className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2 text-sm font-mono"
+                className="flex-1 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 p-4 text-sm font-mono tracking-tight text-primary-500"
               />
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(devKey);
                   addToast({ type: "success", title: "Key Copied", message: "Key copied to clipboard." });
                 }}
-                className="btn-secondary px-3"
+                className="p-4 rounded-2xl bg-gray-900 text-white hover:bg-black transition-colors shadow-lg"
               >
-                <Copy size={16} />
+                <Copy size={20} />
               </button>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+          <div className="pt-10 border-t border-gray-100 dark:border-gray-800">
+            <h4 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter mb-6">
               Claude Desktop Setup
             </h4>
-            <ol className="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-4 list-decimal pl-4">
-              <li>Install Claude Desktop on your computer.</li>
-              <li>Open <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS).</li>
-              <li>Paste the configuration snippet below into the <code>mcpServers</code> section.</li>
-              <li>Restart Claude Desktop.</li>
-            </ol>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">1</span>
+                  <p>Open <code>claude_desktop_config.json</code> in your Application Support folder.</p>
+                </div>
+                <div className="flex gap-4">
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">2</span>
+                  <p>Paste the configuration snippet below into the <code>mcpServers</code> section.</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">3</span>
+                  <p>Restart Claude Desktop to enable the integration.</p>
+                </div>
+              </div>
+            </div>
 
             <div className="relative group">
-              <pre className="p-4 rounded-lg bg-gray-900 text-gray-100 text-xs overflow-x-auto font-mono">
+              <pre className="p-8 rounded-[2rem] bg-gray-900 text-primary-400 text-xs overflow-x-auto font-mono leading-relaxed shadow-inner">
                 {JSON.stringify({
                   mcpServers: {
                     finpal: {
                       command: "npx",
-                      args: ["-y", "mcp-remote", "https://budget-app-production-6630.up.railway.app/api/mcp/sse"],
+                      args: ["-y", "mcp-remote", "https://finpal-mcp.up.railway.app/api/mcp/sse"],
                       env: {
                         API_URL: "https://budget-app-be.vercel.app",
                         API_TOKEN: devKey
@@ -158,20 +173,22 @@ function DeveloperSettings() {
               </pre>
               <button
                 onClick={copyConfig}
-                className="absolute top-3 right-3 p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded border border-gray-700 flex items-center gap-2 transition-colors"
+                className="absolute top-6 right-6 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-xl border border-white/10 flex items-center gap-3 transition-all font-black uppercase tracking-widest text-[10px]"
               >
-                {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-                <span className="text-[10px] uppercase font-bold tracking-tight">Copy JSON</span>
+                {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                <span>Copy Config</span>
               </button>
             </div>
           </div>
 
-          <button
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-            onClick={handleGenerateKey}
-          >
-            Regenerate key (replaces existing)
-          </button>
+          <div className="flex justify-center pt-4">
+            <button
+              className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-primary-500 transition-colors"
+              onClick={handleGenerateKey}
+            >
+              Regenerate developer credentials
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -200,13 +217,11 @@ export function ProfilePage() {
     },
   });
 
-  // Gravatar image for user's email
   const { avatarUrl, loading: avatarLoading } = useGravatar(user?.email, {
-    size: 120,
+    size: 200,
     defaultType: "retro",
   });
 
-  // Populate form once user data is available
   useEffect(() => {
     if (user) {
       reset({
@@ -248,12 +263,10 @@ Want to take control of your daily spending? 💸
 Track expenses, set budgets, and save smarter—all in one app.
 
 👉 Join here:
-https://budget-app-sigma-taupe.vercel.app
+https://finpal.com/join
 
 Try it out and share your feedback! 📊
 #BudgetTracker #SaveMoney
-
-💡 Tip: Bookmark the link for easy access. Let’s build better financial habits together!
 `;
 
   const handleShare = async () => {
@@ -262,10 +275,10 @@ Try it out and share your feedback! 📊
         await navigator.share({
           title: "FinPal App",
           text: shareText,
-          url: "https://budget-app-sigma-taupe.vercel.app",
+          url: "https://finpal.com/join",
         });
       } catch (err) {
-        // user cancelled – ignore
+        // quiet
       }
     } else {
       copyToClipboard();
@@ -277,92 +290,129 @@ Try it out and share your feedback! 📊
     addToast({
       type: "success",
       title: "Copied",
-      message: "Invite message copied to clipboard.",
+      message: "Ready to share with your crew!",
     });
   };
 
-  if (isLoading) {
-    return <LoadingPage page="profile" />;
-  }
+  if (isLoading) return <LoadingPage page="profile" />;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto py-10 px-6 lg:px-8">
-      {/* Profile Header */}
-      <div className="card p-6 flex flex-col md:flex-row items-center gap-6">
-        <div className="flex flex-col items-center">
-          {avatarLoading ? (
-            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
-          ) : (
-            <img
-              src={avatarUrl || "/default-avatar.png"}
-              alt="Profile avatar"
-              className="w-24 h-24 rounded-full border border-gray-300 dark:border-gray-700 shadow"
-            />
-          )}
-        </div>
+    <div className="max-w-7xl mx-auto py-12 px-6 lg:px-10 space-y-12 animate-fade-in relative">
+      {/* Decorative Background */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
-        <div className="flex-1 text-center md:text-left">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            {user?.firstName} {user?.lastName}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300">{user?.email}</p>
-        </div>
-
-        <button
-          className="btn-primary flex items-center gap-2"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <Pencil size={16} />
-          Edit Profile
-        </button>
-      </div>
-
-      {/* Settings */}
-      <div className="card mt-6 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Appearance
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Customize the look and feel of the app
+          <h1 className="text-7xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
+            Settings
+          </h1>
+          <p className="text-xl text-gray-400 dark:text-gray-500 font-medium tracking-tight mt-4">
+            Manage your digital footprint and preferences
           </p>
         </div>
-        <ThemeToggle />
       </div>
 
-      {/* Invite & Share */}
-      <div className="card mt-6 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Invite friends to FinPal
-        </h3>
+      {/* Profile Card */}
+      <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[3rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+        <div className="flex flex-col md:flex-row items-center gap-10">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-primary-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+            {avatarLoading ? (
+              <div className="w-40 h-40 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse border-4 border-white dark:border-gray-900"></div>
+            ) : (
+              <img
+                src={avatarUrl || "/default-avatar.png"}
+                alt={user?.firstName}
+                className="w-40 h-40 rounded-full border-8 border-white dark:border-gray-950 shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
+          </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-          Help your friends track expenses and build better money habits.
-        </p>
+          <div className="flex-1 text-center md:text-left space-y-2">
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">
+              {user?.firstName} {user?.lastName}
+            </h2>
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <span className="text-lg font-medium text-gray-400 dark:text-gray-500">{user?.email}</span>
+              <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-full text-[10px] font-black uppercase tracking-widest">
+                verified account
+              </span>
+            </div>
+          </div>
 
-        <textarea
-          readOnly
-          value={shareText}
-          className="mt-4 w-full min-h-[160px] resize-none rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm text-gray-800 dark:text-gray-200"
-        />
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button className="btn-primary" onClick={handleShare}>
-            Share
-          </button>
-
-          <button className="btn-secondary" onClick={copyToClipboard}>
-            Copy message
-          </button>
-
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary"
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="btn-primary flex items-center gap-3 px-8 py-4 text-lg font-black rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
           >
-            WhatsApp
-          </a>
+            <Pencil size={20} />
+            Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* Appearance Control */}
+        <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+          <div className="flex items-center justify-between mb-8">
+            <div className="space-y-1">
+              <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+                Appearance
+              </h3>
+              <p className="text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+                Switch between light and dark themes
+              </p>
+            </div>
+          </div>
+          <div className="p-6 bg-gray-50/50 dark:bg-gray-800/20 rounded-3xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <span className="text-lg font-black text-gray-900 dark:text-white tracking-tight">System Theme</span>
+            <ThemeToggle />
+          </div>
+        </div>
+
+        {/* Invite Friends */}
+        <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+          <div className="space-y-1 mb-6">
+            <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+              Spread the Word
+            </h3>
+            <p className="text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+              Invite friends to simplify their finances
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="relative group">
+              <textarea
+                readOnly
+                value={shareText}
+                className="w-full min-h-[120px] resize-none rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed shadow-inner"
+              />
+              <button 
+                onClick={copyToClipboard}
+                className="absolute top-4 right-4 p-3 bg-white dark:bg-gray-900 rounded-xl shadow-lg hover:scale-110 transition-transform"
+              >
+                <Copy size={16} className="text-primary-500" />
+              </button>
+            </div>
+
+            <div className="flex gap-4">
+              <button 
+                className="flex-1 btn-primary py-4 rounded-2xl text-lg font-black shadow-lg shadow-primary-500/20"
+                onClick={handleShare}
+              >
+                Fast Share
+              </button>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-2xl bg-[#25D366] text-white hover:scale-105 transition-transform shadow-lg shadow-[#25D366]/20 flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -370,13 +420,13 @@ Try it out and share your feedback! 📊
 
       {/* Edit Modal */}
       {isModalOpen && (
-        <Modal title="Edit Profile" onClose={() => setIsModalOpen(false)}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Modal title="Refine Profile" onClose={() => setIsModalOpen(false)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormInput
                 label="First Name"
                 id="firstName"
-                placeholder="Enter first name"
+                placeholder="John"
                 error={errors.firstName}
                 {...register("firstName")}
               />
@@ -384,45 +434,48 @@ Try it out and share your feedback! 📊
               <FormInput
                 label="Last Name"
                 id="lastName"
-                placeholder="Enter last name"
+                placeholder="Doe"
                 error={errors.lastName}
                 {...register("lastName")}
               />
             </div>
 
-            <FormInput
-              label="Email"
-              id="email"
-              type="email"
-              disabled
-              error={errors.email}
-              {...register("email")}
-            />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
+                Account Email (Primary)
+              </label>
+              <input
+                type="email"
+                disabled
+                className="input-field bg-gray-50/30 dark:bg-gray-800/20 text-gray-400 italic cursor-not-allowed"
+                {...register("email")}
+              />
+            </div>
 
             <FormInput
-              label="New Password (leave blank to keep current)"
+              label="Reset Security Key"
               id="password"
               type="password"
-              placeholder="Enter new password"
+              placeholder="Leave blank to keep current"
               autoComplete="new-password"
               error={errors.password}
               {...register("password")}
             />
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
               <button
                 type="button"
-                className="btn-secondary"
+                className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setIsModalOpen(false)}
               >
-                Cancel
+                Go Back
               </button>
               <button
                 type="submit"
                 disabled={updateProfileMutation.isPending}
-                className="btn-primary"
+                className="btn-primary px-10"
               >
-                {updateProfileMutation.isPending ? "Updating..." : "Save"}
+                {updateProfileMutation.isPending ? "Syncing..." : "Apply Changes"}
               </button>
             </div>
           </form>

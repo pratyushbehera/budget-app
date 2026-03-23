@@ -67,59 +67,57 @@ export function SignupPage() {
 
   return (
     <AuthLayout
-      title="Create your account"
+      title="Join FinPal"
       subtitle={
-        <>
-          Already have an account?{" "}
+        <div className="mt-2">
+          Already a member?{" "}
           <Link
             to="/login"
-            className="text-primary-600 dark:text-primary-400 hover:underline"
+            className="text-primary-500 font-black hover:underline underline-offset-4"
           >
             Sign in
           </Link>
-        </>
+        </div>
       }
       footer={
-        <>
-          By creating an account, you agree to our{" "}
-          <Link to="/terms" className="text-primary-600 hover:underline">
-            Terms
-          </Link>{" "}
-          &{" "}
-          <Link to="/privacy" className="text-primary-600 hover:underline">
-            Privacy Policy
-          </Link>
-        </>
+        <div className="space-y-1">
+          <p>By creating an account, you agree to our</p>
+          <div className="flex items-center justify-center gap-2">
+            <Link to="/terms" className="text-gray-900 dark:text-white hover:underline">Terms</Link>
+            <span className="opacity-30">&bull;</span>
+            <Link to="/privacy" className="text-gray-900 dark:text-white hover:underline">Privacy Policy</Link>
+          </div>
+        </div>
       }
     >
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-4">
+      <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+        <div className="space-y-5">
           <FormInput
             label="Full Name"
             id="name"
             type="text"
             autoComplete="name"
-            placeholder="Enter your full name"
+            placeholder="John Doe"
             error={errors.name}
             {...register("name")}
           />
 
           <FormInput
-            label="Email address"
+            label="Email Address"
             id="email"
             type="email"
             autoComplete="email"
-            placeholder="Enter your email"
+            placeholder="john@example.com"
             error={errors.email}
             {...register("email")}
           />
 
           <FormInput
-            label="Password"
+            label="Secure Password"
             id="password"
             type="password"
             autoComplete="new-password"
-            placeholder="Create a password"
+            placeholder="••••••••"
             error={errors.password}
             {...register("password")}
           />
@@ -129,7 +127,7 @@ export function SignupPage() {
             id="confirmPassword"
             type="password"
             autoComplete="new-password"
-            placeholder="Confirm your password"
+            placeholder="••••••••"
             error={errors.confirmPassword}
             {...register("confirmPassword")}
           />
@@ -139,15 +137,15 @@ export function SignupPage() {
           <button
             type="submit"
             disabled={registerMutation.isPending}
-            className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50"
           >
             {registerMutation.isPending ? (
               <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                Creating account...
+                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                Creating...
               </div>
             ) : (
-              "Create Account"
+              "Launch Account"
             )}
           </button>
         </div>
