@@ -11,7 +11,7 @@ export function RecentTransaction({ month }) {
   if (error) return <p>{error.message}</p>;
 
   return (
-    <div className="md:col-span-2 col-span-4 rounded-3xl bg-gray-50/50 dark:bg-gray-800/50 p-6 shadow-md border-none backdrop-blur-sm">
+    <div className="md:col-span-2 col-span-4 rounded-3xl bg-white dark:bg-gray-800/50 p-6 shadow-md border-none backdrop-blur-sm">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
           Recent Transactions
@@ -34,7 +34,7 @@ export function RecentTransaction({ month }) {
           {data.map((tx) => {
             const isIncome =
               tx.type?.toLowerCase() === "income" ||
-              ["salary", "bonus", "interest", "other income","dividend"].includes(
+              ["salary", "bonus", "interest", "other income", "dividend"].includes(
                 tx.category.toLowerCase()
               );
 
@@ -64,11 +64,10 @@ export function RecentTransaction({ month }) {
                 </div>
 
                 <div
-                  className={`flex items-center text-base font-bold tracking-tight ${
-                    isIncome
+                  className={`flex items-center text-base font-bold tracking-tight ${isIncome
                       ? "text-emerald-600 dark:text-emerald-400"
                       : "text-rose-600 dark:text-rose-400"
-                  }`}
+                    }`}
                 >
                   <span className="mr-1">{isIncome ? "+" : "-"}</span>
                   {formatCurrency(tx.amount)}
