@@ -25,7 +25,7 @@ export function RecurringDrawer({ open, onClose, rules }) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/40 z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -34,11 +34,11 @@ export function RecurringDrawer({ open, onClose, rules }) {
 
           {/* Drawer */}
           <motion.div
-            className={`fixed z-50 bg-white dark:bg-gray-950 shadow-2xl flex flex-col
+            className={`fixed z-50 bg-white dark:bg-gray-950 shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col
               ${
                 isDesktop
-                  ? "top-0 right-0 h-full w-[420px]"
-                  : "bottom-0 left-0 w-full h-[90%] rounded-t-2xl"
+                  ? "top-0 right-0 h-full w-[480px] rounded-l-[3.5rem]"
+                  : "bottom-0 left-0 w-full h-[90%] rounded-t-[3.5rem]"
               }
             `}
             initial={isDesktop ? { x: "100%" } : { y: "100%" }}
@@ -56,35 +56,37 @@ export function RecurringDrawer({ open, onClose, rules }) {
           >
             {/* Drag handle (mobile only) */}
             {!isDesktop && (
-              <div className="flex justify-center py-2">
-                <div className="w-10 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full" />
+              <div className="flex justify-center py-4">
+                <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full" />
               </div>
             )}
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-800">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 dark:border-white/5">
               <div>
-                <h2 className="text-lg font-semibold">
-                  Recurring transactions
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                  Recurring Transactions
                 </h2>
-                <p className="text-xs text-gray-500">
-                  Manage repeating income & expenses
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1">
+                  Manage your pulse
                 </p>
               </div>
-              <button onClick={onClose}>
-                <X className="w-5 h-5" />
+              <button 
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl transition-all"
+              >
+                <X className="w-6 h-6 text-gray-400" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
               <RecurringRuleList rules={rules} />
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-3 border-t dark:border-gray-800 text-xs text-gray-500">
-              To create a new recurring transaction, use{" "}
-              <span className="font-medium">Add Transaction</span>
+            <div className="px-8 py-6 border-t border-gray-100 dark:border-white/5 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">
+              New rule? Use <span className="text-primary-500">Add Transaction</span>
             </div>
           </motion.div>
         </>

@@ -1,6 +1,7 @@
 import { useEnableRecurringRule } from "../../../services/recurringApi";
 import { useToast } from "../../../contexts/ToastContext";
 import { useState } from "react";
+import { Play, StopCircle, Trash2 } from "lucide-react";
 import { StopRecurringModal } from "./StopRecurringModal";
 import { DeleteRecurringModal } from "./DeleteRecurringModal";
 
