@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./apiClient";
 
-export const useDashboard = (month) => {
+export const useDashboard = ({ month, startDate, endDate }) => {
   return useQuery({
-    queryKey: ["dashboard", month || "all"],
+    queryKey: ["dashboard", month, startDate, endDate],
     queryFn: () => {
       const params = new URLSearchParams();
       if (month) params.append("month", month);
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
 
       const queryString = params.toString();
       const path = queryString

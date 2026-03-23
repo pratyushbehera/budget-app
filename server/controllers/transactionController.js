@@ -4,7 +4,7 @@ const GroupActivity = require("../models/GroupActivity");
 
 exports.getTransactions = async (req, res) => {
   try {
-    const { month, limit } = req.query;
+    const { month, limit, startDate, endDate } = req.query;
     const userId = req.user.id;
 
     // Base filter using new paidBy logic
@@ -20,14 +20,19 @@ exports.getTransactions = async (req, res) => {
       ],
     };
 
-    if (month) {
-      const startDate = new Date(`${month}-01`);
-      const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + 1);
+    if (startDate && endDate) {
+      filter.date = {
+        $gte: startDate,
+        $lte: endDate,
+      };
+    } else if (month) {
+      const start = new Date(`${month}-01`);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
 
       filter.date = {
-        $gte: startDate.toISOString().split("T")[0],
-        $lt: endDate.toISOString().split("T")[0],
+        $gte: start.toISOString().split("T")[0],
+        $lt: end.toISOString().split("T")[0],
       };
     }
 

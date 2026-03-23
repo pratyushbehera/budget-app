@@ -3,13 +3,28 @@ const Category = require("../models/Category");
 
 exports.getDashboard = async (req, res) => {
   try {
-    const { month } = req.query;
+    const { month, startDate: qStartDate, endDate: qEndDate } = req.query;
     const userId = req.user.id;
 
-    // Parse selected month
-    const startDate = new Date(`${month}-01`);
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1);
+    let startDate, endDate;
+
+    if (qStartDate && qEndDate) {
+      startDate = new Date(qStartDate);
+      endDate = new Date(qEndDate);
+      // For rolling trend, we still might want to use the end of the range as the reference
+    } else if (month) {
+      startDate = new Date(`${month}-01`);
+      endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+    } else {
+      // Default to current month if nothing provided
+      const now = new Date();
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+
+    const startDateISO = startDate.toISOString().split("T")[0];
+    const endDateISO = endDate.toISOString().split("T")[0];
 
     const currentYear = startDate.getFullYear().toString();
     const currentMonthIndex = startDate.getMonth(); // 0-based (0 = Jan)
@@ -28,8 +43,8 @@ exports.getDashboard = async (req, res) => {
           },
         ],
         date: {
-          $gte: startDate.toISOString().split("T")[0],
-          $lt: endDate.toISOString().split("T")[0],
+          $gte: startDateISO,
+          $lt: endDateISO,
         },
       }),
       Category.find({ userId }),
@@ -108,11 +123,9 @@ exports.getDashboard = async (req, res) => {
     }
 
     // ---- LAST 12 MONTHS (rolling) ----
-    const endMonth = new Date(startDate); // selected month
-    endMonth.setMonth(endMonth.getMonth() + 1); // exclusive end
-
-    const startMonth = new Date(startDate);
-    startMonth.setMonth(startMonth.getMonth() - 11); // go back 11 months
+    const endRef = new Date(endDate);
+    const startRolling = new Date(endRef);
+    startRolling.setMonth(startRolling.getMonth() - 12); // go back 12 months from end of selection
 
     const rollingTxns = await Transaction.find({
       $or: [
@@ -122,8 +135,8 @@ exports.getDashboard = async (req, res) => {
         },
       ],
       date: {
-        $gte: startMonth.toISOString().split("T")[0],
-        $lt: endMonth.toISOString().split("T")[0],
+        $gte: startRolling.toISOString().split("T")[0],
+        $lt: endRef.toISOString().split("T")[0],
       },
     });
 
@@ -133,8 +146,8 @@ exports.getDashboard = async (req, res) => {
     // helper to compute month index in rolling window
     const getMonthIndex = (date) => {
       const diff =
-        (date.getFullYear() - startMonth.getFullYear()) * 12 +
-        (date.getMonth() - startMonth.getMonth());
+        (date.getFullYear() - startRolling.getFullYear()) * 12 +
+        (date.getMonth() - startRolling.getMonth());
       return diff; // 0 → 11
     };
 
@@ -162,7 +175,7 @@ exports.getDashboard = async (req, res) => {
     const monthLabels = [];
 
     for (let i = 0; i < 12; i++) {
-      const d = new Date(startMonth);
+      const d = new Date(startRolling);
       d.setMonth(d.getMonth() + i);
       monthLabels.push(
         d.toLocaleString("en-US", { month: "short", year: "2-digit" })
@@ -173,7 +186,7 @@ exports.getDashboard = async (req, res) => {
     const lastMonthIncome = monthlyIncome[11];
 
     // Fetch same month last year
-    const prevYearStart = new Date(startMonth);
+    const prevYearStart = new Date(startRolling);
     prevYearStart.setFullYear(prevYearStart.getFullYear() - 1);
 
     const prevYearEnd = new Date(prevYearStart);

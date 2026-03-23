@@ -4,8 +4,8 @@ import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { ArrowDownRight, ArrowUpRight, Wallet } from "lucide-react";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
 
-export function RecentTransaction({ month }) {
-  const { data, isLoading, error } = useTransaction({ month, limit: 5 });
+export function RecentTransaction({ month, startDate, endDate }) {
+  const { data, isLoading, error } = useTransaction({ month, startDate, endDate, limit: 5 });
 
   if (isLoading) return <p>Loading recent transactions...</p>;
   if (error) return <p>{error.message}</p>;

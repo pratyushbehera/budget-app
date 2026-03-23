@@ -7,7 +7,10 @@ const appSlice = createSlice({
     loading: false,
     error: null,
     sidebarOpen: true,
+    dateMode: "month", // "month", "year", "range"
     selectedMonth: getCurrentMonth(),
+    startDate: null,
+    endDate: null,
   },
   reducers: {
     setLoading: (state, action) => {
@@ -24,6 +27,16 @@ const appSlice = createSlice({
     },
     setSelectedMonth: (state, action) => {
       state.selectedMonth = action.payload;
+      state.dateMode = "month";
+      state.startDate = null;
+      state.endDate = null;
+    },
+    setDateRange: (state, action) => {
+      const { mode, startDate, endDate, month } = action.payload;
+      state.dateMode = mode;
+      state.startDate = startDate;
+      state.endDate = endDate;
+      if (month) state.selectedMonth = month;
     },
   },
 });
@@ -34,5 +47,6 @@ export const {
   clearError,
   toggleSidebar,
   setSelectedMonth,
+  setDateRange,
 } = appSlice.actions;
 export default appSlice.reducer;

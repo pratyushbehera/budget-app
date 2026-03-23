@@ -18,6 +18,7 @@ import { PendingRecurringCard } from "../features/recurring/components/PendingRe
 import { todayISO, formatMonthYear } from "../shared/utils/formatDate";
 import { useWeeklyInsightsQuery } from "../services/insightsApi";
 import { WeeklyInsightsList } from "../features/dashboard/components/WeeklyInsightsList";
+import { DateRangePicker } from "../shared/components/DateRangePicker";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -40,9 +41,9 @@ export function DashboardPage() {
   );
   const { groups } = useSelector((state) => state.group);
 
-  const selectedMonth = useSelector((state) => state.app.selectedMonth);
+  const { dateMode, selectedMonth, startDate, endDate } = useSelector((state) => state.app);
   const { data: dashboardData, isLoading: dashboardLoading } =
-    useDashboard(selectedMonth);
+    useDashboard({ month: selectedMonth, startDate, endDate });
   const { data: pendingRecurring } = usePendingRecurring();
   const today = todayISO();
 
@@ -84,18 +85,10 @@ export function DashboardPage() {
           <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 font-medium">
             {!hasData 
               ? "Welcome to FinPal. Let's start your financial journey."
-              : `Here’s your financial pulse for ${formatMonthYear(selectedMonth)}.`}
+              : `Here’s your financial pulse for ${dateMode === "range" ? selectedMonth : formatMonthYear(selectedMonth)}.`}
           </p>
         </div>
-        <div className="relative group w-full md:w-56">
-          <input
-            name="month"
-            type="month"
-            className="input-field h-12 w-full rounded-full px-6 border-2 border-transparent bg-gray-100 dark:bg-gray-800 focus:border-primary-500 transition-all font-bold text-gray-700 dark:text-white"
-            value={selectedMonth}
-            onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
-          />
-        </div>
+        <DateRangePicker />
       </header>
 
       {actionableRecurring?.length > 0 && (
@@ -172,7 +165,7 @@ export function DashboardPage() {
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
             <MonthlySpendCard monthlyTrend={dashboardData?.monthlyTrend} />
-            <RecentTransaction month={selectedMonth} />
+            <RecentTransaction month={selectedMonth} startDate={startDate} endDate={endDate} />
 
             <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
           </div>

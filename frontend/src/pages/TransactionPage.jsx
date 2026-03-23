@@ -11,11 +11,16 @@ import { LoadingPage } from "../shared/components/LoadingPage";
 import { TransactionItem } from "../features/transactions/components/TransactionItem";
 import { useRecurringRules } from "../services/recurringApi";
 import { RecurringDrawer } from "../features/recurring/components/RecurringDrawer";
+import { DateRangePicker } from "../shared/components/DateRangePicker";
 
 export function TransactionPage() {
   const dispatch = useDispatch();
-  const selectedMonth = useSelector((state) => state.app.selectedMonth);
-  const { data, isLoading, error } = useTransaction({ month: selectedMonth });
+  const { selectedMonth, startDate, endDate } = useSelector((state) => state.app);
+  const { data, isLoading, error } = useTransaction({ 
+    month: selectedMonth, 
+    startDate, 
+    endDate 
+  });
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editTx, setEditTx] = useState(null);
@@ -101,16 +106,7 @@ export function TransactionPage() {
           </div>
  
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <div className="relative group flex-1 sm:flex-none">
-              <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 w-5 h-5 transition-transform group-focus-within:scale-110" />
-              <input
-                name="month"
-                type="month"
-                className="input-field pl-12 w-full sm:w-56 font-bold text-gray-700 bg-white dark:bg-gray-900 border-2 border-transparent focus:border-primary-500 shadow-sm"
-                value={selectedMonth}
-                onChange={(e) => dispatch(setSelectedMonth(e.target.value))}
-              />
-            </div>
+            <DateRangePicker />
  
             <div className="flex gap-3">
               <button
