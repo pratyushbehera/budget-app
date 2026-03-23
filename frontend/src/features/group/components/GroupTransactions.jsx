@@ -84,7 +84,7 @@ const GroupTransactions = ({ group, groupId }) => {
           <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Start a expense to see it here</p>
         </div>
       ) : (
-        <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar max-h-[85vh]">
           {transactions.map((tx) => {
             const payerName = getMemberName(tx.paidBy);
             const splitType = getSplitType(tx);
@@ -96,8 +96,8 @@ const GroupTransactions = ({ group, groupId }) => {
                 key={tx._id}
                 onClick={() => toggleExpand(tx._id)}
                 className={`group p-5 rounded-[2rem] transition-all duration-300 cursor-pointer border
-                  ${isExpanded 
-                    ? "bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200 border-gray-100 dark:border-gray-700" 
+                  ${isExpanded
+                    ? "bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200 border-gray-100 dark:border-gray-700"
                     : "bg-gray-50 dark:bg-gray-800/40 border-transparent hover:bg-white dark:hover:bg-gray-800/60 hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-none hover:border-gray-100 dark:hover:border-gray-700"}`}
               >
                 <div className="flex justify-between items-start">
@@ -127,11 +127,10 @@ const GroupTransactions = ({ group, groupId }) => {
                         {indicator && (
                           <span
                             className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border
-                            ${
-                              indicator === "You paid"
+                            ${indicator === "You paid"
                                 ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                                 : "bg-amber-50 text-amber-600 border-amber-100"
-                            }
+                              }
                           `}
                           >
                             {indicator}
