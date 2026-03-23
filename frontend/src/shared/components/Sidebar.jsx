@@ -54,7 +54,7 @@ export const Sidebar = () => {
     <>
       {/* Mobile Toggle Button */}
       {!isOpen && (
-        <div className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between p-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div className="md:hidden z-50 fixed top-0 left-0 right-0 flex items-center justify-between p-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
           <button
             onClick={toggleSidebar}
             aria-label="Open menu"
@@ -80,7 +80,7 @@ export const Sidebar = () => {
       <aside
         role="navigation"
         aria-label="Main Sidebar"
-        className={`fixed top-0 left-0 z-20 h-full w-72 bg-white dark:bg-gray-950 border-r-0 md:border-r border-gray-100 dark:border-gray-800 shadow-2xl md:shadow-none transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+        className={`fixed top-0 left-0 z-40 h-full w-72 bg-white dark:bg-gray-950 border-r-0 md:border-r border-gray-100 dark:border-gray-800 shadow-2xl md:shadow-none transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         <div className="flex flex-col h-full p-6">
@@ -212,7 +212,7 @@ export const Sidebar = () => {
       {isOpen && (
         <div
           onClick={toggleSidebar}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm md:hidden z-30 transition-opacity duration-300"
         />
       )}
     </>
