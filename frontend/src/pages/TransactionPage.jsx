@@ -139,14 +139,14 @@ export function TransactionPage() {
                 placeholder="Search history..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field pl-12 bg-white dark:bg-gray-900 font-semibold"
+                className="input-field pl-12 bg-white dark:bg-gray-950/50 font-semibold"
               />
             </div>
 
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="input-field md:w-56 bg-white dark:bg-gray-900 font-bold border-r-[16px] border-transparent"
+              className="input-field md:w-56 bg-white dark:bg-gray-950 font-bold border-r-[16px] border-white-100/20"
             >
               {categoryOptions.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>

@@ -16,7 +16,7 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
 
   return (
     <li
-      className="group flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-gray-900/40 
+      className="group flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-gray-950/40 
                  p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-gray-800 
                  hover:border-primary-500/30 hover:shadow-2xl hover:shadow-primary-500/5 transition-all duration-300 animate-fade-in gap-4"
     >
@@ -81,7 +81,7 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => onEdit(tx)}
-            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-all duration-300 active:scale-90"
+            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-all duration-300 active:scale-90"
             aria-label="Edit transaction"
           >
             <Pencil size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
@@ -89,7 +89,7 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
 
           <button
             onClick={() => onDelete(tx)}
-            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-300 active:scale-90"
+            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-300 active:scale-90"
             aria-label="Delete transaction"
           >
             <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />

@@ -38,7 +38,7 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
   };
 
   return (
-    <div className="col-span-4 rounded-3xl bg-white dark:bg-gray-800/40 p-6 shadow-md border-none backdrop-blur-sm flex flex-col">
+    <div className="col-span-4 rounded-3xl bg-white dark:bg-gray-950/40 p-6 shadow-md border backdrop-blur-sm flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>

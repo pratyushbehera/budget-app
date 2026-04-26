@@ -72,7 +72,7 @@ function DeveloperSettings() {
   };
 
   return (
-    <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] mt-8 p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+    <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[2.5rem] mt-8 p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
       <div className="flex flex-col md:flex-row md:items-center gap-6 mb-10">
         <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 rotate-3">
           <Terminal size={32} className="text-white" />
@@ -314,7 +314,7 @@ Try it out and share your feedback! 📊
       </div>
 
       {/* Profile Card */}
-      <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[3rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+      <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[3rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
         <div className="flex flex-col md:flex-row items-center gap-10">
           <div className="relative group">
             <div className="absolute inset-0 bg-primary-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
@@ -353,7 +353,7 @@ Try it out and share your feedback! 📊
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Appearance Control */}
-        <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+        <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
           <div className="flex items-center justify-between mb-8">
             <div className="space-y-1">
               <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
@@ -371,7 +371,7 @@ Try it out and share your feedback! 📊
         </div>
 
         {/* Invite Friends */}
-        <div className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
+        <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
           <div className="space-y-1 mb-6">
             <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
               Spread the Word
@@ -386,11 +386,11 @@ Try it out and share your feedback! 📊
               <textarea
                 readOnly
                 value={shareText}
-                className="w-full min-h-[120px] resize-none rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed shadow-inner"
+                className="w-full min-h-[120px] resize-none rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/30 p-6 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed shadow-inner"
               />
               <button 
                 onClick={copyToClipboard}
-                className="absolute top-4 right-4 p-3 bg-white dark:bg-gray-900 rounded-xl shadow-lg hover:scale-110 transition-transform"
+                className="btn-secondary absolute top-4 right-4 p-3 rounded-xl shadow-lg hover:scale-110 transition-transform"
               >
                 <Copy size={16} className="text-primary-500" />
               </button>
