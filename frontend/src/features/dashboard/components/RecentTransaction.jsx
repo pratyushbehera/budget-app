@@ -11,7 +11,7 @@ export function RecentTransaction({ month, startDate, endDate }) {
   if (error) return <p>{error.message}</p>;
 
   return (
-    <div className="md:col-span-2 col-span-4 rounded-3xl bg-white dark:bg-gray-800/50 p-6 shadow-md border-none backdrop-blur-sm">
+    <div className="md:col-span-2 col-span-4 rounded-3xl bg-white dark:bg-gray-950 p-6 shadow-md border dark:border-gray-900 backdrop-blur-sm">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
           Recent Transactions
@@ -43,7 +43,7 @@ export function RecentTransaction({ month, startDate, endDate }) {
             return (
               <li
                 key={tx._id}
-                className="group flex items-center justify-between p-3 bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100/50 dark:border-gray-700/50"
+                className="group flex items-center justify-between p-3 bg-white dark:bg-gray-950/80 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100/50 dark:border-gray-700/50"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-primary-100 dark:bg-primary-900/30 group-hover:scale-110 transition-transform duration-300">

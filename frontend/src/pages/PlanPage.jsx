@@ -117,8 +117,13 @@ export function PlanPage() {
               onClick={() => setIsEditing(true)}
               className="btn-primary flex items-center justify-center gap-3 group px-8 py-4 rounded-2xl shadow-xl shadow-primary-500/20"
             >
-              <Edit size={20} className="group-hover:rotate-12 transition-transform" />
-              <span className="text-sm font-black uppercase tracking-widest">Edit My Plan</span>
+              <Edit
+                size={20}
+                className="group-hover:rotate-12 transition-transform"
+              />
+              <span className="text-sm font-black uppercase tracking-widest">
+                Edit My Plan
+              </span>
             </button>
           )}
         </div>
@@ -139,8 +144,14 @@ export function PlanPage() {
                 onClick={() => setShowAddCategory(true)}
                 className="btn-secondary flex items-center justify-center gap-2 group h-12 px-6 rounded-xl"
               >
-                <Plus size={18} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
-                <span className="text-sm font-black uppercase tracking-widest">Add Category</span>
+                <Plus
+                  size={18}
+                  strokeWidth={3}
+                  className="group-hover:rotate-90 transition-transform"
+                />
+                <span className="text-sm font-black uppercase tracking-widest">
+                  Add Category
+                </span>
               </button>
             </div>
 
@@ -148,34 +159,47 @@ export function PlanPage() {
               {Object.entries(groupedCategories).map(([type, groups]) => (
                 <div key={type} className="space-y-6">
                   <div className="flex items-center gap-4">
-                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary-500">{type} Categories</h2>
+                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary-500">
+                      {type} Categories
+                    </h2>
                     <div className="h-px flex-1 bg-primary-100 dark:bg-primary-900/30"></div>
                   </div>
 
                   {Object.entries(groups).map(([group, cats]) => (
-                    <div key={group} className="card p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem]">
+                    <div
+                      key={group}
+                      className="card p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem]"
+                    >
                       <h3 className="text-lg sm:text-xl font-black mb-6 text-gray-900 dark:text-white tracking-tight capitalize">
                         {group}
                       </h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         {cats.map((cat) => {
-                          const Icon = categoryIconMap[cat.name?.toLowerCase()] || categoryIconMap["other"];
+                          const Icon =
+                            categoryIconMap[cat.name?.toLowerCase()] ||
+                            categoryIconMap["other"];
                           return (
                             <div
                               key={cat._id}
-                              className="group flex flex-col gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-4 sm:p-5 rounded-2xl border border-transparent hover:border-primary-500/20 hover:bg-white dark:hover:bg-gray-800/40 transition-all duration-300"
+                              className="group flex flex-col gap-4 bg-gray-50/50 dark:bg-gray-800/20 p-4 sm:p-5 rounded-2xl border border-transparent hover:border-gray-200 hover:bg-white dark:hover:bg-gray-950/90 transition-all duration-300"
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-lg shadow-current/10 transition-transform group-hover:scale-110
-                                    ${type === "Income"
-                                    ? "bg-emerald-500 text-white"
-                                    : group?.toLowerCase().includes("want")
-                                      ? "bg-orange-500 text-white"
-                                      : "bg-blue-500 text-white"
-                                    }`}>
-                                    <Icon className="w-5 h-5" strokeWidth={2.5} />
+                                  <div
+                                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-lg shadow-current/10 transition-transform group-hover:scale-110
+                                    ${
+                                      type === "Income"
+                                        ? "bg-emerald-500 text-white"
+                                        : group?.toLowerCase().includes("want")
+                                        ? "bg-orange-500 text-white"
+                                        : "bg-blue-500 text-white"
+                                    }`}
+                                  >
+                                    <Icon
+                                      className="w-5 h-5"
+                                      strokeWidth={2.5}
+                                    />
                                   </div>
                                   <span className="font-black text-gray-900 dark:text-white tracking-tight truncate max-w-[120px] sm:max-w-none">
                                     {cat.name}
@@ -189,11 +213,15 @@ export function PlanPage() {
                                 </button>
                               </div>
                               <div className="relative">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-base sm:text-lg">₹</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-base sm:text-lg">
+                                  ₹
+                                </span>
                                 <input
                                   type="number"
                                   value={editableData[cat.name] || ""}
-                                  onChange={(e) => handleChange(cat.name, e.target.value)}
+                                  onChange={(e) =>
+                                    handleChange(cat.name, e.target.value)
+                                  }
                                   placeholder="0"
                                   className="input-field pl-10 h-12 sm:h-14 text-base sm:text-lg font-black tracking-tighter"
                                 />
@@ -211,13 +239,32 @@ export function PlanPage() {
             {/* Edit Mode Summary */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {[
-                { label: "Planned Income", value: totalPlannedIncome, color: "emerald" },
-                { label: "Planned Expenses", value: totalPlannedExpense, color: "rose" },
-                { label: "Estimated Savings", value: plannedSavings, color: plannedSavings < 0 ? "rose" : "primary" }
+                {
+                  label: "Planned Income",
+                  value: totalPlannedIncome,
+                  color: "emerald",
+                },
+                {
+                  label: "Planned Expenses",
+                  value: totalPlannedExpense,
+                  color: "rose",
+                },
+                {
+                  label: "Estimated Savings",
+                  value: plannedSavings,
+                  color: plannedSavings < 0 ? "rose" : "primary",
+                },
               ].map((stat, i) => (
-                <div key={i} className={`card p-6 sm:p-8 rounded-2xl sm:rounded-[2.5rem] border-b-8 border-${stat.color}-500 transition-transform hover:-translate-y-1`}>
-                  <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">{stat.label}</p>
-                  <h3 className={`text-2xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white`}>
+                <div
+                  key={i}
+                  className={`card p-6 sm:p-8 rounded-2xl sm:rounded-[2.5rem] border-b-8 border-${stat.color}-500 transition-transform hover:-translate-y-1`}
+                >
+                  <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">
+                    {stat.label}
+                  </p>
+                  <h3
+                    className={`text-2xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white`}
+                  >
                     {formatCurrency(stat.value)}
                   </h3>
                 </div>
@@ -233,16 +280,26 @@ export function PlanPage() {
                 }}
                 className="btn-secondary px-10 h-14 rounded-2xl group w-full sm:w-auto order-2 sm:order-1"
               >
-                <X size={20} className="group-hover:rotate-90 transition-transform" />
-                <span className="text-sm font-black uppercase tracking-widest">Cancel</span>
+                <X
+                  size={20}
+                  className="group-hover:rotate-90 transition-transform"
+                />
+                <span className="text-sm font-black uppercase tracking-widest">
+                  Cancel
+                </span>
               </button>
               <button
                 onClick={handleSavePlan}
                 disabled={isPending}
                 className="btn-primary px-10 h-14 rounded-2xl shadow-2xl shadow-primary-500/30 group w-full sm:w-auto order-1 sm:order-2"
               >
-                <Save size={20} className="group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-black uppercase tracking-widest">{isPending ? "Saving..." : "Commit Plan"}</span>
+                <Save
+                  size={20}
+                  className="group-hover:scale-110 transition-transform"
+                />
+                <span className="text-sm font-black uppercase tracking-widest">
+                  {isPending ? "Saving..." : "Commit Plan"}
+                </span>
               </button>
             </div>
           </div>
@@ -254,16 +311,35 @@ export function PlanPage() {
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { label: "Monthly Income", value: totalPlannedIncome, color: "bg-emerald-500", icon: Wallet },
-                { label: "Budgeted Spend", value: totalPlannedExpense, color: "bg-rose-500", icon: CreditCard },
-                { label: "Projected Savings", value: plannedSavings, color: "bg-primary-500", icon: Save }
+                {
+                  label: "Monthly Income",
+                  value: totalPlannedIncome,
+                  color: "bg-emerald-500",
+                  icon: Wallet,
+                },
+                {
+                  label: "Budgeted Spend",
+                  value: totalPlannedExpense,
+                  color: "bg-rose-500",
+                  icon: CreditCard,
+                },
+                {
+                  label: "Projected Savings",
+                  value: plannedSavings,
+                  color: "bg-primary-500",
+                  icon: Save,
+                },
               ].map((stat, i) => (
                 <div key={i} className="relative group perspective">
-                  <div className={`h-full p-8 rounded-[2.5rem] ${stat.color} text-white shadow-2xl shadow-current/20 overflow-hidden relative transition-all duration-500 group-hover:scale-[1.02]`}>
+                  <div
+                    className={`h-full p-8 rounded-[2.5rem] ${stat.color} text-white shadow-2xl shadow-current/20 overflow-hidden relative transition-all duration-500 group-hover:scale-[1.02]`}
+                  >
                     <div className="absolute -right-6 -bottom-6 opacity-10 group-hover:scale-125 transition-transform duration-700">
                       <stat.icon size={160} strokeWidth={1} />
                     </div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-70 mb-2">{stat.label}</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-70 mb-2">
+                      {stat.label}
+                    </p>
                     <h3 className="text-4xl font-black tracking-tighter">
                       {formatCurrency(stat.value)}
                     </h3>
@@ -299,22 +375,44 @@ export function PlanPage() {
                     {cats.map((cat) => {
                       const value = planData?.[cat.name] || 0;
                       const isIncome = cat.type === "Income";
-                      const Icon = categoryIconMap[cat.name?.toLowerCase()] || categoryIconMap["other"];
+                      const Icon =
+                        categoryIconMap[cat.name?.toLowerCase()] ||
+                        categoryIconMap["other"];
 
                       return (
                         <div
                           key={cat._id}
-                          className="group relative bg-white dark:bg-gray-900/40 p-6 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-2xl transition-all duration-500"
+                          className="group relative bg-white dark:bg-gray-950/40 p-6 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-2xl transition-all duration-500"
                         >
                           <div className="flex flex-col gap-6">
                             <div className="flex items-center justify-between">
-                              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6
-                                ${isIncome ? "bg-emerald-500" : "bg-gray-100 dark:bg-gray-800"} text-white`}>
-                                <Icon size={28} className={isIncome ? 'text-white' : 'text-primary-500'} strokeWidth={2.5} />
+                              <div
+                                className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6
+                                ${
+                                  isIncome
+                                    ? "bg-emerald-500"
+                                    : "bg-gray-100 dark:bg-gray-800"
+                                } text-white`}
+                              >
+                                <Icon
+                                  size={28}
+                                  className={
+                                    isIncome ? "text-white" : "text-primary-500"
+                                  }
+                                  strokeWidth={2.5}
+                                />
                               </div>
                               <div className="text-right">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{cat.type}</p>
-                                <p className={`text-2xl font-black tracking-tighter ${isIncome ? 'text-emerald-500' : 'text-gray-900 dark:text-white'}`}>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
+                                  {cat.type}
+                                </p>
+                                <p
+                                  className={`text-2xl font-black tracking-tighter ${
+                                    isIncome
+                                      ? "text-emerald-500"
+                                      : "text-gray-900 dark:text-white"
+                                  }`}
+                                >
                                   {formatCurrency(value)}
                                 </p>
                               </div>
@@ -328,12 +426,22 @@ export function PlanPage() {
                                 <div className="space-y-2">
                                   <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
                                     <span>Allocation</span>
-                                    <span>{Math.round((value / totalPlannedExpense) * 100)}%</span>
+                                    <span>
+                                      {Math.round(
+                                        (value / totalPlannedExpense) * 100
+                                      )}
+                                      %
+                                    </span>
                                   </div>
                                   <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-0.5">
                                     <div
                                       className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-400 shadow-sm"
-                                      style={{ width: `${Math.min((value / totalPlannedExpense) * 100, 100)}%` }}
+                                      style={{
+                                        width: `${Math.min(
+                                          (value / totalPlannedExpense) * 100,
+                                          100
+                                        )}%`,
+                                      }}
                                     ></div>
                                   </div>
                                 </div>

@@ -58,7 +58,7 @@ export const Sidebar = () => {
           <button
             onClick={toggleSidebar}
             aria-label="Open menu"
-            className="p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white active:scale-95 transition-transform"
+            className="p-3 rounded-2xl bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-white active:scale-95 dark:border dark:border-gray-100 transition-transform"
           >
             <Menu size={24} />
           </button>
@@ -125,11 +125,20 @@ export const Sidebar = () => {
                 to={item.to}
                 onClick={toggleSidebar}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-                  ${window.location.pathname === item.to
-                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                    : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"}`}
+                  ${
+                    window.location.pathname === item.to
+                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
+                      : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+                  }`}
               >
-                <item.icon size={22} className={`transition-transform duration-300 group-hover:scale-110 ${window.location.pathname === item.to ? 'text-white' : 'text-gray-400 group-hover:text-primary-500'}`} />
+                <item.icon
+                  size={22}
+                  className={`transition-transform duration-300 group-hover:scale-110 ${
+                    window.location.pathname === item.to
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-primary-500"
+                  }`}
+                />
                 <span className="tracking-tight">{item.label}</span>
               </Link>
             ))}
@@ -147,12 +156,23 @@ export const Sidebar = () => {
                       to={`/groups/${grp?._id}`}
                       onClick={toggleSidebar}
                       className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all group
-                        ${window.location.pathname.includes(grp?._id)
-                          ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
-                          : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"}`}
+                        ${
+                          window.location.pathname.includes(grp?._id)
+                            ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
+                            : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+                        }`}
                     >
-                      <TicketCheck size={20} className={`${window.location.pathname.includes(grp?._id) ? 'text-white' : 'text-gray-400 group-hover:text-secondary-500'}`} />
-                      <span className="text-sm truncate tracking-tight">{grp.name}</span>
+                      <TicketCheck
+                        size={20}
+                        className={`${
+                          window.location.pathname.includes(grp?._id)
+                            ? "text-white"
+                            : "text-gray-400 group-hover:text-secondary-500"
+                        }`}
+                      />
+                      <span className="text-sm truncate tracking-tight">
+                        {grp.name}
+                      </span>
                     </Link>
                   ))}
                 </div>
@@ -167,7 +187,10 @@ export const Sidebar = () => {
                 <div className="relative">
                   {error || !avatarUrl || loading ? (
                     <div className="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                      <UserIcon size={24} className="text-primary-600 dark:text-primary-400" />
+                      <UserIcon
+                        size={24}
+                        className="text-primary-600 dark:text-primary-400"
+                      />
                     </div>
                   ) : (
                     <img

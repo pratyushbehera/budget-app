@@ -23,7 +23,7 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
   return (
     <div
       className="flex items-center justify-between rounded-2xl p-4 
-                 bg-white dark:bg-gray-800/20 border border-gray-100 dark:border-gray-800 
+                 bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 
                  hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-none transition-all duration-300 group"
     >
       {/* Left Section */}

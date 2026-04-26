@@ -53,8 +53,8 @@ export const CategorySpendChart = ({ data }) => {
       <div
         className={`card p-6 transition-all duration-300 ${
           isFullscreen
-            ? "fixed inset-4 z-50 bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto rounded-3xl"
-            : "col-span-4 md:col-span-2 rounded-3xl shadow-md border-none bg-gray-50/50 dark:bg-gray-800/50 backdrop-blur-sm"
+            ? "fixed inset-4 z-50 bg-white dark:bg-gray-950 shadow-2xl overflow-y-auto rounded-3xl"
+            : "col-span-4 md:col-span-2 rounded-3xl shadow-md border bg-gray-50/50 dark:bg-gray-950/50 backdrop-blur-sm"
         }`}
       >
         {/* Header */}

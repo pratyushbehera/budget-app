@@ -38,7 +38,7 @@ const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900/40 rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none p-8 border border-gray-100 dark:border-gray-800 animate-fade-in">
+    <div className="bg-white dark:bg-gray-950/40 rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none p-8 border border-gray-100 dark:border-gray-800 animate-fade-in">
       <div className="flex items-center gap-4 mb-8">
         <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter">
           Group Members

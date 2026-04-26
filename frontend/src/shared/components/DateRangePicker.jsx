@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { setDateRange } from "../../app/store/appSlice";
-import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,7 +16,7 @@ export function DateRangePicker() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [tempMode, setTempMode] = useState(dateMode);
-  
+
   // Internal state for pickers
   const [internalDate, setInternalDate] = useState(new Date());
   const [internalRange, setInternalRange] = useState([null, null]);
@@ -73,7 +73,7 @@ export function DateRangePicker() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-6 py-3 bg-gray-100 dark:bg-gray-800 rounded-full font-bold text-gray-700 dark:text-white border-2 border-transparent hover:border-primary-500 transition-all shadow-sm group"
+        className="flex items-center gap-3 px-6 py-3 bg-gray-100 dark:bg-gray-950 rounded-full font-bold text-gray-700 dark:text-white border-2 border-white-100/20 hover:border-primary-500 transition-all shadow-sm group"
       >
         <CalendarDays className="w-5 h-5 text-primary-500 group-hover:scale-110 transition-transform" />
         <span className="whitespace-nowrap">{getDisplayText()}</span>
@@ -82,15 +82,15 @@ export function DateRangePicker() {
       <AnimatePresence>
         {isOpen && (
           <>
-            <div 
-              className="fixed inset-0 z-40 bg-black/5 backdrop-blur-[2px]" 
+            <div
+              className="fixed inset-0 z-40 bg-black/5 backdrop-blur-[2px]"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute right-0 mt-3 z-50 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 p-6 min-w-[320px]"
+              className="absolute left-0 lg:left-auto lg:right-0  mt-3 z-40 bg-white dark:bg-gray-950 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 p-6 min-w-[350px]"
             >
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-black text-gray-900 dark:text-white">Select Period</h3>
@@ -100,16 +100,15 @@ export function DateRangePicker() {
               </div>
 
               {/* Mode Switcher */}
-              <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-6">
+              <div className="flex p-1 bg-gray-100 dark:bg-gray-950 rounded-2xl mb-6">
                 {["month", "year", "range"].map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setTempMode(mode)}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                      tempMode === mode
-                        ? "bg-white dark:bg-gray-700 text-primary-500 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                    }`}
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tempMode === mode
+                      ? "bg-white dark:bg-gray-950/20 text-primary-500 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                      }`}
                   >
                     {mode}
                   </button>

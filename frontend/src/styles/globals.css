@@ -29,7 +29,7 @@
   }
   
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-3xl shadow-xl dark:shadow-none border border-gray-100 dark:border-gray-700 backdrop-blur-sm;
+    @apply bg-white dark:bg-gray-950 rounded-3xl shadow-xl dark:shadow-none border border-gray-100 dark:border-gray-700 backdrop-blur-sm;
   }
 
   .table-head{

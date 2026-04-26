@@ -73,9 +73,9 @@ export function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-white dark:bg-gray-950 overflow-hidden">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950 overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-10">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
@@ -109,8 +109,8 @@ export function ChatPage() {
               </div>
               <div className={`flex flex-col gap-2 max-w-[85%] sm:max-w-[80%] ${msg.from === "user" ? "items-end" : ""}`}>
                 <div className={`px-5 py-4 rounded-3xl text-sm sm:text-base leading-relaxed ${msg.from === "user"
-                    ? "bg-gray-900 text-white dark:bg-gray-800"
-                    : "bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800"
+                  ? "bg-gray-900 text-white dark:bg-gray-800"
+                  : "bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800"
                   }`}>
                   <div className="prose dark:prose-invert max-w-none prose-sm sm:prose-base font-medium">
                     <ReactMarkdown>
@@ -131,7 +131,7 @@ export function ChatPage() {
                 <button
                   key={i}
                   onClick={() => streamAIMessage(q.text)}
-                  className="flex items-center gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-primary-500/50 hover:bg-primary-50/10 transition-all text-left text-sm font-bold text-gray-600 dark:text-gray-400 group"
+                  className="flex items-center bg-white gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-primary-500/50 hover:bg-primary-50/10 transition-all text-left text-sm font-bold text-gray-600 dark:text-gray-400 group"
                 >
                   <span className="text-xl group-hover:scale-125 transition-transform">{q.icon}</span>
                   {q.text}
