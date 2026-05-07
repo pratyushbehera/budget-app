@@ -1,4 +1,3 @@
-import React from "react";
 import { Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +14,11 @@ export default function ChatWidget() {
         <div className="absolute inset-0 bg-gradient-to-tr from-primary-600 to-primary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="relative">
-          <Sparkles size={28} strokeWidth={2.5} className="group-hover:rotate-12 transition-transform duration-300" />
+          <Sparkles
+            size={28}
+            strokeWidth={2.5}
+            className="group-hover:rotate-12 transition-transform duration-300"
+          />
         </div>
 
         <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-950 animate-pulse" />

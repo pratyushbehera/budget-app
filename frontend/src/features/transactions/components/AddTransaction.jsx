@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -28,10 +28,10 @@ const transactionSchema = yup.object().shape({
 export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   const { user: currentUser } = useSelector((s) => s.auth);
   const { category: categoryList, loading: isCatLoading } = useSelector(
-    (s) => s.category
+    (s) => s.category,
   );
   const { groups = [], loading: isGroupLoading } = useSelector(
-    (s) => s.group || {}
+    (s) => s.group || {},
   );
 
   const [isRecurring, setIsRecurring] = useState(false);
@@ -151,7 +151,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
 
             onClose();
           },
-        }
+        },
       );
 
       return;
@@ -175,7 +175,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
               title: "Error",
               message: err?.message || "Failed to add transaction.",
             }),
-        }
+        },
       );
     } catch (err) {
       addToast({
@@ -215,8 +215,9 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
               </label>
               <select
                 id="categoryId"
-                className={`input-field ${errors.categoryId ? "border-red-500" : ""
-                  }`}
+                className={`input-field dark:bg-gray-100 ${
+                  errors.categoryId ? "border-red-500" : ""
+                }`}
                 {...register("categoryId")}
               >
                 <option value="">Select Category</option>
@@ -236,7 +237,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
             <FormInput
               label="Amount"
               id="amount"
-              type="number"
+              type="text"
               placeholder="0.00"
               step="0.01"
               error={errors.amount}
@@ -252,7 +253,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
               </label>
               <textarea
                 id="notes"
-                className="input-field resize-none"
+                className="input-field resize-none dark:bg-gray-100"
                 rows={3}
                 placeholder="Optional"
                 {...register("notes")}
@@ -286,7 +287,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
           )}
 
           <div className="mt-4">
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm dark:text-white">
               <input
                 type="checkbox"
                 checked={isRecurring}
@@ -303,7 +304,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
                 <select
                   value={frequency}
                   onChange={(e) => setFrequency(e.target.value)}
-                  className="input-field"
+                  className="input-field dark:bg-gray-100"
                 >
                   <option value="monthly">Monthly</option>
                   <option value="weekly">Weekly</option>
@@ -316,7 +317,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
                   type="date"
                   value={formValues.date}
                   disabled
-                  className="input-field"
+                  className="input-field  dark:bg-gray-100"
                 />
               </div>
             </div>
@@ -327,11 +328,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
             <button type="button" className="btn-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={isPending}
-            >
+            <button type="submit" className="btn-primary" disabled={isPending}>
               {isPending ? "Saving..." : "Save"}
             </button>
           </div>

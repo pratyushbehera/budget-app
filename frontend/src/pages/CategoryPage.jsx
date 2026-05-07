@@ -3,16 +3,16 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
 
-export function CategoryPage() {
+export default function CategoryPage() {
   const {
     category: data,
     loading: isLoading,
     error,
   } = useSelector((state) => state.category);
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [deleteCategory, setDeleteCategory] = useState(null);
-  const [editCategory, setEditCategory] = useState(null);
+  const [,setShowAddModal] = useState(false);
+  const [, setDeleteCategory] = useState(null);
+  const [, setEditCategory] = useState(null);
 
   if (isLoading) return <LoadingPage page="categories" />;
   if (error) return (

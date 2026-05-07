@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal } from "../../../shared/components/Modal";
 import { useToast } from "../../../contexts/ToastContext";
 import { useInviteMember } from "../../../services/groupApi";
@@ -36,7 +36,7 @@ const InviteMemberModal = ({ groupId, onClose }) => {
             message: err?.message || "Failed to send invitation.",
           });
         },
-      }
+      },
     );
   };
 
@@ -55,19 +55,19 @@ const InviteMemberModal = ({ groupId, onClose }) => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <p className="text-[10px] font-medium text-gray-400 px-1">
-            They'll receive an email to join your group.
+            They&apos;ll receive an email to join your group.
           </p>
         </div>
 
         <div className="flex justify-end gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
-          <button 
-            className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:white transition-colors" 
+          <button
+            className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:white transition-colors"
             onClick={onClose}
           >
             Cancel
           </button>
-          <button 
-            className="btn-primary px-8" 
+          <button
+            className="btn-primary px-8"
             onClick={handleSubmit}
             disabled={invite.isPending}
           >

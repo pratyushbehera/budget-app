@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../../contexts/ToastContext";
@@ -24,7 +24,7 @@ export const Sidebar = () => {
   const { addToast } = useToast();
   const { user } = useSelector((state) => state.auth);
   const { groups, loading: isGroupLoading } = useSelector(
-    (state) => state.group
+    (state) => state.group,
   );
 
   const { avatarUrl, loading, error } = useGravatar(user?.email, {
@@ -118,7 +118,7 @@ export const Sidebar = () => {
               { to: "/dashboard", icon: LayoutDashboard, label: "Overview" },
               { to: "/transactions", icon: CreditCard, label: "Transactions" },
               { to: "/plan", icon: FileText, label: "Budget Plan" },
-              { to: "/groups", icon: Group, label: "Social Groups" },
+              { to: "/groups", icon: Group, label: "Money Groups" },
             ].map((item) => (
               <Link
                 key={item.to}
@@ -126,10 +126,10 @@ export const Sidebar = () => {
                 onClick={toggleSidebar}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
                   ${
-                    window.location.pathname === item.to
-                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                      : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-                  }`}
+              window.location.pathname === item.to
+                ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
+                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+              }`}
               >
                 <item.icon
                   size={22}
@@ -157,10 +157,10 @@ export const Sidebar = () => {
                       onClick={toggleSidebar}
                       className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all group
                         ${
-                          window.location.pathname.includes(grp?._id)
-                            ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
-                            : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-                        }`}
+                    window.location.pathname.includes(grp?._id)
+                      ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
+                      : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+                    }`}
                     >
                       <TicketCheck
                         size={20}

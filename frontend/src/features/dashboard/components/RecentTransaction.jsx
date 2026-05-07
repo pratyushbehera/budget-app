@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
 import { useTransaction } from "../../../services/transactionApi";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
-import { ArrowDownRight, ArrowUpRight, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
 
 export function RecentTransaction({ month, startDate, endDate }) {
-  const { data, isLoading, error } = useTransaction({ month, startDate, endDate, limit: 5 });
+  const { data, isLoading, error } = useTransaction({
+    month,
+    startDate,
+    endDate,
+    limit: 5,
+  });
 
   if (isLoading) return <p>Loading recent transactions...</p>;
   if (error) return <p>{error.message}</p>;
@@ -34,9 +39,13 @@ export function RecentTransaction({ month, startDate, endDate }) {
           {data.map((tx) => {
             const isIncome =
               tx.type?.toLowerCase() === "income" ||
-              ["salary", "bonus", "interest", "other income", "dividend"].includes(
-                tx.category.toLowerCase()
-              );
+              [
+                "salary",
+                "bonus",
+                "interest",
+                "other income",
+                "dividend",
+              ].includes(tx.category.toLowerCase());
 
             const Icon = categoryIconMap[tx.category.toLowerCase()] || Wallet;
 
@@ -57,17 +66,18 @@ export function RecentTransaction({ month, startDate, endDate }) {
                       {new Date(tx.date).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
-                        year: "numeric"
+                        year: "numeric",
                       })}
                     </p>
                   </div>
                 </div>
 
                 <div
-                  className={`flex items-center text-base font-bold tracking-tight ${isIncome
+                  className={`flex items-center text-base font-bold tracking-tight ${
+                    isIncome
                       ? "text-emerald-600 dark:text-emerald-400"
                       : "text-rose-600 dark:text-rose-400"
-                    }`}
+                  }`}
                 >
                   <span className="mr-1">{isIncome ? "+" : "-"}</span>
                   {formatCurrency(tx.amount)}

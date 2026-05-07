@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const PendingInviteBanner = ({ pendingCount }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible] = useState(true);
 
   if (!pendingCount || !visible) return null;
 

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useUpdateProfile, useGenerateDeveloperKey } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { Modal } from "../shared/components/Modal";
-import { Pencil, Terminal, Copy, Check, ExternalLink, Key } from "lucide-react";
+import { Pencil, Terminal, Copy, Check, Key } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
@@ -21,7 +21,7 @@ const profileSchema = yup.object().shape({
     .test(
       "len",
       "Password must be at least 6 characters",
-      (val) => !val || val.length >= 6
+      (val) => !val || val.length >= 6,
     ),
 });
 
@@ -54,12 +54,16 @@ function DeveloperSettings() {
       mcpServers: {
         finpal: {
           command: "npx",
-          args: ["-y", "mcp-remote", "https://finpal-mcp-production.up.railway.app/api/mcp/sse"],
+          args: [
+            "-y",
+            "mcp-remote",
+            "https://finpal-mcp-production.up.railway.app/api/mcp/sse",
+          ],
           env: {
-            API_TOKEN: devKey || "YOUR_DEVELOPER_KEY_HERE"
-          }
-        }
-      }
+            API_TOKEN: devKey || "YOUR_DEVELOPER_KEY_HERE",
+          },
+        },
+      },
     };
     await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
     setCopied(true);
@@ -94,8 +98,13 @@ function DeveloperSettings() {
         <p className="text-sm text-amber-900 dark:text-amber-200 font-medium leading-relaxed relative z-10 flex items-start gap-3">
           <Key className="shrink-0 mt-0.5 text-amber-500" size={20} />
           <span>
-            Generate a long-lived API key to allow external tools like Claude Desktop to access your data.
-            <strong className="font-black text-amber-600 dark:text-amber-400"> Keep this key private!</strong> It grants full access to your account for one year.
+            Generate a long-lived API key to allow external tools like Claude
+            Desktop to access your data.
+            <strong className="font-black text-amber-600 dark:text-amber-400">
+              {" "}
+              Keep this key private!
+            </strong>{" "}
+            It grants full access to your account for one year.
           </span>
         </p>
       </div>
@@ -106,7 +115,9 @@ function DeveloperSettings() {
           onClick={handleGenerateKey}
           disabled={generateKeyMutation.isPending}
         >
-          {generateKeyMutation.isPending ? "Generating..." : "Generate Developer Key"}
+          {generateKeyMutation.isPending
+            ? "Generating..."
+            : "Generate Developer Key"}
         </button>
       ) : (
         <div className="space-y-10">
@@ -124,7 +135,11 @@ function DeveloperSettings() {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(devKey);
-                  addToast({ type: "success", title: "Key Copied", message: "Key copied to clipboard." });
+                  addToast({
+                    type: "success",
+                    title: "Key Copied",
+                    message: "Key copied to clipboard.",
+                  });
                 }}
                 className="p-4 rounded-2xl bg-gray-900 text-white hover:bg-black transition-colors shadow-lg"
               >
@@ -140,17 +155,29 @@ function DeveloperSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">1</span>
-                  <p>Open <code>claude_desktop_config.json</code> in your Application Support folder.</p>
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                    1
+                  </span>
+                  <p>
+                    Open <code>claude_desktop_config.json</code> in your
+                    Application Support folder.
+                  </p>
                 </div>
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">2</span>
-                  <p>Paste the configuration snippet below into the <code>mcpServers</code> section.</p>
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                    2
+                  </span>
+                  <p>
+                    Paste the configuration snippet below into the{" "}
+                    <code>mcpServers</code> section.
+                  </p>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">3</span>
+                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                    3
+                  </span>
                   <p>Restart Claude Desktop to enable the integration.</p>
                 </div>
               </div>
@@ -158,24 +185,36 @@ function DeveloperSettings() {
 
             <div className="relative group">
               <pre className="p-8 rounded-[2rem] bg-gray-900 text-primary-400 text-xs overflow-x-auto font-mono leading-relaxed shadow-inner">
-                {JSON.stringify({
-                  mcpServers: {
-                    finpal: {
-                      command: "npx",
-                      args: ["-y", "mcp-remote", "https://finpal-mcp.up.railway.app/api/mcp/sse"],
-                      env: {
-                        API_URL: "https://budget-app-be.vercel.app",
-                        API_TOKEN: devKey
-                      }
-                    }
-                  }
-                }, null, 2)}
+                {JSON.stringify(
+                  {
+                    mcpServers: {
+                      finpal: {
+                        command: "npx",
+                        args: [
+                          "-y",
+                          "mcp-remote",
+                          "https://finpal-mcp.up.railway.app/api/mcp/sse",
+                        ],
+                        env: {
+                          API_URL: "https://budget-app-be.vercel.app",
+                          API_TOKEN: devKey,
+                        },
+                      },
+                    },
+                  },
+                  null,
+                  2,
+                )}
               </pre>
               <button
                 onClick={copyConfig}
                 className="absolute top-6 right-6 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-xl border border-white/10 flex items-center gap-3 transition-all font-black uppercase tracking-widest text-[10px]"
               >
-                {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                {copied ? (
+                  <Check size={16} className="text-emerald-400" />
+                ) : (
+                  <Copy size={16} />
+                )}
                 <span>Copy Config</span>
               </button>
             </div>
@@ -195,7 +234,7 @@ function DeveloperSettings() {
   );
 }
 
-export function ProfilePage() {
+export default function ProfilePage() {
   const { user, loading: isLoading } = useSelector((state) => state.auth);
   const updateProfileMutation = useUpdateProfile();
   const { addToast } = useToast();
@@ -334,7 +373,9 @@ Try it out and share your feedback! 📊
               {user?.firstName} {user?.lastName}
             </h2>
             <div className="flex items-center justify-center md:justify-start gap-3">
-              <span className="text-lg font-medium text-gray-400 dark:text-gray-500">{user?.email}</span>
+              <span className="text-lg font-medium text-gray-400 dark:text-gray-500">
+                {user?.email}
+              </span>
               <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-full text-[10px] font-black uppercase tracking-widest">
                 verified account
               </span>
@@ -365,7 +406,9 @@ Try it out and share your feedback! 📊
             </div>
           </div>
           <div className="p-6 bg-gray-50/50 dark:bg-gray-800/20 rounded-3xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <span className="text-lg font-black text-gray-900 dark:text-white tracking-tight">System Theme</span>
+            <span className="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+              System Theme
+            </span>
             <ThemeToggle />
           </div>
         </div>
@@ -388,7 +431,7 @@ Try it out and share your feedback! 📊
                 value={shareText}
                 className="w-full min-h-[120px] resize-none rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/30 p-6 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed shadow-inner"
               />
-              <button 
+              <button
                 onClick={copyToClipboard}
                 className="btn-secondary absolute top-4 right-4 p-3 rounded-xl shadow-lg hover:scale-110 transition-transform"
               >
@@ -397,7 +440,7 @@ Try it out and share your feedback! 📊
             </div>
 
             <div className="flex gap-4">
-              <button 
+              <button
                 className="flex-1 btn-primary py-4 rounded-2xl text-lg font-black shadow-lg shadow-primary-500/20"
                 onClick={handleShare}
               >
@@ -475,7 +518,9 @@ Try it out and share your feedback! 📊
                 disabled={updateProfileMutation.isPending}
                 className="btn-primary px-10"
               >
-                {updateProfileMutation.isPending ? "Syncing..." : "Apply Changes"}
+                {updateProfileMutation.isPending
+                  ? "Syncing..."
+                  : "Apply Changes"}
               </button>
             </div>
           </form>

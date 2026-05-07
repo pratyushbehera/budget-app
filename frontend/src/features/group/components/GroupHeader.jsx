@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Edit, Trash2, LogOut, UserPlus, Plus } from "lucide-react";
 import { EditGroup } from "./EditGroup";
 import { useDeleteGroup, useLeaveGroup } from "../../../services/groupApi";
@@ -64,7 +64,11 @@ const GroupHeader = ({ group, isAdmin }) => {
           className="btn-primary flex items-center gap-3 group px-8"
           onClick={() => setShowAddModal(true)}
         >
-          <Plus size={24} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
+          <Plus
+            size={24}
+            strokeWidth={3}
+            className="group-hover:rotate-90 transition-transform"
+          />
           <span className="text-lg">Add Transaction</span>
         </button>
       </div>

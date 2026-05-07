@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,7 +19,7 @@ const resetPasswordSchema = yup.object().shape({
     .required("Please confirm your password"),
 });
 
-export function ResetPasswordPage() {
+export default function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
@@ -129,7 +129,9 @@ export function ResetPasswordPage() {
             </p>
             <div className="mt-6 flex items-center justify-center gap-2">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
-              <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Redirecting to login...</span>
+              <span className="text-xs font-black uppercase tracking-widest text-emerald-600">
+                Redirecting to login...
+              </span>
             </div>
           </div>
 

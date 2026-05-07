@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
@@ -6,7 +6,7 @@ import { useVerifyEmail, useResendEmailOtp } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
 
-export function VerifyEmailPage() {
+export default function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -128,10 +128,7 @@ export function VerifyEmailPage() {
       title="Verify Identity"
       subtitle="Enter the 6-digit code sent to your mail"
     >
-      <form
-        onSubmit={handleVerify}
-        className="space-y-10 py-2"
-      >
+      <form onSubmit={handleVerify} className="space-y-10 py-2">
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
@@ -161,7 +158,8 @@ export function VerifyEmailPage() {
               required
             />
             <p className="text-[10px] font-medium text-gray-400 text-center mt-2 px-6">
-              Didn't receive it? Check your spam folder or request a new one below.
+              Didn&apos;t receive it? Check your spam folder or request a new
+              one below.
             </p>
           </div>
         </div>

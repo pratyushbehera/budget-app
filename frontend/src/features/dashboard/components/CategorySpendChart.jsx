@@ -39,7 +39,7 @@ export const CategorySpendChart = ({ data }) => {
   const hasData = chartData.length > 0;
 
   const sortedData = [...chartData].sort(
-    (a, b) => b.percentUsed - a.percentUsed
+    (a, b) => b.percentUsed - a.percentUsed,
   );
   const visibleData = isFullscreen ? sortedData : sortedData.slice(0, 5);
 
@@ -105,8 +105,8 @@ export const CategorySpendChart = ({ data }) => {
                         background: item.isUnplanned
                           ? "linear-gradient(to right, #be123c, #fb7185)" // Rose/Rose
                           : item.percentUsed > 90
-                          ? "linear-gradient(to right, #f59e0b, #f43f5e)" // Amber to Rose
-                          : "linear-gradient(to right, #10b981, #6366f1)", // Emerald to Indigo
+                            ? "linear-gradient(to right, #f59e0b, #f43f5e)" // Amber to Rose
+                            : "linear-gradient(to right, #10b981, #6366f1)", // Emerald to Indigo
                       }}
                     ></div>
                   </div>

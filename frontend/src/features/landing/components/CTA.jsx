@@ -12,10 +12,11 @@ export function CTA() {
 
         <div className="relative z-10 max-w-2xl space-y-10">
           <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">
-            Start Managing <br/> Money Better Today
+            Start Managing <br /> Money Better Today
           </h2>
           <p className="text-xl text-primary-100 font-medium tracking-tight opacity-90 leading-relaxed">
-            Join thousands of users who have transformed their relationship with money using FinPal's expressive interface.
+            Join thousands of users who have transformed their relationship with
+            money using FinPal&apos;s expressive interface.
           </p>
           <div className="pt-4">
             <Link

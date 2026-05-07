@@ -5,21 +5,21 @@ import { Plus, Wallet, Search, CalendarDays } from "lucide-react";
 import { AddTransaction } from "../features/transactions/components/AddTransaction";
 import { EditTransaction } from "../features/transactions/components/EditTransaction";
 import { DeleteTransaction } from "../features/transactions/components/DeleteTransaction";
-import { useDispatch, useSelector } from "react-redux";
-import { setSelectedMonth } from "../app/store/appSlice";
+import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import { TransactionItem } from "../features/transactions/components/TransactionItem";
 import { useRecurringRules } from "../services/recurringApi";
 import { RecurringDrawer } from "../features/recurring/components/RecurringDrawer";
 import { DateRangePicker } from "../shared/components/DateRangePicker";
 
-export function TransactionPage() {
-  const dispatch = useDispatch();
-  const { selectedMonth, startDate, endDate } = useSelector((state) => state.app);
-  const { data, isLoading, error } = useTransaction({ 
-    month: selectedMonth, 
-    startDate, 
-    endDate 
+export default function TransactionPage() {
+  const { selectedMonth, startDate, endDate } = useSelector(
+    (state) => state.app,
+  );
+  const { data, isLoading, error } = useTransaction({
+    month: selectedMonth,
+    startDate,
+    endDate,
   });
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -70,7 +70,7 @@ export function TransactionPage() {
       const isIncome =
         tx.type?.toLowerCase() === "income" ||
         ["salary", "bonus", "interest", "other income", "dividend"].includes(
-          tx.category.toLowerCase()
+          tx.category.toLowerCase(),
         );
 
       total += isIncome ? tx.amount : -tx.amount;
@@ -104,34 +104,45 @@ export function TransactionPage() {
               Manage and track your financial flow
             </p>
           </div>
- 
+
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <DateRangePicker />
- 
+
             <div className="flex gap-3">
               <button
                 onClick={() => setIsRecurringOpen(true)}
                 className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl"
               >
-                <CalendarDays size={18} className="group-hover:rotate-12 transition-transform" />
-                <span className="text-sm font-black uppercase tracking-widest leading-none">Recurring</span>
+                <CalendarDays
+                  size={18}
+                  className="group-hover:rotate-12 transition-transform"
+                />
+                <span className="text-sm font-black uppercase tracking-widest leading-none">
+                  Recurring
+                </span>
               </button>
- 
+
               <button
                 onClick={() => setShowAddModal(true)}
                 className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
               >
-                <Plus size={22} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
-                <span className="text-sm font-black uppercase tracking-widest leading-none">Add New</span>
+                <Plus
+                  size={22}
+                  strokeWidth={3}
+                  className="group-hover:rotate-90 transition-transform"
+                />
+                <span className="text-sm font-black uppercase tracking-widest leading-none">
+                  Add New
+                </span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Filters & Summary Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex flex-col gap-8">
           {/* Search & Filter */}
-          <div className="lg:col-span-2 flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
               <input
@@ -149,7 +160,9 @@ export function TransactionPage() {
               className="input-field md:w-56 bg-white dark:bg-gray-950 font-bold border-r-[16px] border-white-100/20"
             >
               {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
@@ -161,7 +174,9 @@ export function TransactionPage() {
                 <Wallet size={120} strokeWidth={1} />
               </div>
               <div className="relative z-10">
-                <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Filtered Balance</p>
+                <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">
+                  Filtered Balance
+                </p>
                 <div className="flex items-baseline gap-2">
                   <h2 className="text-3xl font-black tracking-tighter">
                     {summary.total >= 0 ? "+" : "-"}
@@ -185,9 +200,12 @@ export function TransactionPage() {
             <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-4xl shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Wallet className="w-12 h-12 text-gray-300 dark:text-gray-600" />
             </div>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">No History Found</h3>
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">
+              No History Found
+            </h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-xs font-medium">
-              We couldn't find any transactions for the selected period or filters.
+              We couldn&apos;t find any transactions for the selected period or
+              filters.
             </p>
           </div>
         ) : (

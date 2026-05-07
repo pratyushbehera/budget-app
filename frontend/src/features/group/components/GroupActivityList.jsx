@@ -1,4 +1,3 @@
-import React from "react";
 import { Bell } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGroupActivity } from "../../../services/groupApi";
@@ -23,38 +22,38 @@ const GroupActivityList = ({ groupId }) => {
 
   const getTypeBadge = (type) => {
     switch (type) {
-      case "invite":
-        return {
-          label: "Invite",
-          cls: "bg-blue-50 text-blue-600 border-blue-100",
-        };
-      case "transaction":
-      case "transaction_deleted":
-      case "transaction_edited":
-        return {
-          label: "Money",
-          cls: "bg-emerald-50 text-emerald-600 border-emerald-100",
-        };
-      case "removed":
-        return {
-          label: "System",
-          cls: "bg-rose-50 text-rose-600 border-rose-100",
-        };
-      case "left":
-        return {
-          label: "Exit",
-          cls: "bg-orange-50 text-orange-600 border-orange-100",
-        };
-      case "settle":
-        return {
-          label: "Settlement",
-          cls: "bg-purple-50 text-purple-600 border-purple-100",
-        };
-      default:
-        return {
-          label: "Update",
-          cls: "bg-gray-100 text-gray-600 border-gray-200",
-        };
+    case "invite":
+      return {
+        label: "Invite",
+        cls: "bg-blue-50 text-blue-600 border-blue-100",
+      };
+    case "transaction":
+    case "transaction_deleted":
+    case "transaction_edited":
+      return {
+        label: "Money",
+        cls: "bg-emerald-50 text-emerald-600 border-emerald-100",
+      };
+    case "removed":
+      return {
+        label: "System",
+        cls: "bg-rose-50 text-rose-600 border-rose-100",
+      };
+    case "left":
+      return {
+        label: "Exit",
+        cls: "bg-orange-50 text-orange-600 border-orange-100",
+      };
+    case "settle":
+      return {
+        label: "Settlement",
+        cls: "bg-purple-50 text-purple-600 border-purple-100",
+      };
+    default:
+      return {
+        label: "Update",
+        cls: "bg-gray-100 text-gray-600 border-gray-200",
+      };
     }
   };
 

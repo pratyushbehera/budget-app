@@ -117,9 +117,9 @@ export const PWAInstallPrompt = () => {
                     className={`inline-flex items-center gap-2
                       rounded-lg px-4 py-2 text-sm font-medium text-white
                       ${canInstall
-                        ? "bg-primary-600 hover:bg-primary-700"
-                        : "bg-neutral-400 cursor-not-allowed"
-                      }`}
+                    ? "bg-primary-600 hover:bg-primary-700"
+                    : "bg-neutral-400 cursor-not-allowed"
+                  }`}
                   >
                     <Download size={16} />
                     Install

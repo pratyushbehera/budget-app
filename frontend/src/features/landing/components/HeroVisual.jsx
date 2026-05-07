@@ -14,7 +14,7 @@ export function HeroVisual() {
         transition={{
           opacity: { duration: 1 },
           x: { duration: 1 },
-          y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
+          y: { duration: 8, repeat: Infinity, ease: "easeInOut" },
         }}
         className="absolute left-0 top-12 bg-white/60 dark:bg-gray-900/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-gray-800/50 z-20 hover:scale-110 transition-transform cursor-pointer group"
       >
@@ -32,7 +32,7 @@ export function HeroVisual() {
         transition={{
           scale: { duration: 1 },
           opacity: { duration: 1 },
-          y: { duration: 10, repeat: Infinity, ease: "easeInOut" }
+          y: { duration: 10, repeat: Infinity, ease: "easeInOut" },
         }}
         className="bg-white/80 dark:bg-gray-900/60 backdrop-blur-3xl p-10 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-white dark:border-gray-800/50 relative z-10"
       >
@@ -63,7 +63,7 @@ export function HeroVisual() {
         transition={{
           opacity: { duration: 1, delay: 0.2 },
           x: { duration: 1, delay: 0.2 },
-          y: { duration: 7, repeat: Infinity, ease: "easeInOut" }
+          y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
         }}
         className="absolute right-0 bottom-12 bg-emerald-500/10 dark:bg-emerald-500/5 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-2xl border border-emerald-100/50 dark:border-emerald-500/20 hover:scale-110 transition-transform cursor-pointer group"
       >

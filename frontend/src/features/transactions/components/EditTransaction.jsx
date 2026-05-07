@@ -1,6 +1,4 @@
-// EditTransaction.jsx
-
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -28,7 +26,7 @@ const transactionSchema = yup.object().shape({
 
 export const EditTransaction = ({ transaction, onClose }) => {
   const { category: categoryList, loading: isCatLoading } = useSelector(
-    (s) => s.category
+    (s) => s.category,
   );
   const { groups = [] } = useSelector((s) => s.group || {});
   const { addToast } = useToast();
@@ -75,7 +73,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     let categoryId = transaction.categoryId;
     if (!categoryId) {
       categoryId = categoryList.find(
-        (ct) => ct.name === transaction.category
+        (ct) => ct.name === transaction.category,
       )?._id;
     }
 
@@ -110,7 +108,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
 
     const initialized = selectedGroup.members.map((m) => {
       const existing = transaction.splitDetails.find(
-        (s) => s.userId === m.userId?._id || s.email === m.email
+        (s) => s.userId === m.userId?._id || s.email === m.email,
       );
 
       return {
@@ -128,7 +126,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     const equalAmt = total / initialized.length;
 
     const isEqual = initialized.every(
-      (itm) => Math.abs(itm.amount - equalAmt) < 0.01
+      (itm) => Math.abs(itm.amount - equalAmt) < 0.01,
     );
 
     if (isEqual) return setSplitMode("equal");
@@ -137,7 +135,13 @@ export const EditTransaction = ({ transaction, onClose }) => {
     if (Math.abs(percentSum - 100) < 1) return setSplitMode("percent");
 
     setSplitMode("exact");
-  }, [selectedGroup, transaction, formValues?.amount, setSplitDetails, setSplitMode]);
+  }, [
+    selectedGroup,
+    transaction,
+    formValues?.amount,
+    setSplitDetails,
+    setSplitMode,
+  ]);
 
   if (isCatLoading) return "Loading...";
 
@@ -190,7 +194,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
               title: "Error updating",
               message: err?.message || "Something went wrong.",
             }),
-        }
+        },
       );
     } catch (err) {
       addToast({
@@ -230,8 +234,9 @@ export const EditTransaction = ({ transaction, onClose }) => {
             </label>
             <select
               id="edit-category"
-              className={`input-field ${errors.categoryId ? "border-red-500" : ""
-                }`}
+              className={`input-field ${
+                errors.categoryId ? "border-red-500" : ""
+              }`}
               {...register("categoryId")}
             >
               <option value="">Select Category</option>

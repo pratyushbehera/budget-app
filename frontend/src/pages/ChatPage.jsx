@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Bot, User, Send, Sparkles, ArrowLeft, MessageSquare } from "lucide-react";
+import { Bot, User, Send, Sparkles, ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { streamChatResponse } from "../services/chatApi";
@@ -13,14 +13,17 @@ const PREDEFINED_QUESTIONS = [
   { text: "My top 3 categories", icon: "🏆" },
 ];
 
-export function ChatPage() {
+export default function ChatPage() {
   const navigate = useNavigate();
   const selectedMonth = useSelector((state) => state.app.selectedMonth);
   const { data: dashboardData } = useDashboard(selectedMonth);
   const { categoryPlanUsage } = dashboardData || {};
 
   const [messages, setMessages] = useState([
-    { from: "ai", text: "Hello! I'm your FinPal AI assistant. How can I help you with your finances today?" }
+    {
+      from: "ai",
+      text: "Hello! I'm your FinPal AI assistant. How can I help you with your finances today?",
+    },
   ]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
@@ -37,19 +40,19 @@ export function ChatPage() {
     if (!query.trim()) return;
 
     const userMsg = { from: "user", text: query };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsStreaming(true);
 
     let aiText = "";
     const aiMsgSlot = { from: "ai", text: "" };
-    setMessages(prev => [...prev, aiMsgSlot]);
+    setMessages((prev) => [...prev, aiMsgSlot]);
 
     try {
       const generator = streamChatResponse(query, categoryPlanUsage, token);
       for await (const chunk of generator) {
         aiText += chunk;
-        setMessages(prev => {
+        setMessages((prev) => {
           const updated = [...prev];
           updated[updated.length - 1] = { from: "ai", text: aiText };
           return updated;
@@ -57,9 +60,12 @@ export function ChatPage() {
       }
     } catch (err) {
       console.error(err);
-      setMessages(prev => {
+      setMessages((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1] = { from: "ai", text: "I'm sorry, I encountered an error. Please try again." };
+        updated[updated.length - 1] = {
+          from: "ai",
+          text: "I'm sorry, I encountered an error. Please try again.",
+        };
         return updated;
       });
     } finally {
@@ -88,8 +94,12 @@ export function ChatPage() {
               <Sparkles size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black text-gray-900 dark:text-white leading-tight">FinPal AI</h1>
-              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Always Online</p>
+              <h1 className="text-lg font-black text-gray-900 dark:text-white leading-tight">
+                FinPal AI
+              </h1>
+              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
+                Always Online
+              </p>
             </div>
           </div>
         </div>
@@ -101,23 +111,37 @@ export function ChatPage() {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex gap-4 sm:gap-6 animate-fade-in ${msg.from === "user" ? "flex-row-reverse" : ""}`}
+              className={`flex gap-4 sm:gap-6 animate-fade-in ${
+                msg.from === "user" ? "flex-row-reverse" : ""
+              }`}
             >
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md ${msg.from === "user" ? "bg-gray-100 dark:bg-gray-800" : "bg-primary-500 text-white"
-                }`}>
+              <div
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md ${
+                  msg.from === "user"
+                    ? "bg-gray-100 dark:bg-gray-800"
+                    : "bg-primary-500 text-white"
+                }`}
+              >
                 {msg.from === "user" ? <User size={20} /> : <Bot size={20} />}
               </div>
-              <div className={`flex flex-col gap-2 max-w-[85%] sm:max-w-[80%] ${msg.from === "user" ? "items-end" : ""}`}>
-                <div className={`px-5 py-4 rounded-3xl text-sm sm:text-base leading-relaxed ${msg.from === "user"
-                  ? "bg-gray-900 text-white dark:bg-gray-800"
-                  : "bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800"
-                  }`}>
+              <div
+                className={`flex flex-col gap-2 max-w-[85%] sm:max-w-[80%] ${
+                  msg.from === "user" ? "items-end" : ""
+                }`}
+              >
+                <div
+                  className={`px-5 py-4 rounded-3xl text-sm sm:text-base leading-relaxed ${
+                    msg.from === "user"
+                      ? "bg-gray-900 text-white dark:bg-gray-800"
+                      : "bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800"
+                  }`}
+                >
                   <div className="prose dark:prose-invert max-w-none prose-sm sm:prose-base font-medium">
-                    <ReactMarkdown>
-                      {msg.text}
-                    </ReactMarkdown>
+                    <ReactMarkdown>{msg.text}</ReactMarkdown>
                   </div>
-                  {msg.from === "ai" && isStreaming && i === messages.length - 1 && (
+                  {msg.from === "ai" &&
+                    isStreaming &&
+                    i === messages.length - 1 && (
                     <span className="ml-1 inline-block w-1.5 h-5 bg-primary-500 animate-pulse align-middle" />
                   )}
                 </div>
@@ -133,7 +157,9 @@ export function ChatPage() {
                   onClick={() => streamAIMessage(q.text)}
                   className="flex items-center bg-white gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-primary-500/50 hover:bg-primary-50/10 transition-all text-left text-sm font-bold text-gray-600 dark:text-gray-400 group"
                 >
-                  <span className="text-xl group-hover:scale-125 transition-transform">{q.icon}</span>
+                  <span className="text-xl group-hover:scale-125 transition-transform">
+                    {q.icon}
+                  </span>
                   {q.text}
                 </button>
               ))}

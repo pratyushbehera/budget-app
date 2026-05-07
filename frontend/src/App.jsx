@@ -1,4 +1,3 @@
-import React from "react";
 import { ToastContainer } from "./shared/components/ToastContainer";
 import "./styles/globals.css";
 import { AppProviders } from "./app/providers/AppProviders";

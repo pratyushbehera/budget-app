@@ -1,21 +1,16 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import { useCurrentUser, useLogout } from '../services/authApi';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUser, logout as logoutAction } from '../features/auth/authSlice';
+import { createContext, useContext, useEffect } from "react";
+import { useCurrentUser, useLogout } from "../services/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, logout as logoutAction } from "../features/auth/authSlice";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  
-  const { 
-    data: currentUser, 
-    isLoading, 
-    error,
-    refetch 
-  } = useCurrentUser();
-  
+
+  const { data: currentUser, isLoading, error, refetch } = useCurrentUser();
+
   const logoutMutation = useLogout();
 
   // Sync TanStack Query data with Redux
@@ -33,7 +28,7 @@ export function AuthProvider({ children }) {
     }
   }, [error, isAuthenticated]);
 
-  const login = async (credentials) => {
+  const login = async () => {
     // This will now be handled by the useLogin hook in components
     // We keep this function for context API consistency
   };
@@ -57,17 +52,13 @@ export function AuthProvider({ children }) {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

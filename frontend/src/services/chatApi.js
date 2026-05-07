@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export const streamChatResponse = async function* (
   query,
   categoryPlanUsage,
-  token
+  token,
 ) {
   const response = await fetch(`${API_BASE_URL}/api/ai/chat`, {
     method: "POST",

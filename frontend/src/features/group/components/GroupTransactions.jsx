@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Wallet } from "lucide-react";
 import { useGroupTransactions } from "../../../services/groupApi";
@@ -18,16 +18,11 @@ const GroupTransactions = ({ group, groupId }) => {
     return m?.userId?.firstName || m?.email || "Unknown";
   };
 
-  const getEffectiveSplitInfo = (tx, currentUserId) => {
+  const getEffectiveSplitInfo = (tx) => {
     if (!tx.splitDetails?.length) return null;
 
-    const total = tx.splitDetails.reduce(
-      (s, d) => s + Number(d.shareAmount),
-      0
-    );
-
     const nonZeroShares = tx.splitDetails.filter(
-      (s) => Number(s.shareAmount) > 0
+      (s) => Number(s.shareAmount) > 0,
     );
 
     if (nonZeroShares.length === 1) {
@@ -103,10 +98,10 @@ const GroupTransactions = ({ group, groupId }) => {
                 onClick={() => toggleExpand(tx._id)}
                 className={`group p-5 rounded-[2rem] transition-all duration-300 cursor-pointer border lg:mx-8
                   ${
-                    isExpanded
-                      ? "bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200 border-gray-100 dark:border-gray-700"
-                      : "bg-gray-50 dark:bg-gray-950/60 border-transparent hover:bg-white dark:hover:bg-gray-950/80 hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-none hover:border-gray-100 dark:hover:border-gray-700"
-                  }`}
+              isExpanded
+                ? "bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200 border-gray-100 dark:border-gray-700"
+                : "bg-gray-50 dark:bg-gray-950/60 border-transparent hover:bg-white dark:hover:bg-gray-950/80 hover:shadow-xl hover:shadow-gray-100 dark:hover:shadow-none hover:border-gray-100 dark:hover:border-gray-700"
+              }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex gap-5">
@@ -141,10 +136,10 @@ const GroupTransactions = ({ group, groupId }) => {
                           <span
                             className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border
                             ${
-                              indicator === "You paid"
-                                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                : "bg-amber-50 text-amber-600 border-amber-100"
-                            }
+                          indicator === "You paid"
+                            ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                            : "bg-amber-50 text-amber-600 border-amber-100"
+                          }
                           `}
                           >
                             {indicator}

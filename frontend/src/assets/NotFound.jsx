@@ -2,10 +2,7 @@ export const NotFound = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 645.27759 750.3254"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     role="img"
-    artist="Katerina Limpitsouni"
-    source="https://undraw.co/"
     className="w-56 mb-4 opacity-90 self-center"
   >
     <path

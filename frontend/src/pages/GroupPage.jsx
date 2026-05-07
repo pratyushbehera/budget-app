@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGroup } from "../services/groupApi";
 import { useSelector } from "react-redux";
@@ -48,5 +48,4 @@ const GroupPage = () => {
     </div>
   );
 };
-
 export default GroupPage;

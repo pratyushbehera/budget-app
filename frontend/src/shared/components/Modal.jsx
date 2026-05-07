@@ -1,4 +1,3 @@
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -20,7 +19,7 @@ export function Modal({ title, children, onClose, maxWidth = "max-w-md" }) {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className={`relative bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl w-full ${maxWidth} flex flex-col max-h-[90vh] overflow-hidden border border-gray-100 dark:border-gray-800`}
+          className={`relative bg-white dark:bg-gray-950 rounded-[2.5rem] shadow-2xl w-full ${maxWidth} flex flex-col max-h-[90vh] overflow-hidden border border-gray-100 dark:border-gray-800`}
         >
           {/* Header */}
           <div className="flex justify-between items-center p-8 pb-4">

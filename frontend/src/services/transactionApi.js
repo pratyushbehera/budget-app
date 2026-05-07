@@ -17,7 +17,7 @@ export const useTransaction = ({ month, startDate, endDate, limit } = {}) => {
       const queryString = params.toString();
       const path = queryString
         ? `/api/transactions?${queryString}`
-        : `/api/transactions`;
+        : "/api/transactions";
 
       return api.get(path);
     },

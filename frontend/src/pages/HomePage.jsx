@@ -9,7 +9,7 @@ import {
   CTA,
 } from "../features/landing/components";
 
-export function HomePage() {
+export default function HomePage() {
   return (
     <div
       className="

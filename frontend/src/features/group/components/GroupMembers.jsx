@@ -1,11 +1,9 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { useRemoveMember, useLeaveGroup } from "../../../services/groupApi";
 import { useToast } from "../../../contexts/ToastContext";
 import MemberRow from "./MemberRow";
 
 const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
-  const user = useSelector((s) => s.auth.user);
   const { addToast } = useToast();
   const { mutateAsync: removeMember } = useRemoveMember(groupId);
   const { mutateAsync: leaveGroup } = useLeaveGroup(groupId);
@@ -20,7 +18,7 @@ const GroupMembers = ({ members, owner, isAdmin, groupId }) => {
             title: "Success",
             message: "Member removed successfully.",
           }),
-      }
+      },
     );
   };
 

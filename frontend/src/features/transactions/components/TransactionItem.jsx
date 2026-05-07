@@ -1,4 +1,3 @@
-import React from "react";
 import { CalendarDays, Pencil, Trash2, Wallet } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
@@ -9,7 +8,7 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
   const isIncome =
     tx.type?.toLowerCase() === "income" ||
     ["salary", "bonus", "interest", "dividend", "other income"].includes(
-      tx.category.toLowerCase()
+      tx.category.toLowerCase(),
     );
 
   const Icon = categoryIconMap[tx.category.toLowerCase()] || Wallet;
@@ -25,9 +24,11 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
         {/* Vibrant Icon Tile */}
         <div
           className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 flex-shrink-0
-            ${isIncome
-              ? "bg-emerald-500 shadow-emerald-500/20 text-white"
-              : "bg-rose-500 shadow-rose-500/20 text-white"}`}
+            ${
+    isIncome
+      ? "bg-emerald-500 shadow-emerald-500/20 text-white"
+      : "bg-rose-500 shadow-rose-500/20 text-white"
+    }`}
         >
           <Icon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
         </div>
@@ -55,7 +56,9 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
             {tx.isRecurring && (
               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
                 <CalendarDays size={10} strokeWidth={3} />
-                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">Recurring</span>
+                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+                  Recurring
+                </span>
               </div>
             )}
           </div>
@@ -67,10 +70,11 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
         {/* Amount */}
         <div className="text-left sm:text-right">
           <p
-            className={`text-lg sm:text-xl font-black tracking-tighter ${isIncome
+            className={`text-lg sm:text-xl font-black tracking-tighter ${
+              isIncome
                 ? "text-emerald-500 dark:text-emerald-400"
                 : "text-rose-500 dark:text-rose-400"
-              }`}
+            }`}
           >
             {isIncome ? "+" : "-"}
             {formatCurrency(tx.amount)}
@@ -84,7 +88,11 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
             className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-all duration-300 active:scale-90"
             aria-label="Edit transaction"
           >
-            <Pencil size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+            <Pencil
+              size={16}
+              className="sm:w-[18px] sm:h-[18px]"
+              strokeWidth={2.5}
+            />
           </button>
 
           <button
@@ -92,7 +100,11 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
             className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-300 active:scale-90"
             aria-label="Delete transaction"
           >
-            <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+            <Trash2
+              size={16}
+              className="sm:w-[18px] sm:h-[18px]"
+              strokeWidth={2.5}
+            />
           </button>
         </div>
       </div>

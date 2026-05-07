@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,7 +15,7 @@ const forgotPasswordSchema = yup.object().shape({
     .required("Email is required"),
 });
 
-export function ForgotPasswordPage() {
+export default function ForgotPasswordPage() {
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
   const { addToast } = useToast();
@@ -82,8 +82,8 @@ export function ForgotPasswordPage() {
         <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <p className="text-lg text-gray-500 font-medium tracking-tight text-center px-4 leading-relaxed">
-              Enter your email address and we'll send you a link to reset your
-              access.
+              Enter your email address and we&apos;ll send you a link to reset
+              your access.
             </p>
 
             <FormInput
@@ -117,9 +117,9 @@ export function ForgotPasswordPage() {
       ) : (
         <div className="space-y-10 py-4 animate-fade-in text-center">
           <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50 rounded-[2.5rem] p-8 relative overflow-hidden group">
-             {/* Dynamic background pulse */}
+            {/* Dynamic background pulse */}
             <div className="absolute inset-0 bg-emerald-500/5 scale-0 group-hover:scale-100 transition-transform duration-1000 rounded-full"></div>
-            
+
             <div className="relative z-10">
               <div className="w-20 h-20 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20 rotate-3 group-hover:rotate-6 transition-transform">
                 <span className="text-4xl text-white font-black">✓</span>
@@ -128,8 +128,10 @@ export function ForgotPasswordPage() {
                 Email Transmitted
               </h3>
               <p className="text-gray-500 dark:text-gray-400 font-medium leading-relaxed mb-4">
-                We've sent recovery instructions to <br/>
-                <span className="text-emerald-600 dark:text-emerald-400 font-black">{sentEmail}</span>
+                We&apos;ve sent recovery instructions to <br />
+                <span className="text-emerald-600 dark:text-emerald-400 font-black">
+                  {sentEmail}
+                </span>
               </p>
               <div className="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                 Expires in 10 minutes

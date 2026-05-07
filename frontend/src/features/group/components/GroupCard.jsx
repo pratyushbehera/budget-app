@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Users } from "lucide-react";
 import { gradientPalette } from "../../../shared/constants/constants";
@@ -10,7 +9,10 @@ const GroupCard = ({ group, isAdmin }) => {
     gradientPalette[gradientKeys[group.name.length % gradientKeys.length]];
 
   return (
-    <Link to={`/groups/${group._id}`} className="block group cursor-pointer perspective">
+    <Link
+      to={`/groups/${group._id}`}
+      className="block group cursor-pointer perspective"
+    >
       <div
         className={`relative h-48 overflow-hidden rounded-[2.5rem] p-8 text-white shadow-xl shadow-current/10 
                    bg-gradient-to-br ${gradient} transition-all duration-500 group-hover:scale-[1.03] group-hover:-rotate-1 active:scale-95`}

@@ -49,7 +49,7 @@ export const AddCategory = ({ onClose }) => {
               message: err?.message || "Error adding category.",
             });
           },
-        }
+        },
       );
     } catch (err) {
       addToast({

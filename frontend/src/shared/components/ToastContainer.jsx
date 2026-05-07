@@ -1,4 +1,3 @@
-import React from "react";
 import { useToast } from "../../contexts/ToastContext";
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,30 +9,30 @@ export function ToastContainer() {
 
   const getStyles = (type) => {
     switch (type) {
-      case "error":
-        return {
-          gradient: "from-red-500/90 to-red-600/90",
-          Icon: XCircle,
-          text: "text-white",
-        };
-      case "warning":
-        return {
-          gradient: "from-yellow-500/90 to-amber-600/90",
-          Icon: AlertTriangle,
-          text: "text-black",
-        };
-      case "success":
-        return {
-          gradient: "from-green-500/90 to-emerald-600/90",
-          Icon: CheckCircle,
-          text: "text-white",
-        };
-      default:
-        return {
-          gradient: "from-blue-500/90 to-indigo-600/90",
-          Icon: Info,
-          text: "text-white",
-        };
+    case "error":
+      return {
+        gradient: "from-red-500/90 to-red-600/90",
+        Icon: XCircle,
+        text: "text-white",
+      };
+    case "warning":
+      return {
+        gradient: "from-yellow-500/90 to-amber-600/90",
+        Icon: AlertTriangle,
+        text: "text-black",
+      };
+    case "success":
+      return {
+        gradient: "from-green-500/90 to-emerald-600/90",
+        Icon: CheckCircle,
+        text: "text-white",
+      };
+    default:
+      return {
+        gradient: "from-blue-500/90 to-indigo-600/90",
+        Icon: Info,
+        text: "text-white",
+      };
     }
   };
 
@@ -58,13 +57,9 @@ export function ToastContainer() {
                 <Icon size={22} className="flex-shrink-0 mt-0.5" />
 
                 <div className="flex-1">
-                  <h4 className="font-semibold leading-tight">
-                    {toast.title}
-                  </h4>
+                  <h4 className="font-semibold leading-tight">{toast.title}</h4>
                   {toast.message && (
-                    <p className="text-sm mt-1 opacity-90">
-                      {toast.message}
-                    </p>
+                    <p className="text-sm mt-1 opacity-90">{toast.message}</p>
                   )}
                 </div>
 

@@ -58,7 +58,7 @@ export const EditGroup = ({ group, onClose }) => {
               message: err?.message || "Error updating group.",
             });
           },
-        }
+        },
       );
     } catch (err) {
       addToast({

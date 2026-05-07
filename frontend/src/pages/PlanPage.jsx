@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePlan, useSavePlan } from "../services/planApi";
 import { useToast } from "../contexts/ToastContext";
 import { Edit, Plus, Save, X, Trash2, Wallet, CreditCard } from "lucide-react";
@@ -10,7 +10,7 @@ import { NoPlan } from "../features/plan/components/NoPlan";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import { useSelector } from "react-redux";
 
-export function PlanPage() {
+export default function PlanPage() {
   const { category: categoryList } = useSelector((state) => state.category);
   const { addToast } = useToast();
   const { data: planData, isLoading } = usePlan();
@@ -61,7 +61,7 @@ export function PlanPage() {
               message: err?.message || "Error adding transaction.",
             });
           },
-        }
+        },
       );
     } catch (err) {
       addToast({
@@ -189,12 +189,12 @@ export function PlanPage() {
                                   <div
                                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-lg shadow-current/10 transition-transform group-hover:scale-110
                                     ${
-                                      type === "Income"
-                                        ? "bg-emerald-500 text-white"
-                                        : group?.toLowerCase().includes("want")
-                                        ? "bg-orange-500 text-white"
-                                        : "bg-blue-500 text-white"
-                                    }`}
+                            type === "Income"
+                              ? "bg-emerald-500 text-white"
+                              : group?.toLowerCase().includes("want")
+                                ? "bg-orange-500 text-white"
+                                : "bg-blue-500 text-white"
+                            }`}
                                   >
                                     <Icon
                                       className="w-5 h-5"
@@ -263,7 +263,9 @@ export function PlanPage() {
                     {stat.label}
                   </p>
                   <h3
-                    className={`text-2xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white`}
+                    className={
+                      "text-2xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white"
+                    }
                   >
                     {formatCurrency(stat.value)}
                   </h3>
@@ -356,7 +358,7 @@ export function PlanPage() {
                   if (!acc[groupName]) acc[groupName] = [];
                   acc[groupName].push(cat);
                   return acc;
-                }, {}) || {}
+                }, {}) || {},
               ).map(([group, cats]) => (
                 <div key={group} className="space-y-8">
                   <div className="flex items-center gap-6">
@@ -389,10 +391,10 @@ export function PlanPage() {
                               <div
                                 className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6
                                 ${
-                                  isIncome
-                                    ? "bg-emerald-500"
-                                    : "bg-gray-100 dark:bg-gray-800"
-                                } text-white`}
+                        isIncome
+                          ? "bg-emerald-500"
+                          : "bg-gray-100 dark:bg-gray-800"
+                        } text-white`}
                               >
                                 <Icon
                                   size={28}
@@ -428,7 +430,7 @@ export function PlanPage() {
                                     <span>Allocation</span>
                                     <span>
                                       {Math.round(
-                                        (value / totalPlannedExpense) * 100
+                                        (value / totalPlannedExpense) * 100,
                                       )}
                                       %
                                     </span>
@@ -439,7 +441,7 @@ export function PlanPage() {
                                       style={{
                                         width: `${Math.min(
                                           (value / totalPlannedExpense) * 100,
-                                          100
+                                          100,
                                         )}%`,
                                       }}
                                     ></div>

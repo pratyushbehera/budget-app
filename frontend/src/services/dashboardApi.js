@@ -13,7 +13,7 @@ export const useDashboard = ({ month, startDate, endDate }) => {
       const queryString = params.toString();
       const path = queryString
         ? `/api/dashboard?${queryString}`
-        : `/api/dashboard`;
+        : "/api/dashboard";
 
       return api.get(path);
     },

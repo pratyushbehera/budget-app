@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, XCircle, LogOut } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGravatar } from "../../../shared/hooks/useGravatar";
@@ -52,7 +51,9 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
             )}
           </div>
 
-          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-tight">{email}</p>
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-tight">
+            {email}
+          </p>
         </div>
       </div>
 
@@ -84,7 +85,9 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
           <button
             className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
             onClick={() => onRemove(userObj)}
-            title={member.status === "pending" ? "Cancel Invite" : "Remove member"}
+            title={
+              member.status === "pending" ? "Cancel Invite" : "Remove member"
+            }
           >
             <XCircle size={16} strokeWidth={2.5} />
           </button>

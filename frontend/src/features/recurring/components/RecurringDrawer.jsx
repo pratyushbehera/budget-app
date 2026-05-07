@@ -36,10 +36,10 @@ export function RecurringDrawer({ open, onClose, rules }) {
           <motion.div
             className={`fixed z-50 bg-white dark:bg-gray-950 shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col
               ${
-                isDesktop
-                  ? "top-0 right-0 h-full w-[480px] rounded-l-[3.5rem]"
-                  : "bottom-0 left-0 w-full h-[90%] rounded-t-[3.5rem]"
-              }
+        isDesktop
+          ? "top-0 right-0 h-full w-[480px] rounded-l-[3.5rem]"
+          : "bottom-0 left-0 w-full h-[90%] rounded-t-[3.5rem]"
+        }
             `}
             initial={isDesktop ? { x: "100%" } : { y: "100%" }}
             animate={isDesktop ? { x: 0 } : { y: 0 }}

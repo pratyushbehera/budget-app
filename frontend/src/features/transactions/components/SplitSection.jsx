@@ -1,5 +1,3 @@
-import React from "react";
-
 export function SplitSection({
   splitMode,
   setSplitMode,
@@ -16,7 +14,7 @@ export function SplitSection({
   if (!selectedGroup) return null;
 
   return (
-    <div className="mt-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+    <div className="mt-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-200">
       <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">
         Split Details
       </h3>
@@ -30,7 +28,7 @@ export function SplitSection({
       <select
         id="paidBy"
         name="paidBy"
-        className="input-field mt-1"
+        className="input-field mt-1  dark:bg-gray-100"
         value={paidBy}
         onChange={onPaidByChange}
       >
@@ -66,7 +64,7 @@ export function SplitSection({
               key={idx}
               className="flex justify-between items-center text-sm"
             >
-              <span>{s.email}</span>
+              <span className=" dark:text-white">{s.email}</span>
               <div className="flex items-center gap-1">
                 <label htmlFor={`percent-${idx}`} className="sr-only">
                   Percent for {s.email}
@@ -76,10 +74,10 @@ export function SplitSection({
                   type="text"
                   value={s.percent}
                   onChange={(e) => updatePercent(idx, e.target.value)}
-                  className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                  className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-100 dark:text-white"
                   min={0}
                 />
-                <span className="text-xs">%</span>
+                <span className="text-xs dark:text-white">%</span>
               </div>
             </div>
           ))}
@@ -90,7 +88,7 @@ export function SplitSection({
               key={idx}
               className="flex justify-between items-center text-sm"
             >
-              <span>{s.email}</span>
+              <span className=" dark:text-white">{s.email}</span>
               <div className="flex items-center gap-2">
                 <label htmlFor={`exact-${idx}`} className="sr-only">
                   Amount for {s.email}
@@ -100,7 +98,7 @@ export function SplitSection({
                   type="number"
                   value={s.amount}
                   onChange={(e) => updateExact(idx, e.target.value)}
-                  className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-700"
+                  className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-100 dark:text-white"
                   min={0}
                 />
               </div>

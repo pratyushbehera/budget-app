@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGroups } from "../../services/groupApi";
 import { setGroup } from "../store/groupSlice";

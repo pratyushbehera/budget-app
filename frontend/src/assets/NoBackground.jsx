@@ -4,8 +4,6 @@ export const NoBackground = () => (
     viewBox="0 0 647.63626 632.17383"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     role="img"
-    artist="Katerina Limpitsouni"
-    source="https://undraw.co/"
     className="w-56 mb-4 opacity-90 self-center"
   >
     <path

@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,7 +23,7 @@ const signupSchema = yup.object().shape({
     .required("Please confirm your password"),
 });
 
-export function SignupPage() {
+export default function SignupPage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
 
@@ -83,9 +82,19 @@ export function SignupPage() {
         <div className="space-y-1">
           <p>By creating an account, you agree to our</p>
           <div className="flex items-center justify-center gap-2">
-            <Link to="/terms" className="text-gray-900 dark:text-white hover:underline">Terms</Link>
+            <Link
+              to="/terms"
+              className="text-gray-900 dark:text-white hover:underline"
+            >
+              Terms
+            </Link>
             <span className="opacity-30">&bull;</span>
-            <Link to="/privacy" className="text-gray-900 dark:text-white hover:underline">Privacy Policy</Link>
+            <Link
+              to="/privacy"
+              className="text-gray-900 dark:text-white hover:underline"
+            >
+              Privacy Policy
+            </Link>
           </div>
         </div>
       }

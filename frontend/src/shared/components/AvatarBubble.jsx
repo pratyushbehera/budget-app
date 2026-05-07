@@ -1,4 +1,3 @@
-import React from "react";
 import { useGravatar } from "../hooks/useGravatar";
 
 export const AvatarBubble = ({ email, name }) => {

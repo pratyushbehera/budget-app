@@ -1,4 +1,3 @@
-import React from "react";
 import { useGroupSummary, useSettleUp } from "../../../services/groupApi";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -11,7 +10,7 @@ const GroupSummary = ({ group, groupId }) => {
   const { addToast } = useToast();
   const { user } = useSelector((state) => state.auth);
   const { data: summary, isLoading } = useGroupSummary(groupId);
-  const { mutate: settleUp, isPending } = useSettleUp(groupId);
+  const { mutate: settleUp } = useSettleUp(groupId);
 
   const getMemberName = (userId) => {
     const m = group.members.find((x) => x.userId?._id === userId);
@@ -62,7 +61,7 @@ const GroupSummary = ({ group, groupId }) => {
               Fully Settled
             </h2>
             <p className="text-lg opacity-80 font-medium tracking-tight">
-              Everyone's account in this group is clear.
+              Everyone&apos;s account in this group is clear.
             </p>
           </div>
         </div>
@@ -87,7 +86,7 @@ const GroupSummary = ({ group, groupId }) => {
             message: "Balances settled successfully.",
           });
         },
-      }
+      },
     );
   };
 
@@ -102,12 +101,12 @@ const GroupSummary = ({ group, groupId }) => {
       <div
         className={`rounded-[2.5rem] p-8 text-white shadow-2xl transition-all duration-500 hover:scale-[1.02]
         ${
-          yourBalance === 0
-            ? "bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20"
-            : yourBalance < 0
-            ? "bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20"
-            : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
-        }`}
+    yourBalance === 0
+      ? "bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20"
+      : yourBalance < 0
+        ? "bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20"
+        : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
+    }`}
       >
         <div className="flex justify-between items-start">
           <div className="space-y-1">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { setDateRange } from "../../app/store/appSlice";
@@ -11,7 +11,7 @@ import "./DateRangePicker.css";
 export function DateRangePicker() {
   const dispatch = useDispatch();
   const { dateMode, selectedMonth, startDate, endDate } = useSelector(
-    (state) => state.app
+    (state) => state.app,
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -36,12 +36,26 @@ export function DateRangePicker() {
   const handleApply = () => {
     if (tempMode === "month") {
       const monthStr = format(internalDate, "yyyy-MM");
-      dispatch(setDateRange({ mode: "month", month: monthStr, startDate: null, endDate: null }));
+      dispatch(
+        setDateRange({
+          mode: "month",
+          month: monthStr,
+          startDate: null,
+          endDate: null,
+        }),
+      );
     } else if (tempMode === "year") {
       const yearStr = format(internalDate, "yyyy");
       const start = `${yearStr}-01-01`;
       const end = `${yearStr}-12-31`;
-      dispatch(setDateRange({ mode: "year", month: yearStr, startDate: start, endDate: end }));
+      dispatch(
+        setDateRange({
+          mode: "year",
+          month: yearStr,
+          startDate: start,
+          endDate: end,
+        }),
+      );
     } else if (tempMode === "range") {
       const [start, end] = internalRange;
       if (start && end) {
@@ -51,7 +65,7 @@ export function DateRangePicker() {
             startDate: format(start, "yyyy-MM-dd"),
             endDate: format(end, "yyyy-MM-dd"),
             month: `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`,
-          })
+          }),
         );
       }
     }
@@ -60,11 +74,14 @@ export function DateRangePicker() {
 
   const getDisplayText = () => {
     if (dateMode === "month") {
-      return format(new Date(selectedMonth + "-01"), "MMMM yyyy");
+      return format(new Date(`${selectedMonth}-01`), "MMMM yyyy");
     } else if (dateMode === "year") {
       return `Year ${selectedMonth}`;
     } else if (dateMode === "range" && startDate && endDate) {
-      return `${format(new Date(startDate), "MMM d, yy")} - ${format(new Date(endDate), "MMM d, yy")}`;
+      return `${format(new Date(startDate), "MMM d, yy")} - ${format(
+        new Date(endDate),
+        "MMM d, yy",
+      )}`;
     }
     return "Select Date";
   };
@@ -93,8 +110,13 @@ export function DateRangePicker() {
               className="absolute left-0 lg:left-auto lg:right-0  mt-3 z-40 bg-white dark:bg-gray-950 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 p-6 min-w-[350px]"
             >
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-black text-gray-900 dark:text-white">Select Period</h3>
-                <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                <h3 className="text-lg font-black text-gray-900 dark:text-white">
+                  Select Period
+                </h3>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                >
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
@@ -105,10 +127,11 @@ export function DateRangePicker() {
                   <button
                     key={mode}
                     onClick={() => setTempMode(mode)}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tempMode === mode
-                      ? "bg-white dark:bg-gray-950/20 text-primary-500 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                      }`}
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                      tempMode === mode
+                        ? "bg-white dark:bg-gray-950/20 text-primary-500 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
                   >
                     {mode}
                   </button>
@@ -150,7 +173,10 @@ export function DateRangePicker() {
               <div className="mt-8">
                 <button
                   onClick={handleApply}
-                  disabled={tempMode === "range" && (!internalRange[0] || !internalRange[1])}
+                  disabled={
+                    tempMode === "range" &&
+                    (!internalRange[0] || !internalRange[1])
+                  }
                   className="w-full btn-primary h-12 rounded-2xl shadow-lg shadow-primary-500/20 disabled:opacity-50 disabled:shadow-none"
                 >
                   Apply Selection

@@ -81,11 +81,11 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
             />
             <Tooltip
               contentStyle={{ 
-                borderRadius: '16px', 
-                border: 'none', 
-                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(8px)'
+                borderRadius: "16px", 
+                border: "none", 
+                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(8px)",
               }}
               formatter={(val, name) => [`₹${val.toLocaleString()}`, name.charAt(0).toUpperCase() + name.slice(1)]}
             />

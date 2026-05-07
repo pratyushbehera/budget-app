@@ -1,8 +1,6 @@
-import React from "react";
-
 export function GroupSection({ groups = [], form, updateFormField, disabled }) {
   return (
-    <div className="mt-6 border rounded-lg p-4 bg-gray-50 dark:bg-gray-850">
+    <div className="mt-6 border rounded-lg p-4 bg-gray-50 dark:bg-gray-200">
       <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-600 mb-2">
         Group (Optional)
       </h3>
@@ -19,7 +17,7 @@ export function GroupSection({ groups = [], form, updateFormField, disabled }) {
         value={form.groupId}
         onChange={updateFormField}
         disabled={disabled}
-        className="input-field mt-1"
+        className="input-field mt-1 dark:bg-gray-100"
       >
         <option value="">No Group</option>
         {groups.map((g) => (

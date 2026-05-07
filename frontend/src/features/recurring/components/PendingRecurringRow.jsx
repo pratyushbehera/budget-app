@@ -39,7 +39,7 @@ export function PendingRecurringRow({ item }) {
               "Something went wrong",
           });
         },
-      }
+      },
     );
   };
 

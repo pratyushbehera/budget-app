@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { NotFound } from "../assets/NotFound";
 
@@ -22,11 +21,12 @@ export default function NotFoundPage() {
               404
             </h1>
             <h2 className="text-6xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tighter leading-none relative z-10">
-              Lost in <br/> Space?
+              Lost in <br /> Space?
             </h2>
           </div>
           <p className="text-2xl text-gray-400 dark:text-gray-500 font-medium tracking-tight leading-relaxed max-w-md">
-            We can’t find the page you’re looking for. It might have been moved or doesn't exist anymore.
+            We can&apos;t find the page you&apos;re looking for. It might have
+            been moved or doesn&apos;t exist anymore.
           </p>
 
           <div className="flex justify-center md:justify-start pt-4">

@@ -18,7 +18,7 @@ export function useSplitCalculation(amount, groupMembers) {
           email: m.email,
           percent: 0,
           amount: 0,
-        }))
+        })),
       );
     }
   }, [groupMembers]);
@@ -36,7 +36,7 @@ export function useSplitCalculation(amount, groupMembers) {
         ...s,
         amount: equalAmount,
         percent: equalPercent,
-      }))
+      })),
     );
   }, [splitMode, amount, splitDetails.length]);
 
@@ -49,7 +49,7 @@ export function useSplitCalculation(amount, groupMembers) {
           ...s,
           percent: 0, // ✅ reset
           amount: 0,
-        }))
+        })),
       );
     }
 
@@ -59,10 +59,10 @@ export function useSplitCalculation(amount, groupMembers) {
           ...s,
           amount: 0, // ✅ reset
           percent: 0,
-        }))
+        })),
       );
     }
-  }, [splitMode]);
+  }, [splitMode, splitDetails.length]);
 
   const updatePercent = (idx, percent) => {
     const val = Number(percent || 0);
@@ -76,14 +76,14 @@ export function useSplitCalculation(amount, groupMembers) {
           percent: p,
           amount: +((p / 100) * total).toFixed(2),
         };
-      })
+      }),
     );
   };
 
   const updateExact = (idx, amt) => {
     const val = Number(amt || 0);
     setSplitDetails((cur) =>
-      cur.map((s, i) => (i === idx ? { ...s, amount: val } : s))
+      cur.map((s, i) => (i === idx ? { ...s, amount: val } : s)),
     );
   };
 

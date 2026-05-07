@@ -1,12 +1,10 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useDashboard } from "../services/dashboardApi";
 import { InfoTile } from "../features/dashboard/components/InfoTile";
 import { CategorySpendChart } from "../features/dashboard/components/CategorySpendChart";
 import { RecentTransaction } from "../features/dashboard/components/RecentTransaction";
 import { MonthlySpendCard } from "../features/dashboard/components/MonthlySpendChart";
 import { Link } from "react-router-dom";
-import { setSelectedMonth } from "../app/store/appSlice";
 import { motion } from "framer-motion";
 import { NoBackground } from "../assets/NoBackground";
 import { QuickAdd } from "../features/dashboard/components/QuickAdd";
@@ -16,8 +14,6 @@ import { PendingInviteBanner } from "../features/group/components/PendingInviteB
 import { usePendingRecurring } from "../services/recurringApi";
 import { PendingRecurringCard } from "../features/recurring/components/PendingRecurringCard";
 import { todayISO, formatMonthYear } from "../shared/utils/formatDate";
-import { useWeeklyInsightsQuery } from "../services/insightsApi";
-import { WeeklyInsightsList } from "../features/dashboard/components/WeeklyInsightsList";
 import { DateRangePicker } from "../shared/components/DateRangePicker";
 
 const containerVariants = {
@@ -34,22 +30,26 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-export function DashboardPage() {
-  const dispatch = useDispatch();
+export default function DashboardPage() {
   const { user: currentUser, loading: userLoading } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
   const { groups } = useSelector((state) => state.group);
 
-  const { dateMode, selectedMonth, startDate, endDate } = useSelector((state) => state.app);
-  const { data: dashboardData, isLoading: dashboardLoading } =
-    useDashboard({ month: selectedMonth, startDate, endDate });
+  const { dateMode, selectedMonth, startDate, endDate } = useSelector(
+    (state) => state.app,
+  );
+  const { data: dashboardData, isLoading: dashboardLoading } = useDashboard({
+    month: selectedMonth,
+    startDate,
+    endDate,
+  });
   const { data: pendingRecurring } = usePendingRecurring();
   const today = todayISO();
 
   const actionableRecurring =
     pendingRecurring?.filter(
-      (r) => r.status === "pending" && r.dueDate <= today
+      (r) => r.status === "pending" && r.dueDate <= today,
     ) || [];
 
   // const weeklyInsightsQuery = useWeeklyInsightsQuery();
@@ -75,17 +75,22 @@ export function DashboardPage() {
     <div className="min-h-screen max-w-7xl mx-auto sm:px-6 lg:px-8 pb-12">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 py-6 sm:py-10 sm:px-0 gap-6">
         <div>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight"
           >
-            Hi {currentUser?.firstName} <span className="inline-block animate-bounce-subtle">👋</span>
+            Hi {currentUser?.firstName}{" "}
+            <span className="inline-block animate-bounce-subtle">👋</span>
           </motion.h1>
           <p className="text-base sm:text-lg text-gray-500 dark:text-gray-400 font-medium">
-            {!hasData 
+            {!hasData
               ? "Welcome to FinPal. Let's start your financial journey."
-              : `Here’s your financial pulse for ${dateMode === "range" ? selectedMonth : formatMonthYear(selectedMonth)}.`}
+              : `Here’s your financial pulse for ${
+                dateMode === "range"
+                  ? selectedMonth
+                  : formatMonthYear(selectedMonth)
+              }.`}
           </p>
         </div>
         <DateRangePicker />
@@ -129,10 +134,10 @@ export function DashboardPage() {
                   dashboardData?.overview?.totalIncome === 0
                     ? 0
                     : (
-                        (dashboardData?.overview?.savings /
+                      (dashboardData?.overview?.savings /
                           dashboardData?.overview?.totalIncome) *
                         100
-                      ).toFixed(1)
+                    ).toFixed(1)
                 }%`,
               },
               {
@@ -165,7 +170,11 @@ export function DashboardPage() {
           {/* Charts & Transactions */}
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 gap-4 px-4 py-3 sm:px-0">
             <MonthlySpendCard monthlyTrend={dashboardData?.monthlyTrend} />
-            <RecentTransaction month={selectedMonth} startDate={startDate} endDate={endDate} />
+            <RecentTransaction
+              month={selectedMonth}
+              startDate={startDate}
+              endDate={endDate}
+            />
 
             <CategorySpendChart data={dashboardData?.categoryPlanUsage} />
           </div>
@@ -180,9 +189,13 @@ export function DashboardPage() {
             Your financial story starts here
           </h3>
           <p className="mb-10 text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed font-medium">
-            Once you start adding your income and expenses, this space will transform into a vibrant dashboard of your budget progress.
+            Once you start adding your income and expenses, this space will
+            transform into a vibrant dashboard of your budget progress.
           </p>
-          <Link to="/transactions" className="btn-primary flex items-center gap-3 text-lg px-8 sm:px-10 py-4 h-auto shadow-xl shadow-primary-500/20 active:scale-95 transition-all">
+          <Link
+            to="/transactions"
+            className="btn-primary flex items-center gap-3 text-lg px-8 sm:px-10 py-4 h-auto shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+          >
             Start Adding Transactions
           </Link>
         </div>

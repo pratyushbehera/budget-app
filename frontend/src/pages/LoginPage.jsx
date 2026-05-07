@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -20,12 +20,10 @@ const loginSchema = yup.object().shape({
     .string()
     .email("Please enter a valid email")
     .required("Email is required"),
-  password: yup
-    .string()
-    .required("Password is required"),
+  password: yup.string().required("Password is required"),
 });
 
-export function LoginPage() {
+export default function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +39,8 @@ export function LoginPage() {
   });
 
   const from = location.state?.from?.pathname || "/dashboard";
+  const emailRegister = register("email");
+  const passwordRegister = register("password");
 
   const loginMutation = useLogin();
 
@@ -75,7 +75,7 @@ export function LoginPage() {
           loginFailure({
             message: err.data.message,
             requiresVerification: true,
-          })
+          }),
         );
 
         addToast({
@@ -145,12 +145,12 @@ export function LoginPage() {
             autoComplete="email"
             placeholder="name@email.com"
             error={errors.email}
-            {...register("email")}
-            onChange={() => {
+            {...emailRegister}
+            onChange={(e) => {
+              emailRegister.onChange(e);
               if (error) dispatch(clearError());
             }}
           />
-
           <FormInput
             label="Secret Key"
             id="password"
@@ -158,8 +158,10 @@ export function LoginPage() {
             autoComplete="current-password"
             placeholder="••••••••"
             error={errors.password}
-            {...register("password")}
-            onChange={() => {
+            {...passwordRegister}
+            onChange={(e) => {
+              passwordRegister.onChange(e);
+
               if (error) dispatch(clearError());
             }}
           />
@@ -167,7 +169,9 @@ export function LoginPage() {
 
         {error && (
           <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-[1.5rem] p-5 animate-shake">
-            <p className="text-rose-600 dark:text-rose-400 text-xs font-black uppercase tracking-widest">{error}</p>
+            <p className="text-rose-600 dark:text-rose-400 text-xs font-black uppercase tracking-widest">
+              {error}
+            </p>
           </div>
         )}
 
@@ -183,7 +187,7 @@ export function LoginPage() {
                 Verifying...
               </div>
             ) : (
-              "Authorize Access"
+              "Login"
             )}
           </button>
         </div>
