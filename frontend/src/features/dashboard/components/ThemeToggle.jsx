@@ -1,16 +1,18 @@
 import { useTheme } from "../../../contexts/ThemeContext";
 import { Moon, Sun } from "lucide-react";
+import Button from "@/shared/system/button";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <button
+    <Button
+      size="icon-sm"
       onClick={toggleTheme}
-      className="btn-secondary"
       aria-label="Toggle theme"
+      variant="tertiary"
     >
       {theme === "light" ? <Moon /> : <Sun />}
-    </button>
+    </Button>
   );
 }

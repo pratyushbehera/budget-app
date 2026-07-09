@@ -8,7 +8,7 @@ export function Modal({ title, children, onClose, maxWidth = "max-w-md" }) {
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: 0.5 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
           className="absolute inset-0 bg-black/60 backdrop-blur-md"
@@ -22,7 +22,7 @@ export function Modal({ title, children, onClose, maxWidth = "max-w-md" }) {
           className={`relative bg-white dark:bg-gray-950 rounded-[2.5rem] shadow-2xl w-full ${maxWidth} flex flex-col max-h-[90vh] overflow-hidden border border-gray-100 dark:border-gray-800`}
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-8 pb-4">
+          <div className="flex justify-between items-center p-8 pb-4 border-b border-gray-100">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
               {title}
             </h2>
@@ -35,7 +35,7 @@ export function Modal({ title, children, onClose, maxWidth = "max-w-md" }) {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-8 pt-4 pb-8 custom-scrollbar">
             {children}
           </div>
         </motion.div>

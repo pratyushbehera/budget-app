@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import ProtectedLayout from "../layouts/ProtectedLayout";
+import CookBookPage from "../../pages/CookBookPage";
 
 // Lazy pages
 const HomePage = lazy(() => import("@pages/HomePage"));
@@ -38,7 +39,7 @@ function PublicRoute({ children }) {
 
 function VerificationRoute({ children }) {
   const { isAuthenticated, requiresVerification } = useSelector(
-    (state) => state.auth,
+    (state) => state.auth
   );
 
   // If fully authenticated & verified → dashboard
@@ -99,6 +100,15 @@ export function AppRoutes() {
             <VerificationRoute>
               <VerifyEmailPage />
             </VerificationRoute>
+          }
+        />
+
+        <Route
+          path="/cookbook"
+          element={
+            <PublicRoute>
+              <CookBookPage />
+            </PublicRoute>
           }
         />
 
