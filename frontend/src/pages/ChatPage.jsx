@@ -5,6 +5,9 @@ import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { streamChatResponse } from "../services/chatApi";
 import { useDashboard } from "../services/dashboardApi";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
+import PageHeading from "../shared/components/PageHeading";
 
 const PREDEFINED_QUESTIONS = [
   { text: "Where did I overspend?", icon: "📉" },
@@ -83,24 +86,18 @@ export default function ChatPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <button
+          <Button
             onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            <ArrowLeft size={20} className="text-gray-500 dark:text-gray-400" />
-          </button>
+            variant="ghost"
+            size="icon-sm"
+            className="border"
+            leftIcon={<ArrowLeft size={20} />}
+          ></Button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
               <Sparkles size={20} className="text-white" />
             </div>
-            <div>
-              <h1 className="text-lg font-black text-gray-900 dark:text-white leading-tight">
-                FinPal AI
-              </h1>
-              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                Always Online
-              </p>
-            </div>
+            <PageHeading title="FinPal AI" />
           </div>
         </div>
       </header>
@@ -142,8 +139,8 @@ export default function ChatPage() {
                   {msg.from === "ai" &&
                     isStreaming &&
                     i === messages.length - 1 && (
-                    <span className="ml-1 inline-block w-1.5 h-5 bg-primary-500 animate-pulse align-middle" />
-                  )}
+                      <span className="ml-1 inline-block w-1.5 h-5 bg-primary-500 animate-pulse align-middle" />
+                    )}
                 </div>
               </div>
             </div>
@@ -152,16 +149,16 @@ export default function ChatPage() {
           {messages.length === 1 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
               {PREDEFINED_QUESTIONS.map((q, i) => (
-                <button
+                <Button
                   key={i}
                   onClick={() => streamAIMessage(q.text)}
-                  className="flex items-center bg-white gap-3 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-primary-500/50 hover:bg-primary-50/10 transition-all text-left text-sm font-bold text-gray-600 dark:text-gray-400 group"
+                  variant="ghost"
+                  size="md"
+                  className="border text-left"
+                  leftIcon={q.icon}
                 >
-                  <span className="text-xl group-hover:scale-125 transition-transform">
-                    {q.icon}
-                  </span>
                   {q.text}
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -171,21 +168,20 @@ export default function ChatPage() {
       {/* Input Area */}
       <footer className="p-4 sm:p-6 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 sticky bottom-0">
         <div className="max-w-3xl mx-auto relative group">
-          <input
+          <Input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Ask anything about your budget..."
-            className="w-full h-14 sm:h-16 pl-6 pr-16 rounded-[2rem] bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-gray-800 transition-all outline-none font-bold text-gray-900 dark:text-white"
           />
-          <button
+          <Button
+            size="icon-md"
+            leftIcon={<Send size={20} />}
             onClick={handleSend}
             disabled={!input.trim() || isStreaming}
-            className="absolute right-2 top-2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary-500 text-white flex items-center justify-center shadow-lg shadow-primary-500/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 transition-all"
-          >
-            <Send size={20} />
-          </button>
+            className="absolute right-0 top-0 h-[52px]"
+          ></Button>
         </div>
         <p className="text-[10px] text-center mt-3 text-gray-400 font-bold uppercase tracking-widest">
           This is informational only, not financial advice.

@@ -5,6 +5,8 @@ import { loginSuccess } from "../features/auth/authSlice";
 import { useVerifyEmail, useResendEmailOtp } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
 
 export default function VerifyEmailPage() {
   const location = useLocation();
@@ -129,58 +131,47 @@ export default function VerifyEmailPage() {
       subtitle="Enter the 6-digit code sent to your mail"
     >
       <form onSubmit={handleVerify} className="space-y-10 py-2">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
-              Account Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-field bg-gray-50/50 dark:bg-gray-800/20"
-              placeholder="name@email.com"
-              required
-            />
-          </div>
+        <Input
+          label="Email"
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="name@email.com"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
-              One-Time Passcode
-            </label>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="input-field text-center tracking-[0.5em] text-3xl font-black py-6 bg-primary-50/30 dark:bg-primary-900/10 border-primary-100 dark:border-primary-900/50 placeholder:tracking-normal placeholder:font-medium placeholder:text-lg"
-              placeholder="000000"
-              maxLength={6}
-              required
-            />
-            <p className="text-[10px] font-medium text-gray-400 text-center mt-2 px-6">
-              Didn&apos;t receive it? Check your spam folder or request a new
-              one below.
-            </p>
-          </div>
-        </div>
+        <Input
+          label="One-Time Passcode"
+          id="otp"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          className="text-center tracking-[0.5em] text-3xl py-6 placeholder:tracking-[0.5em] placeholder:font-large placeholder:text-3xl"
+          placeholder="000000"
+          maxLength={6}
+          required
+          helperText="Didn't receive it? Check your spam folder or request a new
+              one below."
+        />
 
         <div className="space-y-4">
-          <button
+          <Button
             type="submit"
-            disabled={verifyMutation.isPending}
-            className="w-full btn-primary py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50"
+            isLoading={verifyMutation.isPending}
+            className="w-full "
           >
             {verifyMutation.isPending ? "Validating..." : "Confirm Access"}
-          </button>
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={handleResend}
-            disabled={resendMutation.isPending}
-            className="w-full py-4 text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            isLoading={resendMutation.isPending}
+            className="w-full border"
           >
             {resendMutation.isPending ? "Resending..." : "New Code Required"}
-          </button>
+          </Button>
         </div>
       </form>
     </AuthLayout>

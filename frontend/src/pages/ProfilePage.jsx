@@ -4,13 +4,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useUpdateProfile, useGenerateDeveloperKey } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
-import { Modal } from "../shared/components/Modal";
 import { Pencil, Terminal, Copy, Check, Key } from "lucide-react";
 import { useGravatar } from "../shared/hooks/useGravatar";
 import { useSelector } from "react-redux";
 import { LoadingPage } from "../shared/components/LoadingPage";
-import { FormInput } from "../shared/components/FormInput";
 import { ThemeToggle } from "../features/dashboard/components/ThemeToggle";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
+import Input from "@/shared/system/FormField/Input";
+import Textarea from "@/shared/system/FormField/TextArea";
+import PageHeading from "../shared/components/PageHeading";
+import Typography from "@/shared/system/Typography";
 
 const profileSchema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -82,12 +86,10 @@ function DeveloperSettings() {
           <Terminal size={32} className="text-white" />
         </div>
         <div>
-          <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">
-            Developer Access
-          </h3>
-          <p className="text-lg text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+          <Typography variant="h3">Developer Access</Typography>
+          <Typography variant="subtitle1">
             Connect FinPal to Claude AI via MCP
-          </p>
+          </Typography>
         </div>
       </div>
 
@@ -110,75 +112,84 @@ function DeveloperSettings() {
       </div>
 
       {!devKey ? (
-        <button
-          className="btn-primary flex items-center gap-3 px-8 py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95"
+        <Button
+          variant="primary"
+          size="sm"
           onClick={handleGenerateKey}
-          disabled={generateKeyMutation.isPending}
+          isLoading={generateKeyMutation.isPending}
         >
           {generateKeyMutation.isPending
             ? "Generating..."
             : "Generate Developer Key"}
-        </button>
+        </Button>
       ) : (
         <div className="space-y-10">
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
-              Your Secret API Key
-            </label>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                readOnly
-                value={devKey}
-                className="flex-1 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 p-4 text-sm font-mono tracking-tight text-primary-500"
-              />
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(devKey);
-                  addToast({
-                    type: "success",
-                    title: "Key Copied",
-                    message: "Key copied to clipboard.",
-                  });
-                }}
-                className="p-4 rounded-2xl bg-gray-900 text-white hover:bg-black transition-colors shadow-lg"
-              >
-                <Copy size={20} />
-              </button>
-            </div>
+          <div className="flex gap-3">
+            <Input
+              label="Your Secret API Key"
+              type="text"
+              className="font-mono tracking-tight"
+              readOnly
+              value={devKey}
+            />
+            <Button
+              size="icon-md"
+              variant="ghost"
+              onClick={() => {
+                navigator.clipboard.writeText(devKey);
+                addToast({
+                  type: "success",
+                  title: "Key Copied",
+                  message: "Key copied to clipboard.",
+                });
+              }}
+              className="hover:text-primary-500 border mt-8"
+            >
+              <Copy size={20} strokeWidth={2} />
+            </Button>
           </div>
 
           <div className="pt-10 border-t border-gray-100 dark:border-gray-800">
-            <h4 className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter mb-6">
-              Claude Desktop Setup
-            </h4>
+            <Typography variant="h4">Claude Desktop Setup</Typography>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                  <Typography
+                    variant="subtitle1"
+                    className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0"
+                  >
                     1
-                  </span>
-                  <p>
+                  </Typography>
+                  <Typography variant="body2">
                     Open <code>claude_desktop_config.json</code> in your
                     Application Support folder.
-                  </p>
+                  </Typography>
                 </div>
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                  <Typography
+                    variant="subtitle1"
+                    className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0"
+                  >
                     2
-                  </span>
-                  <p>
+                  </Typography>
+                  <Typography variant="body2">
                     Paste the configuration snippet below into the{" "}
                     <code>mcpServers</code> section.
-                  </p>
+                  </Typography>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <span className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-black text-gray-900 dark:text-white shrink-0">
+                  <Typography
+                    variant="subtitle1"
+                    className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0"
+                  >
                     3
-                  </span>
-                  <p>Restart Claude Desktop to enable the integration.</p>
+                  </Typography>
+                  <Typography variant="body2">
+                    Restart Claude Desktop to enable the integration.
+                  </Typography>
                 </div>
               </div>
             </div>
@@ -206,27 +217,27 @@ function DeveloperSettings() {
                   2,
                 )}
               </pre>
-              <button
+              <Button
+                size="sm"
+                variant="ghost"
                 onClick={copyConfig}
-                className="absolute top-6 right-6 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-xl border border-white/10 flex items-center gap-3 transition-all font-black uppercase tracking-widest text-[10px]"
+                className="absolute top-6 right-6 border hover:text-primary-500 hover:border-primary-500"
+                leftIcon={copied ? <Check size={16} /> : <Copy size={16} />}
               >
-                {copied ? (
-                  <Check size={16} className="text-emerald-400" />
-                ) : (
-                  <Copy size={16} />
-                )}
-                <span>Copy Config</span>
-              </button>
+                Copy Config
+              </Button>
             </div>
           </div>
 
           <div className="flex justify-center pt-4">
-            <button
-              className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-primary-500 transition-colors"
+            <Button
+              variant="primary"
+              size="sm"
+              className="uppercase tracking-[0.2em]"
               onClick={handleGenerateKey}
             >
               Regenerate developer credentials
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -336,21 +347,15 @@ Try it out and share your feedback! 📊
   if (isLoading) return <LoadingPage page="profile" />;
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-6 lg:px-10 space-y-12 animate-fade-in relative">
+    <div className="min-h-screen max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       {/* Decorative Background */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-7xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
-            Settings
-          </h1>
-          <p className="text-xl text-gray-400 dark:text-gray-500 font-medium tracking-tight mt-4">
-            Manage your digital footprint and preferences
-          </p>
-        </div>
-      </div>
+      <PageHeading
+        title="Settings"
+        subtitle="Manage your digital footprint and preferences"
+      />
 
       {/* Profile Card */}
       <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[3rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
@@ -369,26 +374,25 @@ Try it out and share your feedback! 📊
           </div>
 
           <div className="flex-1 text-center md:text-left space-y-2">
-            <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">
+            <Typography variant="h2">
               {user?.firstName} {user?.lastName}
-            </h2>
+            </Typography>
+
             <div className="flex items-center justify-center md:justify-start gap-3">
-              <span className="text-lg font-medium text-gray-400 dark:text-gray-500">
-                {user?.email}
-              </span>
+              <Typography variant="body1">{user?.email}</Typography>
+              {/* //TODO: Badge */}
               <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-full text-[10px] font-black uppercase tracking-widest">
                 verified account
               </span>
             </div>
           </div>
-
-          <button
+          <Button
+            size="md"
             onClick={() => setIsModalOpen(true)}
-            className="btn-primary flex items-center gap-3 px-8 py-4 text-lg font-black rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+            leftIcon={<Pencil size={16} />}
           >
-            <Pencil size={20} />
             Edit Profile
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -397,18 +401,14 @@ Try it out and share your feedback! 📊
         <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
           <div className="flex items-center justify-between mb-8">
             <div className="space-y-1">
-              <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-                Appearance
-              </h3>
-              <p className="text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+              <Typography variant="h3">Appearance</Typography>
+              <Typography variant="subtitle1">
                 Switch between light and dark themes
-              </p>
+              </Typography>
             </div>
           </div>
           <div className="p-6 bg-gray-50/50 dark:bg-gray-800/20 rounded-3xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <span className="text-lg font-black text-gray-900 dark:text-white tracking-tight">
-              System Theme
-            </span>
+            <Typography variant="label">System Theme</Typography>
             <ThemeToggle />
           </div>
         </div>
@@ -416,41 +416,33 @@ Try it out and share your feedback! 📊
         {/* Invite Friends */}
         <div className="bg-white/80 dark:bg-gray-950/60 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-slide-in-bottom">
           <div className="space-y-1 mb-6">
-            <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
-              Spread the Word
-            </h3>
-            <p className="text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+            <Typography variant="h3">Spread the Word</Typography>
+            <Typography variant="subtitle1">
               Invite friends to simplify their finances
-            </p>
+            </Typography>
           </div>
 
           <div className="space-y-6">
             <div className="relative group">
-              <textarea
-                readOnly
-                value={shareText}
-                className="w-full min-h-[120px] resize-none rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/30 p-6 text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed shadow-inner"
-              />
-              <button
+              <Textarea readOnly value={shareText} className="h-[150px]" />
+              <Button
+                size="icon-sm"
+                variant="secondary"
                 onClick={copyToClipboard}
-                className="btn-secondary absolute top-4 right-4 p-3 rounded-xl shadow-lg hover:scale-110 transition-transform"
-              >
-                <Copy size={16} className="text-primary-500" />
-              </button>
+                leftIcon={<Copy size={16} className="text-primary-500" />}
+                className="absolute top-4 right-4"
+              ></Button>
             </div>
 
             <div className="flex gap-4">
-              <button
-                className="flex-1 btn-primary py-4 rounded-2xl text-lg font-black shadow-lg shadow-primary-500/20"
-                onClick={handleShare}
-              >
+              <Button size="lg" variant="primary" onClick={handleShare}>
                 Fast Share
-              </button>
+              </Button>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-4 rounded-2xl bg-[#25D366] text-white hover:scale-105 transition-transform shadow-lg shadow-[#25D366]/20 flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
+                className="p-4 rounded-xl bg-[#25D366] text-white hover:scale-105 transition-transform shadow-lg shadow-[#25D366]/20 flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
               >
                 WhatsApp
               </a>
@@ -463,66 +455,64 @@ Try it out and share your feedback! 📊
 
       {/* Edit Modal */}
       {isModalOpen && (
-        <Modal title="Refine Profile" onClose={() => setIsModalOpen(false)}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInput
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <Modal.Header>Refine Profile</Modal.Header>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Modal.Body>
+              <Input
                 label="First Name"
                 id="firstName"
                 placeholder="John"
-                error={errors.firstName}
+                required
+                error={errors?.firstName?.message}
                 {...register("firstName")}
               />
-
-              <FormInput
+              <Input
                 label="Last Name"
                 id="lastName"
                 placeholder="Doe"
-                error={errors.lastName}
+                required
+                error={errors?.lastName?.message}
                 {...register("lastName")}
               />
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
-                Account Email (Primary)
-              </label>
-              <input
-                type="email"
+              <Input
+                label="Account Email (Primary)"
+                id="email"
+                placeholder="johndoe@email.com"
                 disabled
-                className="input-field bg-gray-50/30 dark:bg-gray-800/20 text-gray-400 italic cursor-not-allowed"
                 {...register("email")}
               />
-            </div>
 
-            <FormInput
-              label="Reset Security Key"
-              id="password"
-              type="password"
-              placeholder="Leave blank to keep current"
-              autoComplete="new-password"
-              error={errors.password}
-              {...register("password")}
-            />
-
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-              <button
-                type="button"
-                className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              <Input
+                label="Reset Security Key"
+                id="password"
+                type="password"
+                placeholder="Leave blank to keep current"
+                autoComplete="new-password"
+                error={errors?.password?.message}
+                {...register("password")}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setIsModalOpen(false)}
               >
-                Go Back
-              </button>
-              <button
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
                 type="submit"
-                disabled={updateProfileMutation.isPending}
-                className="btn-primary px-10"
+                size="sm"
+                isLoading={updateProfileMutation.isPending}
               >
                 {updateProfileMutation.isPending
                   ? "Syncing..."
                   : "Apply Changes"}
-              </button>
-            </div>
+              </Button>
+            </Modal.Footer>
           </form>
         </Modal>
       )}

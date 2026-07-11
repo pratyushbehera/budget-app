@@ -3,8 +3,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useCreateGroup } from "../../../services/groupApi";
 import { useToast } from "../../../contexts/ToastContext";
-import { Modal } from "../../../shared/components/Modal";
-import { FormInput } from "../../../shared/components/FormInput";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
+import Input from "@/shared/system/FormField/Input";
+import Textarea from "@/shared/system/FormField/TextArea";
 
 const groupSchema = yup.object().shape({
   name: yup.string().required("Group name is required"),
@@ -19,13 +21,12 @@ const CreateGroupModal = ({ onClose }) => {
   } = useForm({
     resolver: yupResolver(groupSchema),
   });
-
   const createGroup = useCreateGroup();
   const { addToast } = useToast();
 
   const onSubmit = (data) => {
     createGroup.mutate(
-      { name: data.name, description: data.description, members: [] },
+      { name: data.groupName, description: data.description, members: [] },
       {
         onSuccess: () => {
           addToast({
@@ -35,40 +36,38 @@ const CreateGroupModal = ({ onClose }) => {
           });
           onClose();
         },
-      },
+      }
     );
   };
-
+  console.log("xxx", errors);
   return (
-    <Modal title="Create Group" onClose={onClose}>
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <FormInput
-          label="Group Name"
-          placeholder="E.g., Goa Trip, Office Lunch"
-          error={errors.name}
-          {...register("name")}
-        />
+    <Modal onClose={onClose}>
+      <Modal.Header>Create Group</Modal.Header>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          <Input
+            label="Group Name"
+            required
+            placeholder="E.g., Goa Trip, Office Lunch"
+            error={errors?.name?.message}
+            {...register("groupName")}
+          />
 
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            Description (optional)
-          </label>
-          <textarea
-            className="input-field resize-none"
+          <Textarea
+            label="Description (optional)"
             rows={3}
             placeholder="A short description..."
             {...register("description")}
           />
-        </div>
-
-        <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800">
-          <button type="button" className="btn-secondary" onClick={onClose}>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" size="sm" onClick={onClose}>
             Cancel
-          </button>
-          <button type="submit" className="btn-primary">
+          </Button>
+          <Button variant="primary" type="submit" size="sm">
             Create
-          </button>
-        </div>
+          </Button>
+        </Modal.Footer>
       </form>
     </Modal>
   );

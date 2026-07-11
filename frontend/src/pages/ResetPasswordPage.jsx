@@ -6,7 +6,8 @@ import * as yup from "yup";
 import { useResetPassword } from "../services/authApi";
 import { useToast } from "../contexts/ToastContext";
 import { AuthLayout } from "../features/auth/layouts/AuthLayout";
-import { FormInput } from "../shared/components/FormInput";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
 
 const resetPasswordSchema = yup.object().shape({
   password: yup
@@ -19,7 +20,7 @@ const resetPasswordSchema = yup.object().shape({
     .required("Please confirm your password"),
 });
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage({ onNavigate }) {
   const { token } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
@@ -81,39 +82,36 @@ export default function ResetPasswordPage() {
       {!success ? (
         <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
-            <FormInput
+            <Input
               label="New Password"
               id="password"
               type="password"
+              required
               placeholder="••••••••"
-              error={errors.password}
+              error={errors?.password?.message}
               {...register("password")}
             />
 
-            <FormInput
+            <Input
               label="Confirm New Key"
               id="confirmPassword"
               type="password"
+              required
               placeholder="••••••••"
-              error={errors.confirmPassword}
+              error={errors?.confirmPassword?.message}
               {...register("confirmPassword")}
             />
           </div>
-
-          <button
+          <Button
             type="submit"
-            disabled={resetPasswordMutation.isPending}
-            className="w-full btn-primary py-4 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50"
+            size="lg"
+            className="w-full"
+            isLoading={resetPasswordMutation.isPending}
           >
-            {resetPasswordMutation.isPending ? (
-              <div className="flex items-center justify-center">
-                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin mr-3" />
-                Updating...
-              </div>
-            ) : (
-              "Update Password"
-            )}
-          </button>
+            {resetPasswordMutation.isPending
+              ? "Updating..."
+              : "Update Password"}
+          </Button>
         </form>
       ) : (
         <div className="space-y-8 py-4 animate-fade-in text-center">
@@ -135,12 +133,13 @@ export default function ResetPasswordPage() {
             </div>
           </div>
 
-          <Link
-            to="/login"
-            className="block w-full py-4 text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          <button
+            type="button"
+            onClick={() => onNavigate("login")}
+            className="text-primary-500 font-black hover:underline underline-offset-4"
           >
             Go to Sign In
-          </Link>
+          </button>
         </div>
       )}
     </AuthLayout>

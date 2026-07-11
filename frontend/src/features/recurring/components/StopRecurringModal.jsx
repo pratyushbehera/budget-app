@@ -1,6 +1,7 @@
-import { Modal } from "../../../shared/components/Modal";
 import { useStopRecurringRule } from "../../../services/recurringApi";
 import { useToast } from "../../../contexts/ToastContext";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
 
 export const StopRecurringModal = ({ rule, onClose }) => {
   const { mutateAsync: stopRule, isPending } = useStopRecurringRule();
@@ -28,25 +29,23 @@ export const StopRecurringModal = ({ rule, onClose }) => {
   };
 
   return (
-    <Modal title="Stop Recurring" onClose={onClose}>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
-        This will stop future recurring transactions.
-        <br />
-        Past transactions will not be affected.
-      </p>
-
-      <div className="flex justify-end gap-3">
-        <button className="btn-secondary" onClick={onClose}>
+    <Modal onClose={onClose}>
+      <Modal.Header>Stop Recurring</Modal.Header>
+      <Modal.Body>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+          This will stop future recurring transactions.
+          <br />
+          Past transactions will not be affected.
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size="sm" variant="secondary" onClick={onClose}>
           Cancel
-        </button>
-        <button
-          className="btn-primary"
-          onClick={handleStop}
-          disabled={isPending}
-        >
+        </Button>
+        <Button size="sm" onClick={handleStop} isLoading={isPending}>
           Stop
-        </button>
-      </div>
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

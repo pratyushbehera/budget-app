@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useToast } from "../../../contexts/ToastContext";
-import { Modal } from "../../../shared/components/Modal";
 import { useUpdateGroup } from "../../../services/groupApi";
-import { FormInput } from "../../../shared/components/FormInput";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
+import Input from "@/shared/system/FormField/Input";
+import Textarea from "@/shared/system/FormField/TextArea";
 
 const groupSchema = yup.object().shape({
   name: yup.string().required("Group name is required"),
@@ -58,7 +60,7 @@ export const EditGroup = ({ group, onClose }) => {
               message: err?.message || "Error updating group.",
             });
           },
-        },
+        }
       );
     } catch (err) {
       addToast({
@@ -71,48 +73,42 @@ export const EditGroup = ({ group, onClose }) => {
   };
 
   return (
-    <Modal title="Group Settings" onClose={onClose}>
-      <form className="space-y-6 pt-4" onSubmit={handleSubmit(onSubmit)}>
-        <FormInput
-          label="Display Name"
-          placeholder="e.g. Vacation 2024"
-          error={errors.name}
-          {...register("name")}
-        />
-
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">
-            About this Group
-          </label>
-          <textarea
-            placeholder="What's this group for?"
-            rows={4}
-            className={`input-field min-h-[120px] resize-none ${errors.description ? "border-rose-500 bg-rose-50/10" : "bg-gray-50/50 dark:bg-gray-800/20"}`}
-            {...register("description")}
+    <Modal onClose={onClose}>
+      <Modal.Header>Group Settings</Modal.Header>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          <Input
+            label="Group Name"
+            required
+            placeholder="e.g. Vacation 2024"
+            error={errors?.name?.message}
+            {...register("name")}
           />
-          {errors.description && (
-            <p className="mt-1.5 text-xs font-bold text-rose-500 px-1">
-              {errors.description.message}
-            </p>
-          )}
-        </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
-          <button 
-            type="button" 
-            className="px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" 
-            onClick={onClose}
-          >
-            Go Back
-          </button>
-          <button 
-            type="submit" 
-            className="btn-primary px-8" 
-            disabled={isPending}
+          <div className="space-y-2">
+            <Textarea
+              label="About this Group"
+              placeholder="What's this group for?"
+              required
+              rows={4}
+              error={errors?.description?.message}
+              {...register("description")}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            size="sm"
+            isLoading={isPending}
           >
             {isPending ? "Updating..." : "Save Changes"}
-          </button>
-        </div>
+          </Button>
+        </Modal.Footer>
       </form>
     </Modal>
   );

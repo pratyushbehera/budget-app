@@ -5,6 +5,9 @@ import { useDeleteGroup, useLeaveGroup } from "../../../services/groupApi";
 import InviteMemberModal from "./InviteMember";
 import { AddTransaction } from "../../transactions/components/AddTransaction";
 
+import Button from "@/shared/system/Button";
+import PageHeading from "../../../shared/components/PageHeading";
+
 const GroupHeader = ({ group, isAdmin }) => {
   const [editGroup, setEditGroup] = useState(false);
   const [inviteModal, setInviteModal] = useState(false);
@@ -14,53 +17,57 @@ const GroupHeader = ({ group, isAdmin }) => {
 
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in">
-      <div className="space-y-3">
-        <h1 className="text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-none capitalize">
-          {group.name}
-        </h1>
-        <p className="text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight">
-          {group.description || "Shared budget and expenses"}
-        </p>
-      </div>
+      <PageHeading
+        title={group.name}
+        subtitle={group.description || "Shared budget and expenses"}
+      />
 
       <div className="flex flex-wrap gap-3 items-center">
         {isAdmin && (
-          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/40 p-1.5 rounded-2xl">
-            <button
-              className="p-3 rounded-xl text-gray-500 hover:text-primary-500 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm shadow-transparent hover:shadow-gray-200/50"
-              onClick={() => setInviteModal(true)}
+          <div className="flex items-center gap-2 bg-gray-100 dark:bg-transparent border dark:border-gray-800/40 p-1.5 rounded-2xl">
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              className="hover:text-primary-500"
               title="Invite member"
+              onClick={() => setInviteModal(true)}
             >
               <UserPlus size={20} strokeWidth={2.5} />
-            </button>
-            <button
-              className="p-3 rounded-xl text-gray-500 hover:text-primary-500 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm shadow-transparent hover:shadow-gray-200/50"
+            </Button>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              className="hover:text-primary-500"
               onClick={() => setEditGroup(true)}
               title="Edit group"
             >
               <Edit size={20} strokeWidth={2.5} />
-            </button>
-            <button
-              className="p-3 rounded-xl text-gray-500 hover:text-rose-500 hover:bg-white dark:hover:bg-gray-700 transition-all shadow-sm shadow-transparent hover:shadow-gray-200/50"
+            </Button>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              className="hover:text-rose-500"
               onClick={() => deleteGroup.mutate()}
               title="Delete group"
             >
               <Trash2 size={20} strokeWidth={2.5} />
-            </button>
+            </Button>
+            {!isAdmin && (
+              <Button
+                size="icon-sm"
+                variant="tertiary"
+                onClick={() => leaveGroup.mutate()}
+                title="Leave group"
+              >
+                <LogOut size={22} strokeWidth={2} />
+              </Button>
+            )}
           </div>
         )}
 
-        {!isAdmin && (
-          <button
-            className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/10"
-            onClick={() => leaveGroup.mutate()}
-            title="Leave group"
-          >
-            <LogOut size={22} strokeWidth={2.5} />
-          </button>
-        )}
-
-        <button
+        <Button
+          size="md"
+          variant="primary"
           className="btn-primary flex items-center gap-3 group px-8"
           onClick={() => setShowAddModal(true)}
         >
@@ -70,7 +77,7 @@ const GroupHeader = ({ group, isAdmin }) => {
             className="group-hover:rotate-90 transition-transform"
           />
           <span className="text-lg">Add Transaction</span>
-        </button>
+        </Button>
       </div>
 
       {editGroup && (

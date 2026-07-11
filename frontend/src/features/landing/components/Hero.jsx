@@ -1,55 +1,102 @@
-import { HeroVisual } from "./HeroVisual";
-import { AnimatedSection } from "../../../shared/components/AnimatedSection";
-import { GradientBlob } from "../../../shared/components/GradientBlob";
-import { Link } from "react-router-dom";
+import Typography from "@/shared/system/Typography";
+
+const LOGO_URL = "/logo.png";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-20">
-      <GradientBlob />
-      
-      {/* Decorative Blur Patterns */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
+    <div
+      className="
+        relative
+        flex
+        flex-col
+        items-center
+        lg:flex-1
+        lg:py-12
+      "
+    >
+      {/* Brand */}
+      <header className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pt-6 lg:pt-8">
+        <div className="flex items-center gap-3">
+          <img
+            src={LOGO_URL}
+            alt="FinPal logo"
+            className="h-12 w-12 lg:h-14 lg:w-14"
+          />
 
-      <div className="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center">
-        {/* Text Area */}
-        <AnimatedSection className="space-y-10">
-          <div className="space-y-4">
-            <div className="inline-block px-4 py-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 rounded-full text-xs font-black uppercase tracking-[0.2em] animate-fade-in">
-              The Future of Personal Finance
-            </div>
-            <h1 className="text-7xl md:text-8xl font-black text-gray-900 dark:text-white tracking-tighter leading-[0.9] animate-slide-in-bottom">
-              Take Control <br/>
-              <span className="text-primary-500">of Your Money</span>
-            </h1>
-          </div>
+          <Typography
+            variant="h1"
+            className="text-3xl lg:text-4xl font-black tracking-tight"
+          >
+            FinPal
+          </Typography>
+        </div>
+      </header>
 
-          <p className="text-2xl text-gray-400 dark:text-gray-500 font-medium tracking-tight max-w-xl leading-relaxed animate-fade-in">
-            Master your spending, crush your goals, and build lasting wealth with the most expressive budget tracker ever built.
-          </p>
+      {/* Hero content */}
+      <div
+        className="
+          relative
+          z-10
+          flex
+          flex-1
+          flex-col
+          items-center
+          lg:items-start
+          w-full
+          max-w-2xl
+          px-6
+          lg:px-8
+          py-8
+          lg:py-12
+          space-y-4
+          lg:space-y-5
+        "
+      >
+        <div
+          className="
+            inline-flex
+            px-4
+            py-1.5
+            bg-primary-100
+            dark:bg-primary-900/40
+            text-primary-600
+            dark:text-primary-400
+            rounded-full
+            text-xs
+            font-black
+            uppercase
+            tracking-[0.2em]
+          "
+        >
+          The Future of Personal Finance
+        </div>
 
-          <div className="flex flex-wrap gap-6 animate-fade-in pt-4">
-            <Link 
-              to="/signup" 
-              className="btn-primary px-10 py-5 text-xl font-black rounded-2xl shadow-2xl shadow-primary-500/30 hover:scale-105 active:scale-95 transition-all"
-            >
-              Get Started Free
-            </Link>
-            <Link 
-              to="/login" 
-              className="px-10 py-5 text-xl font-black text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl border-2 border-transparent hover:border-gray-100 dark:hover:border-gray-800 transition-all"
-            >
-              Sign In
-            </Link>
-          </div>
-        </AnimatedSection>
+        <Typography
+          variant="h1"
+          className="
+            text-5xl
+            lg:text-7xl
+            font-black
+            tracking-tighter
+            leading-[0.92]
+            text-center
+            lg:text-left
+          "
+        >
+          Take Control
+          <br />
+          <span className="text-primary-500">of Your Money</span>
+        </Typography>
 
-        {/* Visual Area */}
-        <AnimatedSection delay={0.3} className="relative">
-          <div className="absolute inset-0 bg-primary-500/5 rounded-full blur-3xl -z-10 scale-150"></div>
-          <HeroVisual />
-        </AnimatedSection>
+        <Typography
+          variant="subtitle1"
+          align="center"
+          className="text-lg lg:text-2xl lg:text-left"
+        >
+          Master your spending, crush your goals, and build lasting wealth with
+          the most expressive budget tracker ever built.
+        </Typography>
       </div>
-    </section>
+    </div>
   );
 }

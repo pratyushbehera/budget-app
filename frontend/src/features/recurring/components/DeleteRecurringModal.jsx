@@ -1,6 +1,7 @@
-import { Modal } from "../../../shared/components/Modal";
 import { useDeleteRecurringRule } from "../../../services/recurringApi";
 import { useToast } from "../../../contexts/ToastContext";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
 
 export const DeleteRecurringModal = ({ rule, onClose }) => {
   const { mutateAsync: deleteRule, isPending } = useDeleteRecurringRule();
@@ -28,25 +29,28 @@ export const DeleteRecurringModal = ({ rule, onClose }) => {
   };
 
   return (
-    <Modal title="Delete Recurring Rule" onClose={onClose}>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
-        This will permanently remove this recurring rule.
-        <br />
-        <strong>This action cannot be undone.</strong>
-      </p>
-
-      <div className="flex justify-end gap-3">
-        <button className="btn-secondary" onClick={onClose}>
+    <Modal onClose={onClose}>
+      <Modal.Header>Delete Recurring Rule</Modal.Header>
+      <Modal.Body>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+          This will permanently remove this recurring rule.
+          <br />
+          <strong>This action cannot be undone.</strong>
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size="sm" variant="secondary" onClick={onClose}>
           Cancel
-        </button>
-        <button
-          className="btn-primary"
+        </Button>
+        <Button
+          size="sm"
+          variant="tertiary"
           onClick={handleDelete}
-          disabled={isPending}
+          isLoading={isPending}
         >
           Delete
-        </button>
-      </div>
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

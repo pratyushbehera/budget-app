@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ThemeToggle } from "../features/dashboard/components/ThemeToggle";
-import { Modal } from "../shared/components/Modal";
 import { DateRangePicker } from "../shared/components/DateRangePicker";
 
-import Button from "@/shared/system/button";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
 import { PlusIcon } from "lucide-react";
 
 export default function CookBookPage() {
@@ -32,12 +32,10 @@ export default function CookBookPage() {
       </div>
       <DateRangePicker />
       {modal && (
-        <Modal
-          title="Test modal"
-          maxWidth="max-w-xl"
-          onClose={() => setModal(false)}
-        >
-          Content here
+        <Modal size="xl" onClose={() => setModal(false)}>
+          <Modal.Header>Test modal</Modal.Header>
+          <Modal.Body>Content here</Modal.Body>
+          <Modal.Footer>Action</Modal.Footer>
         </Modal>
       )}
     </div>

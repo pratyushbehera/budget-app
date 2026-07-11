@@ -7,11 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DateRangePicker.css";
+import Button from "@/shared/system/Button";
 
 export function DateRangePicker() {
   const dispatch = useDispatch();
   const { dateMode, selectedMonth, startDate, endDate } = useSelector(
-    (state) => state.app,
+    (state) => state.app
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,7 @@ export function DateRangePicker() {
           month: monthStr,
           startDate: null,
           endDate: null,
-        }),
+        })
       );
     } else if (tempMode === "year") {
       const yearStr = format(internalDate, "yyyy");
@@ -54,7 +55,7 @@ export function DateRangePicker() {
           month: yearStr,
           startDate: start,
           endDate: end,
-        }),
+        })
       );
     } else if (tempMode === "range") {
       const [start, end] = internalRange;
@@ -65,7 +66,7 @@ export function DateRangePicker() {
             startDate: format(start, "yyyy-MM-dd"),
             endDate: format(end, "yyyy-MM-dd"),
             month: `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`,
-          }),
+          })
         );
       }
     }
@@ -80,7 +81,7 @@ export function DateRangePicker() {
     } else if (dateMode === "range" && startDate && endDate) {
       return `${format(new Date(startDate), "MMM d, yy")} - ${format(
         new Date(endDate),
-        "MMM d, yy",
+        "MMM d, yy"
       )}`;
     }
     return "Select Date";
@@ -88,13 +89,14 @@ export function DateRangePicker() {
 
   return (
     <div className="relative">
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-6 py-3 bg-gray-100 dark:bg-gray-950 rounded-full font-bold text-gray-700 dark:text-white border-2 border-white-100/20 hover:border-primary-500 transition-all shadow-sm group"
+        variant="ghost"
+        className="border"
+        leftIcon={<CalendarDays className="text-primary-500" />}
       >
-        <CalendarDays className="w-5 h-5 text-primary-500 group-hover:scale-110 transition-transform" />
-        <span className="whitespace-nowrap">{getDisplayText()}</span>
-      </button>
+        {getDisplayText()}
+      </Button>
 
       <AnimatePresence>
         {isOpen && (
@@ -113,28 +115,27 @@ export function DateRangePicker() {
                 <h3 className="text-lg font-black text-gray-900 dark:text-white">
                   Select Period
                 </h3>
-                <button
+                <Button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
+                  variant="ghost"
+                  size="icon-sm"
+                  leftIcon={<X size={16} strokeWidth={2} />}
+                  className="border hover:text-tertiary-500"
+                ></Button>
               </div>
 
               {/* Mode Switcher */}
-              <div className="flex p-1 bg-gray-100 dark:bg-gray-950 rounded-2xl mb-6">
+              <div className="flex justify-between bg-gray-100 dark:bg-gray-950 rounded-2xl mb-6">
                 {["month", "year", "range"].map((mode) => (
-                  <button
+                  <Button
                     key={mode}
+                    size="sm"
+                    variant={tempMode === mode ? "primary" : "ghost"}
                     onClick={() => setTempMode(mode)}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                      tempMode === mode
-                        ? "bg-white dark:bg-gray-950/20 text-primary-500 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                    }`}
+                    className="uppercase tracking-wider border"
                   >
                     {mode}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -171,16 +172,16 @@ export function DateRangePicker() {
               </div>
 
               <div className="mt-8">
-                <button
+                <Button
                   onClick={handleApply}
                   disabled={
                     tempMode === "range" &&
                     (!internalRange[0] || !internalRange[1])
                   }
-                  className="w-full btn-primary h-12 rounded-2xl shadow-lg shadow-primary-500/20 disabled:opacity-50 disabled:shadow-none"
+                  className="w-full"
                 >
                   Apply Selection
-                </button>
+                </Button>
               </div>
             </motion.div>
           </>

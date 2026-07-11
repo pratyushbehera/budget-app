@@ -1,3 +1,5 @@
+import Select from "@/shared/system/FormField/Select";
+
 export function GroupSection({ groups = [], form, updateFormField, disabled }) {
   return (
     <div className="mt-6 border rounded-lg p-4 bg-gray-50 dark:bg-gray-200">
@@ -5,27 +7,17 @@ export function GroupSection({ groups = [], form, updateFormField, disabled }) {
         Group (Optional)
       </h3>
 
-      <label
-        htmlFor="group"
-        className="text-xs font-medium text-gray-500 dark:text-gray-400"
-      >
-        Group
-      </label>
-      <select
-        id="group"
+      <Select
+        options={groups.map((grp) => ({
+          label: grp.name,
+          value: grp._id || g.id,
+        }))}
+        placeholder="No group"
         name="groupId"
         value={form.groupId}
         onChange={updateFormField}
         disabled={disabled}
-        className="input-field mt-1 dark:bg-gray-100"
-      >
-        <option value="">No Group</option>
-        {groups.map((g) => (
-          <option key={g._id || g.id} value={g._id || g.id}>
-            {g.name}
-          </option>
-        ))}
-      </select>
+      />
 
       {disabled && (
         <p className="text-xs text-primary-600 mt-1">

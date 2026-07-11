@@ -3,6 +3,7 @@ import { useTransaction } from "../../../services/transactionApi";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { Wallet } from "lucide-react";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
+import Typography from "@/shared/system/Typography";
 
 export function RecentTransaction({ month, startDate, endDate }) {
   const { data, isLoading, error } = useTransaction({
@@ -18,9 +19,8 @@ export function RecentTransaction({ month, startDate, endDate }) {
   return (
     <div className="md:col-span-2 col-span-4 rounded-3xl bg-white dark:bg-gray-950 p-6 shadow-md border dark:border-gray-900 backdrop-blur-sm">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-          Recent Transactions
-        </h3>
+        <Typography variant="h4">Recent Transactions</Typography>
+
         <Link
           to="/transactions"
           className="text-sm font-bold text-primary-500 hover:text-primary-600 transition-colors uppercase tracking-wider"
