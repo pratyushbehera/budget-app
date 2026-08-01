@@ -22,7 +22,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 app.use(compression());
 
-app.get("/", (req, res) => res.send("Budget App API running"));
+app.get("/", (req, res) => res.send({ status: "Budget App API running" }));
 
 // Feature routes
 app.use("/api/auth", authRoutes);
