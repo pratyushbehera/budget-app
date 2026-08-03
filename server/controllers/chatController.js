@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { OpenRouter } = require("@openrouter/sdk");
 
 const buildChatPrompt = (query, categoryPlanUsage) => {
   return `
@@ -66,6 +67,71 @@ exports.chatStream = async (req, res) => {
     res.end();
   } catch (err) {
     console.error("chatStream error:", err);
+    if (!res.headersSent) {
+      res.status(500).json({ message: "AI chat failed", error: err.message });
+    } else {
+      try {
+        res.end();
+      } catch (e) {
+        console.error("Error ending response after failure", e);
+      }
+    }
+  }
+};
+
+exports.chatStreamOpenRouter = async (req, res) => {
+  try {
+    const { query, categoryPlanUsage } = req.body;
+
+    if (!query || typeof categoryPlanUsage !== "object") {
+      return res.status(400).json({
+        message: "query (string) and categoryPlanUsage (object) are required.",
+      });
+    }
+
+    const prompt = buildChatPrompt(query, categoryPlanUsage);
+
+    const openrouter = new OpenRouter({
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
+
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.status(200);
+
+    const stream = await openrouter.chat.send({
+      chatRequest: {
+        model: "openrouter/free",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        reasoning: { enabled: false },
+        stream: true,
+      },
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content;
+      if (content) {
+        res.write(content);
+      }
+
+      // Optional: Log token usage internally without breaking the UI stream
+      if (chunk.usage) {
+        console.log(
+          "\nReasoning tokens:",
+          chunk.usage.completionTokensDetails?.reasoningTokens
+        );
+      }
+    }
+
+    res.end();
+  } catch (err) {
+    console.error("chatStreamOpenRouter error:", err);
     if (!res.headersSent) {
       res.status(500).json({ message: "AI chat failed", error: err.message });
     } else {
