@@ -5,6 +5,8 @@ import {
   useApproveRecurring,
   useSkipRecurring,
 } from "../../../services/recurringApi";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
 
 export function PendingRecurringRow({ item }) {
   const [amount, setAmount] = useState(item.amount);
@@ -39,7 +41,7 @@ export function PendingRecurringRow({ item }) {
               "Something went wrong",
           });
         },
-      },
+      }
     );
   };
 
@@ -81,38 +83,35 @@ export function PendingRecurringRow({ item }) {
       {/* Amount */}
       <div className="flex items-center gap-1">
         <IndianRupee className="w-3 h-3 text-gray-500" />
-        <input
+        <Input
           type="number"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
-          className="w-24 input-field h-8 text-sm"
+          className="w-24 h-8 text-sm"
         />
       </div>
 
       {/* Date */}
-      <input
+      <Input
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-        className="input-field h-8 text-sm w-36"
+        className="h-8 text-sm w-36"
       />
 
       {/* Actions */}
       <div className="flex gap-1">
-        <button
+        <Button
           onClick={handleApprove}
-          disabled={approveMutation.isPending}
-          className="btn-primary text-xs px-3 py-1"
+          isLoading={approveMutation.isPending}
+          size="sm"
         >
           {approveMutation.isPending ? "Saving..." : "Approve"}
-        </button>
+        </Button>
 
-        <button
-          onClick={handleSkip}
-          className="btn-secondary text-xs px-3 py-1"
-        >
+        <Button onClick={handleSkip} variant="secondary" size="sm">
           Skip
-        </button>
+        </Button>
       </div>
     </div>
   );

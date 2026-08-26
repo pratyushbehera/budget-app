@@ -4,6 +4,7 @@ import { X, Download } from "lucide-react";
 import { usePWAInstall } from "../hooks/usePWAInstall";
 import { shouldShowPWAPrompt, dismissPWAPrompt } from "../utils/pwaStorage";
 import { useSelector } from "react-redux";
+import Button from "@/shared/system/Button";
 
 export const PWAInstallPrompt = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -77,13 +78,13 @@ export const PWAInstallPrompt = () => {
           {isMobile && (
             <div className="w-10 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-3" />
           )}
-
-          <button
+          <Button
             onClick={dismiss}
-            className="absolute top-3 right-3 text-neutral-400 hover:text-neutral-600"
-          >
-            <X size={18} />
-          </button>
+            variant="ghost"
+            className="absolute top-3 right-3 border hover:text-tertiary-500"
+            size="icon-sm"
+            leftIcon={<X size={18} />}
+          ></Button>
 
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-xl bg-primary-100 dark:bg-primary-900/30">
@@ -111,19 +112,15 @@ export const PWAInstallPrompt = () => {
                     Share → Add to Home Screen
                   </span>
                 ) : (
-                  <button
+                  <Button
+                    size="sm"
+                    variant={canInstall ? "primary" : "ghost"}
                     onClick={handleInstall}
                     disabled={!canInstall}
-                    className={`inline-flex items-center gap-2
-                      rounded-lg px-4 py-2 text-sm font-medium text-white
-                      ${canInstall
-                    ? "bg-primary-600 hover:bg-primary-700"
-                    : "bg-neutral-400 cursor-not-allowed"
-                  }`}
+                    leftIcon={<Download size={16} />}
                   >
-                    <Download size={16} />
                     Install
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

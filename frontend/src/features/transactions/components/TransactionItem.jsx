@@ -2,13 +2,14 @@ import { CalendarDays, Pencil, Trash2, Wallet } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
 import { categoryIconMap } from "../../../shared/utils/categoryIconMap";
 import { useSelector } from "react-redux";
+import Button from "@/shared/system/Button";
 
 export const TransactionItem = ({ tx, onEdit, onDelete }) => {
   const { groups, loading: isLoading } = useSelector((state) => state.group);
   const isIncome =
     tx.type?.toLowerCase() === "income" ||
     ["salary", "bonus", "interest", "dividend", "other income"].includes(
-      tx.category.toLowerCase(),
+      tx.category.toLowerCase()
     );
 
   const Icon = categoryIconMap[tx.category.toLowerCase()] || Wallet;
@@ -25,10 +26,10 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
         <div
           className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 flex-shrink-0
             ${
-    isIncome
-      ? "bg-emerald-500 shadow-emerald-500/20 text-white"
-      : "bg-rose-500 shadow-rose-500/20 text-white"
-    }`}
+              isIncome
+                ? "bg-emerald-500 shadow-emerald-500/20 text-white"
+                : "bg-rose-500 shadow-rose-500/20 text-white"
+            }`}
         >
           <Icon className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
         </div>
@@ -83,29 +84,22 @@ export const TransactionItem = ({ tx, onEdit, onDelete }) => {
 
         {/* Actions Menu */}
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => onEdit(tx)}
-            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-all duration-300 active:scale-90"
+          <Button
+            size="icon-sm"
+            variant="secondary"
             aria-label="Edit transaction"
-          >
-            <Pencil
-              size={16}
-              className="sm:w-[18px] sm:h-[18px]"
-              strokeWidth={2.5}
-            />
-          </button>
+            leftIcon={<Pencil size={16} strokeWidth={2} />}
+            onClick={() => onEdit(tx)}
+          ></Button>
 
-          <button
+          <Button
             onClick={() => onDelete(tx)}
-            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl btn-secondary text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-300 active:scale-90"
+            leftIcon={<Trash2 size={16} strokeWidth={2} />}
+            variant="ghost"
+            className="border hover:text-tertiary-500 "
+            size="icon-sm"
             aria-label="Delete transaction"
-          >
-            <Trash2
-              size={16}
-              className="sm:w-[18px] sm:h-[18px]"
-              strokeWidth={2.5}
-            />
-          </button>
+          ></Button>
         </div>
       </div>
     </li>

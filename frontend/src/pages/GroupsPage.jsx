@@ -6,6 +6,9 @@ import GroupCard from "../features/group/components/GroupCard";
 import CreateGroupModal from "../features/group/components/CreateGroup";
 import Tab from "../shared/components/Tab";
 import { LoadingPage } from "../shared/components/LoadingPage";
+import Button from "@/shared/system/Button";
+import Typography from "@/shared/system/Typography";
+import PageHeading from "../shared/components/PageHeading";
 
 const GroupsPage = () => {
   const { user } = useSelector((s) => s.auth);
@@ -34,26 +37,17 @@ const GroupsPage = () => {
     <div className="min-h-screen max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in">
-        <div className="space-y-2">
-          <h1 className="text-6xl font-black text-gray-900 dark:text-white tracking-tighter">
-            Money Groups
-          </h1>
-          <p className="text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight">
-            Manage your shared budgets and invites
-          </p>
-        </div>
-
-        <button
+        <PageHeading
+          title="Money Groups"
+          subtitle="Manage your shared budgets and invites"
+        />
+        <Button
+          size="md"
+          leftIcon={<Plus size={20} strokeWidth={2} />}
           onClick={() => setShowCreate(true)}
-          className="btn-primary flex items-center gap-3 group px-8"
         >
-          <Plus
-            size={24}
-            strokeWidth={3}
-            className="group-hover:rotate-90 transition-transform"
-          />
-          <span className="text-lg">New Group</span>
-        </button>
+          New Group
+        </Button>
       </div>
 
       {/* PENDING INVITES */}
@@ -95,20 +89,18 @@ const GroupsPage = () => {
                   </p>
 
                   <div className="flex gap-3 pt-2">
-                    <button
+                    <Button
                       onClick={() =>
                         acceptInvite.mutate({ groupId: g._id, reject: true })
                       }
-                      className="flex-1 py-3 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-black uppercase tracking-widest transition-all border border-white/10"
+                      variant="secondary"
+                      size="sm"
                     >
                       Decline
-                    </button>
-                    <button
-                      onClick={() => acceptInvite.mutate(g._id)}
-                      className="flex-1 py-3 h-12 rounded-2xl bg-white text-emerald-600 hover:bg-emerald-50 text-xs font-black uppercase tracking-widest transition-all shadow-lg"
-                    >
+                    </Button>
+                    <Button onClick={() => acceptInvite.mutate(g._id)} sie="sm">
                       Accept
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

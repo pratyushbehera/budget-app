@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { usePlan, useSavePlan } from "../services/planApi";
 import { useToast } from "../contexts/ToastContext";
-import { Edit, Plus, Save, X, Trash2, Wallet, CreditCard } from "lucide-react";
+import {
+  Edit,
+  Plus,
+  Save,
+  Trash2,
+  Wallet,
+  CreditCard,
+  IndianRupee,
+} from "lucide-react";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { categoryIconMap } from "../shared/utils/categoryIconMap";
 import { AddCategory } from "../features/plan/components/AddCategory";
@@ -9,6 +17,10 @@ import { DeleteCategory } from "../features/plan/components/DeleteCategory";
 import { NoPlan } from "../features/plan/components/NoPlan";
 import { LoadingPage } from "../shared/components/LoadingPage";
 import { useSelector } from "react-redux";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
+import Typography from "@/shared/system/Typography";
+import PageHeading from "../shared/components/PageHeading";
 
 export default function PlanPage() {
   const { category: categoryList } = useSelector((state) => state.category);
@@ -61,7 +73,7 @@ export default function PlanPage() {
               message: err?.message || "Error adding transaction.",
             });
           },
-        },
+        }
       );
     } catch (err) {
       addToast({
@@ -103,28 +115,18 @@ export default function PlanPage() {
       <div className="space-y-8 sm:space-y-12">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 border-b border-gray-100 dark:border-gray-800 pb-8 sm:pb-0 sm:border-none">
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
-              Budget Plan
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight">
-              Design your monthly financial strategy
-            </p>
-          </div>
+          <PageHeading
+            title="Budget Plan"
+            subtitle="Design your monthly financial strategy"
+          />
 
           {!isEditing && Object.keys(planData).length > 0 && (
-            <button
+            <Button
               onClick={() => setIsEditing(true)}
-              className="btn-primary flex items-center justify-center gap-3 group px-8 py-4 rounded-2xl shadow-xl shadow-primary-500/20"
+              leftIcon={<Edit size={20} />}
             >
-              <Edit
-                size={20}
-                className="group-hover:rotate-12 transition-transform"
-              />
-              <span className="text-sm font-black uppercase tracking-widest">
-                Edit My Plan
-              </span>
-            </button>
+              Edit My Plan
+            </Button>
           )}
         </div>
 
@@ -140,19 +142,13 @@ export default function PlanPage() {
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                 Refine Your Strategy
               </h2>
-              <button
+              <Button
+                className="uppercase tracking-widest"
+                leftIcon={<Plus size={20} />}
                 onClick={() => setShowAddCategory(true)}
-                className="btn-secondary flex items-center justify-center gap-2 group h-12 px-6 rounded-xl"
               >
-                <Plus
-                  size={18}
-                  strokeWidth={3}
-                  className="group-hover:rotate-90 transition-transform"
-                />
-                <span className="text-sm font-black uppercase tracking-widest">
-                  Add Category
-                </span>
-              </button>
+                Add Category
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:gap-8">
@@ -189,12 +185,12 @@ export default function PlanPage() {
                                   <div
                                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-lg shadow-current/10 transition-transform group-hover:scale-110
                                     ${
-                            type === "Income"
-                              ? "bg-emerald-500 text-white"
-                              : group?.toLowerCase().includes("want")
-                                ? "bg-orange-500 text-white"
-                                : "bg-blue-500 text-white"
-                            }`}
+                                      type === "Income"
+                                        ? "bg-emerald-500 text-white"
+                                        : group?.toLowerCase().includes("want")
+                                        ? "bg-orange-500 text-white"
+                                        : "bg-blue-500 text-white"
+                                    }`}
                                   >
                                     <Icon
                                       className="w-5 h-5"
@@ -205,25 +201,26 @@ export default function PlanPage() {
                                     {cat.name}
                                   </span>
                                 </div>
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  className="hover:text-tertiary-500"
                                   onClick={() => setDeleteTarget(cat)}
-                                  className="p-2 rounded-lg text-gray-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
                                 >
                                   <Trash2 size={16} />
-                                </button>
+                                </Button>
                               </div>
                               <div className="relative">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-base sm:text-lg">
                                   ₹
                                 </span>
-                                <input
-                                  type="number"
+                                <Input
                                   value={editableData[cat.name] || ""}
                                   onChange={(e) =>
                                     handleChange(cat.name, e.target.value)
                                   }
                                   placeholder="0"
-                                  className="input-field pl-10 h-12 sm:h-14 text-base sm:text-lg font-black tracking-tighter"
+                                  leftIcon={<IndianRupee size="18" />}
                                 />
                               </div>
                             </div>
@@ -275,34 +272,23 @@ export default function PlanPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row justify-center md:justify-end gap-3 sm:gap-4 p-4">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setIsEditing(false);
                   setEditableData(planData || {});
                 }}
-                className="btn-secondary px-10 h-14 rounded-2xl group w-full sm:w-auto order-2 sm:order-1"
               >
-                <X
-                  size={20}
-                  className="group-hover:rotate-90 transition-transform"
-                />
-                <span className="text-sm font-black uppercase tracking-widest">
-                  Cancel
-                </span>
-              </button>
-              <button
+                Cancel
+              </Button>
+
+              <Button
+                variant="primary"
                 onClick={handleSavePlan}
-                disabled={isPending}
-                className="btn-primary px-10 h-14 rounded-2xl shadow-2xl shadow-primary-500/30 group w-full sm:w-auto order-1 sm:order-2"
+                isLoading={isPending}
               >
-                <Save
-                  size={20}
-                  className="group-hover:scale-110 transition-transform"
-                />
-                <span className="text-sm font-black uppercase tracking-widest">
-                  {isPending ? "Saving..." : "Commit Plan"}
-                </span>
-              </button>
+                {isPending ? "Saving..." : "Commit Plan"}
+              </Button>
             </div>
           </div>
         )}
@@ -358,7 +344,7 @@ export default function PlanPage() {
                   if (!acc[groupName]) acc[groupName] = [];
                   acc[groupName].push(cat);
                   return acc;
-                }, {}) || {},
+                }, {}) || {}
               ).map(([group, cats]) => (
                 <div key={group} className="space-y-8">
                   <div className="flex items-center gap-6">
@@ -391,10 +377,10 @@ export default function PlanPage() {
                               <div
                                 className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6
                                 ${
-                        isIncome
-                          ? "bg-emerald-500"
-                          : "bg-gray-100 dark:bg-gray-800"
-                        } text-white`}
+                                  isIncome
+                                    ? "bg-emerald-500"
+                                    : "bg-gray-100 dark:bg-gray-800"
+                                } text-white`}
                               >
                                 <Icon
                                   size={28}
@@ -430,7 +416,7 @@ export default function PlanPage() {
                                     <span>Allocation</span>
                                     <span>
                                       {Math.round(
-                                        (value / totalPlannedExpense) * 100,
+                                        (value / totalPlannedExpense) * 100
                                       )}
                                       %
                                     </span>
@@ -441,7 +427,7 @@ export default function PlanPage() {
                                       style={{
                                         width: `${Math.min(
                                           (value / totalPlannedExpense) * 100,
-                                          100,
+                                          100
                                         )}%`,
                                       }}
                                     ></div>

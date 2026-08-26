@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSelector } from "react-redux";
 import { useAddTransaction } from "../../../services/transactionApi";
-import { Modal } from "../../../shared/components/Modal";
 import { useToast } from "../../../contexts/ToastContext";
 import { uid } from "../../../shared/utils/generateUid";
 import { useGroup } from "../../../services/groupApi";
@@ -12,7 +11,13 @@ import { useCreateRecurringRules } from "../../../services/recurringApi";
 import { GroupSection } from "./GroupSection";
 import { SplitSection } from "./SplitSection";
 import { useSplitCalculation } from "../hooks/useSplitCalculation";
-import { FormInput } from "../../../shared/components/FormInput";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
+import Input from "@/shared/system/FormField/Input";
+import Textarea from "@/shared/system/FormField/TextArea";
+import Checkbox from "@/shared/system/FormField/CheckBox";
+import Select from "@/shared/system/FormField/Select";
+import Typography from "@/shared/system/Typography";
 
 const transactionSchema = yup.object().shape({
   date: yup.string().required("Date is required"),
@@ -28,10 +33,10 @@ const transactionSchema = yup.object().shape({
 export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   const { user: currentUser } = useSelector((s) => s.auth);
   const { category: categoryList, loading: isCatLoading } = useSelector(
-    (s) => s.category,
+    (s) => s.category
   );
   const { groups = [], loading: isGroupLoading } = useSelector(
-    (s) => s.group || {},
+    (s) => s.group || {}
   );
 
   const [isRecurring, setIsRecurring] = useState(false);
@@ -151,7 +156,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
 
             onClose();
           },
-        },
+        }
       );
 
       return;
@@ -175,7 +180,7 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
               title: "Error",
               message: err?.message || "Failed to add transaction.",
             }),
-        },
+        }
       );
     } catch (err) {
       addToast({
@@ -187,153 +192,129 @@ export const AddTransaction = ({ onClose, groupId: defaultGroupId }) => {
   };
 
   return (
-    <Modal title="Add Transaction" onClose={onClose}>
-      {isCatLoading || isGroupLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Transaction Details */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Transaction Details
-            </h3>
-
-            <FormInput
-              label="Date"
-              id="transaction-date"
-              type="date"
-              error={errors.date}
-              {...register("date")}
-            />
-
-            <div className="space-y-2 mt-3">
-              <label
-                htmlFor="categoryId"
-                className="text-xs font-medium text-gray-500 dark:text-gray-400"
-              >
-                Category
-              </label>
-              <select
-                id="categoryId"
-                className={`input-field dark:bg-gray-100 ${
-                  errors.categoryId ? "border-red-500" : ""
-                }`}
-                {...register("categoryId")}
-              >
-                <option value="">Select Category</option>
-                {categoryList?.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              {errors.categoryId && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.categoryId.message}
-                </p>
-              )}
-            </div>
-
-            <FormInput
-              label="Amount"
-              id="amount"
-              type="text"
-              placeholder="0.00"
-              step="0.01"
-              error={errors.amount}
-              {...register("amount")}
-            />
-
-            <div className="space-y-2 mt-3">
-              <label
-                htmlFor="notes"
-                className="text-xs font-medium text-gray-500 dark:text-gray-400"
-              >
-                Notes
-              </label>
-              <textarea
-                id="notes"
-                className="input-field resize-none dark:bg-gray-100"
-                rows={3}
-                placeholder="Optional"
-                {...register("notes")}
-              />
-            </div>
-          </div>
-
-          {/* Group section (separate card) */}
-          <GroupSection
-            groups={groups}
-            form={formValues}
-            updateFormField={updateFormField}
-            disabled={!!defaultGroupId}
-          />
-
-          {/* Split section (only when group exists) */}
-          {formValues.groupId && selectedGroup && (
-            <SplitSection
-              splitMode={splitMode}
-              setSplitMode={setSplitMode}
-              splitDetails={splitDetails}
-              updatePercent={updatePercent}
-              updateExact={updateExact}
-              isSplitValid={isSplitValid}
-              totalSplit={totalSplit}
-              amount={formValues.amount}
-              selectedGroup={selectedGroup}
-              paidBy={formValues.paidBy}
-              onPaidByChange={updateFormField}
-            />
-          )}
-
-          <div className="mt-4">
-            <label className="flex items-center gap-2 text-sm dark:text-white">
-              <input
-                type="checkbox"
-                checked={isRecurring}
-                onChange={(e) => setIsRecurring(e.target.checked)}
-              />
-              Make this recurring
-            </label>
-          </div>
-
-          {isRecurring && (
-            <div className="mt-3 grid grid-cols-2 gap-3">
+    <Modal onClose={onClose} size="2xl">
+      <Modal.Header>Add Transaction</Modal.Header>
+      <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto">
+        <Modal.Body>
+          {isCatLoading || isGroupLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {/* Transaction Details */}
               <div>
-                <label className="text-xs text-gray-500">Frequency</label>
-                <select
-                  value={frequency}
-                  onChange={(e) => setFrequency(e.target.value)}
-                  className="input-field dark:bg-gray-100"
-                >
-                  <option value="monthly">Monthly</option>
-                  <option value="weekly">Weekly</option>
-                </select>
+                <Typography variant="h6" role="heading">
+                  Transaction Details
+                </Typography>
+
+                <div className="flex gap-4">
+                  <Input
+                    label="Date"
+                    id="transaction-date"
+                    type="date"
+                    required
+                    error={errors?.date?.message}
+                    {...register("date")}
+                  />
+                  <Select
+                    label="Category"
+                    required
+                    placeholder="Select a category"
+                    options={categoryList.map((cat) => ({
+                      label: cat.name,
+                      value: cat._id,
+                    }))}
+                    error={errors?.categoryId?.message}
+                    {...register("categoryId")}
+                  />
+                </div>
+                <Input
+                  label="Amount"
+                  id="amount"
+                  required
+                  placeholder="0.00"
+                  step="0.01"
+                  error={errors?.amount?.message}
+                  {...register("amount")}
+                />
+
+                <div className="space-y-2 mt-3">
+                  <Textarea
+                    id="notes"
+                    label="Notes"
+                    rows={3}
+                    placeholder="Optional"
+                    {...register("notes")}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs text-gray-500">Starts on</label>
-                <input
-                  type="date"
-                  value={formValues.date}
-                  disabled
-                  className="input-field  dark:bg-gray-100"
+              {/* Group section (separate card) */}
+              <GroupSection
+                groups={groups}
+                form={formValues}
+                updateFormField={updateFormField}
+                disabled={!!defaultGroupId}
+              />
+
+              {/* Split section (only when group exists) */}
+              {formValues.groupId && selectedGroup && (
+                <SplitSection
+                  splitMode={splitMode}
+                  setSplitMode={setSplitMode}
+                  splitDetails={splitDetails}
+                  updatePercent={updatePercent}
+                  updateExact={updateExact}
+                  isSplitValid={isSplitValid}
+                  totalSplit={totalSplit}
+                  amount={formValues.amount}
+                  selectedGroup={selectedGroup}
+                  paidBy={formValues.paidBy}
+                  onPaidByChange={updateFormField}
+                />
+              )}
+
+              <div className="mt-4">
+                <Checkbox
+                  label="Make this recurring"
+                  type="checkbox"
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
                 />
               </div>
-            </div>
-          )}
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800">
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary" disabled={isPending}>
-              {isPending ? "Saving..." : "Save"}
-            </button>
-          </div>
-        </form>
-      )}
+              {isRecurring && (
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <Select
+                    label="Frequency"
+                    value={frequency}
+                    onChange={(e) => setFrequency(e.target.value)}
+                    placeholder="Choose a frequency"
+                    options={[
+                      { label: "Monthly", value: "monthly" },
+                      { label: "Weekly", value: "weekly" },
+                    ]}
+                  />
+
+                  <Input
+                    label="Starts on"
+                    id="starts"
+                    required
+                    value={formValues.date}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button size="sm" variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button size="sm" isLoading={isPending} type="submit">
+            {isPending ? "Saving..." : "Save"}
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 };

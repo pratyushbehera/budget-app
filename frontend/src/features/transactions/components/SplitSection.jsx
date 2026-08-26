@@ -1,3 +1,9 @@
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
+import Select from "@/shared/system/FormField/Select";
+
+import { IndianRupeeIcon, PercentIcon } from "lucide-react";
+
 export function SplitSection({
   splitMode,
   setSplitMode,
@@ -19,41 +25,29 @@ export function SplitSection({
         Split Details
       </h3>
 
-      <label
-        htmlFor="paidBy"
-        className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2 block"
-      >
-        Paid By
-      </label>
-      <select
-        id="paidBy"
-        name="paidBy"
-        className="input-field mt-1  dark:bg-gray-100"
+      <Select
+        label="Paid By"
+        placeholder="Paid By"
         value={paidBy}
         onChange={onPaidByChange}
-      >
-        {selectedGroup.members.map((m) => (
-          <option key={m.email} value={m.userId?._id}>
-            {m.userId?.firstName || m.email}
-          </option>
-        ))}
-      </select>
+        options={selectedGroup.members.map((member) => ({
+          label: member.userId?.firstName || member.email,
+          value: member.userId?._id,
+        }))}
+      />
 
       <div className="flex gap-2 mt-3">
         {["equal", "percent", "exact"].map((mode) => (
-          <button
+          <Button
             key={mode}
-            type="button"
             onClick={() => setSplitMode(mode)}
-            className={`px-2 py-1 rounded text-sm capitalize ${
-              splitMode === mode
-                ? "bg-primary-600 text-white"
-                : "bg-gray-200 dark:bg-gray-700"
-            }`}
+            size="sm"
+            variant={splitMode === mode ? "primary" : "secondary"}
+            className="uppercase"
             aria-pressed={splitMode === mode}
           >
             {mode}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -65,19 +59,15 @@ export function SplitSection({
               className="flex justify-between items-center text-sm"
             >
               <span className=" dark:text-white">{s.email}</span>
-              <div className="flex items-center gap-1">
-                <label htmlFor={`percent-${idx}`} className="sr-only">
-                  Percent for {s.email}
-                </label>
-                <input
+              <div className="flex">
+                <Input
                   id={`percent-${idx}`}
-                  type="text"
                   value={s.percent}
                   onChange={(e) => updatePercent(idx, e.target.value)}
-                  className="w-20 p-1 rounded bg-gray-100 dark:bg-gray-100 dark:text-white"
                   min={0}
+                  className="w-24"
+                  rightIcon={<PercentIcon size="18" />}
                 />
-                <span className="text-xs dark:text-white">%</span>
               </div>
             </div>
           ))}
@@ -90,16 +80,13 @@ export function SplitSection({
             >
               <span className=" dark:text-white">{s.email}</span>
               <div className="flex items-center gap-2">
-                <label htmlFor={`exact-${idx}`} className="sr-only">
-                  Amount for {s.email}
-                </label>
-                <input
+                <Input
                   id={`exact-${idx}`}
-                  type="number"
                   value={s.amount}
                   onChange={(e) => updateExact(idx, e.target.value)}
-                  className="w-24 p-1 rounded bg-gray-100 dark:bg-gray-100 dark:text-white"
                   min={0}
+                  className="w-28"
+                  leftIcon={<IndianRupeeIcon size="18" />}
                 />
               </div>
             </div>

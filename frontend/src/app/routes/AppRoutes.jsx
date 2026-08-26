@@ -3,11 +3,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import ProtectedLayout from "../layouts/ProtectedLayout";
+import CookBookPage from "../../pages/CookBookPage";
 
 // Lazy pages
 const HomePage = lazy(() => import("@pages/HomePage"));
-const LoginPage = lazy(() => import("@pages/LoginPage"));
-const SignupPage = lazy(() => import("@pages/SignupPage"));
 const DashboardPage = lazy(() => import("@pages/DashboardPage"));
 const ProfilePage = lazy(() => import("@pages/ProfilePage"));
 const TransactionPage = lazy(() => import("@pages/TransactionPage"));
@@ -15,7 +14,6 @@ const CategoryPage = lazy(() => import("@pages/CategoryPage"));
 const PlanPage = lazy(() => import("@pages/PlanPage"));
 const GroupPage = lazy(() => import("@pages/GroupPage"));
 const GroupsPage = lazy(() => import("@pages/GroupsPage"));
-const ForgotPasswordPage = lazy(() => import("@pages/ForgotPasswordPage"));
 const ResetPasswordPage = lazy(() => import("@pages/ResetPasswordPage"));
 const VerifyEmailPage = lazy(() => import("@pages/VerifyEmailPage"));
 const ChatPage = lazy(() => import("@pages/ChatPage"));
@@ -25,7 +23,7 @@ const NotFoundPage = lazy(() => import("@pages/NotFoundPage"));
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const token = localStorage.getItem("auth-token");
-  return isAuthenticated || token ? children : <Navigate to="/login" />;
+  return isAuthenticated || token ? children : <Navigate to="/" />;
 }
 
 // Public Route component (redirect to dashboard if already authenticated)
@@ -58,33 +56,6 @@ export function AppRoutes() {
         <Route path="/" element={<HomePage />} />
 
         <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <LoginPage />
-            </PublicRoute>
-          }
-        />
-
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <SignupPage />
-            </PublicRoute>
-          }
-        />
-
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPasswordPage />
-            </PublicRoute>
-          }
-        />
-
-        <Route
           path="/reset-password/:token"
           element={
             <PublicRoute>
@@ -99,6 +70,15 @@ export function AppRoutes() {
             <VerificationRoute>
               <VerifyEmailPage />
             </VerificationRoute>
+          }
+        />
+
+        <Route
+          path="/cookbook"
+          element={
+            <PublicRoute>
+              <CookBookPage />
+            </PublicRoute>
           }
         />
 

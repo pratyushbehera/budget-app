@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
+import Button from "@/shared/system/Button";
+import Typography from "@/shared/system/Typography";
 
 export const CategorySpendChart = ({ data }) => {
   const [chartData, setChartData] = useState([]);
@@ -39,7 +41,7 @@ export const CategorySpendChart = ({ data }) => {
   const hasData = chartData.length > 0;
 
   const sortedData = [...chartData].sort(
-    (a, b) => b.percentUsed - a.percentUsed,
+    (a, b) => b.percentUsed - a.percentUsed
   );
   const visibleData = isFullscreen ? sortedData : sortedData.slice(0, 5);
 
@@ -59,29 +61,29 @@ export const CategorySpendChart = ({ data }) => {
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-            Planned vs Actual Spend
-          </h3>
+          <Typography variant="h4">Planned vs Actual Spend</Typography>
 
-          <button
+          <Button
+            size="icon-sm"
+            variant="ghost"
             onClick={() => setIsFullscreen((prev) => !prev)}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-all"
-          >
-            {isFullscreen ? (
-              <Minimize2 size={20} strokeWidth={2} />
-            ) : (
-              <Maximize2 size={20} strokeWidth={2} />
-            )}
-          </button>
+            leftIcon={
+              isFullscreen ? (
+                <Minimize2 size={20} strokeWidth={2} />
+              ) : (
+                <Maximize2 size={20} strokeWidth={2} />
+              )
+            }
+          ></Button>
         </div>
 
         {!hasData ? (
           <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500 dark:text-gray-400">
-            <p className="text-base font-medium mb-2">No spending data available yet</p>
-            <p className="text-sm max-w-xs opacity-70">
+            <Typography variant="h6">No spending data available yet</Typography>
+            <Typography variant="body2" align="center">
               Once you set your budget and record expenses, you’ll see how your
               spending compares to your plan.
-            </p>
+            </Typography>
           </div>
         ) : (
           <>
@@ -90,7 +92,13 @@ export const CategorySpendChart = ({ data }) => {
                 <div key={item.category} className="group">
                   <div className="flex justify-between text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                     <span className="tracking-tight">{item.category}</span>
-                    <span className={item.percentUsed > 100 ? "text-tertiary-500" : "text-primary-500"}>
+                    <span
+                      className={
+                        item.percentUsed > 100
+                          ? "text-tertiary-500"
+                          : "text-primary-500"
+                      }
+                    >
                       {item.isUnplanned
                         ? "Unplanned"
                         : `${item.percentUsed.toFixed(0)}%`}
@@ -105,8 +113,8 @@ export const CategorySpendChart = ({ data }) => {
                         background: item.isUnplanned
                           ? "linear-gradient(to right, #be123c, #fb7185)" // Rose/Rose
                           : item.percentUsed > 90
-                            ? "linear-gradient(to right, #f59e0b, #f43f5e)" // Amber to Rose
-                            : "linear-gradient(to right, #10b981, #6366f1)", // Emerald to Indigo
+                          ? "linear-gradient(to right, #f59e0b, #f43f5e)" // Amber to Rose
+                          : "linear-gradient(to right, #10b981, #6366f1)", // Emerald to Indigo
                       }}
                     ></div>
                   </div>
@@ -124,7 +132,10 @@ export const CategorySpendChart = ({ data }) => {
             </div>
 
             {!isFullscreen && chartData.length > 5 && (
-              <p className="text-[12px] font-semibold text-primary-500 mt-6 text-center cursor-pointer hover:underline" onClick={() => setIsFullscreen(true)}>
+              <p
+                className="text-[12px] font-semibold text-primary-500 mt-6 text-center cursor-pointer hover:underline"
+                onClick={() => setIsFullscreen(true)}
+              >
                 View all {chartData.length} categories
               </p>
             )}

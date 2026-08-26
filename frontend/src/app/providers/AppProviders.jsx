@@ -12,6 +12,7 @@ import { ThemeProvider } from "../../contexts/ThemeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
+    initialIsOpen: false,
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
@@ -34,7 +35,7 @@ export function AppProviders({ children }) {
                 <AuthProvider>
                   <ToastProvider>
                     {children}
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
                   </ToastProvider>
                 </AuthProvider>
               </BrowserRouter>

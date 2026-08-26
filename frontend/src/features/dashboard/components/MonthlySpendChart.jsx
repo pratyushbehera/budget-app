@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 import { convertToShortForm } from "../../../shared/utils/formatCurrency";
+import Typography from "@/shared/system/Typography";
 
 export const MonthlySpendCard = ({ monthlyTrend }) => {
   if (!monthlyTrend) return null;
@@ -24,17 +25,17 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
   const trendIcon = (dir, isPositiveGood = true) => {
     if (dir === "up")
       return isPositiveGood ? (
-        <ArrowUpRight className="text-green-500" size={14} />
+        <ArrowUpRight className="text-green-500" size={16} />
       ) : (
-        <ArrowUpRight className="text-red-500" size={14} />
+        <ArrowUpRight className="text-red-500" size={16} />
       );
     if (dir === "down")
       return isPositiveGood ? (
-        <ArrowDownRight className="text-green-500" size={14} />
+        <ArrowDownRight className="text-green-500" size={16} />
       ) : (
-        <ArrowDownRight className="text-red-500" size={14} />
+        <ArrowDownRight className="text-red-500" size={16} />
       );
-    return <Minus size={14} className="text-gray-400" />;
+    return <Minus size={16} className="text-gray-400" />;
   };
 
   return (
@@ -42,21 +43,19 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-            Monthly Income vs Spend
-          </h3>
-          <p className="text-xs text-gray-500 font-medium mt-1">Last 6 months overview</p>
+          <Typography variant="h4">Monthly Income vs Spend</Typography>
+          <Typography variant="subtitle1">Last 6 months overview</Typography>
         </div>
 
-        <div className="text-xs space-y-2 text-right">
+        <div className="text-right space-y-2">
           <div className="flex items-center gap-2 justify-end bg-gray-100 dark:bg-gray-700/50 px-3 py-1.5 rounded-full">
             {trendIcon(trend.spend, false)}
-            <span className="font-bold text-gray-700 dark:text-gray-200">
-              Spend {trend.spend}
-            </span>
+            <Typography variant="subtitle2">Spend {trend.spend}</Typography>
           </div>
           {yoy.spendChangePercent !== null && (
-            <div className="text-gray-400 font-medium px-2">YoY: {yoy.spendChangePercent}%</div>
+            <Typography variant="caption" align="right">
+              YoY: {yoy.spendChangePercent}%
+            </Typography>
           )}
         </div>
       </div>
@@ -64,7 +63,10 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
       {/* Chart */}
       <div className="h-64 mt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 5, bottom: 5, left: 0 }}
+          >
             <XAxis
               dataKey="month"
               tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 500 }}
@@ -80,16 +82,19 @@ export const MonthlySpendCard = ({ monthlyTrend }) => {
               dx={-10}
             />
             <Tooltip
-              contentStyle={{ 
-                borderRadius: "16px", 
-                border: "none", 
+              contentStyle={{
+                borderRadius: "16px",
+                border: "none",
                 boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
                 backgroundColor: "rgba(255, 255, 255, 0.9)",
                 backdropFilter: "blur(8px)",
               }}
-              formatter={(val, name) => [`₹${val.toLocaleString()}`, name.charAt(0).toUpperCase() + name.slice(1)]}
+              formatter={(val, name) => [
+                `₹${val.toLocaleString()}`,
+                name.charAt(0).toUpperCase() + name.slice(1),
+              ]}
             />
-            <Legend verticalAlign="top" height={36}/>
+            <Legend verticalAlign="top" height={36} />
             <Line
               type="monotone"
               dataKey="income"

@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "@/shared/system/Button";
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -26,12 +27,9 @@ export class ErrorBoundary extends React.Component {
               We apologize for the inconvenience. Please try refreshing the
               page.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-            >
+            <Button size="sm" onClick={() => window.location.reload()}>
               Refresh Page
-            </button>
+            </Button>
           </div>
         </div>
       );

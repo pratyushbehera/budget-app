@@ -1,4 +1,5 @@
 import { Plus, Target } from "lucide-react";
+import Button from "@/shared/system/Button";
 
 export const NoPlan = ({ setIsEditing }) => (
   <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-900/40 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-gray-800 text-center animate-fade-in group">
@@ -15,16 +16,12 @@ export const NoPlan = ({ setIsEditing }) => (
       Let&apos;s set some goals and take control of your money!
     </p>
 
-    <button
+    <Button
       onClick={() => setIsEditing(true)}
-      className="btn-primary flex items-center gap-3 px-10 group/btn"
+      size="lg"
+      leftIcon={<Plus size={24} strokeWidth={3} />}
     >
-      <Plus
-        size={24}
-        strokeWidth={3}
-        className="transition-transform group-hover/btn:rotate-90"
-      />
-      <span className="text-lg">Create My First Plan</span>
-    </button>
+      Create My First Plan
+    </Button>
   </div>
 );

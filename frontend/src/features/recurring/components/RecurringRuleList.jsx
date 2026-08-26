@@ -3,6 +3,7 @@ import { useToast } from "../../../contexts/ToastContext";
 import { useState } from "react";
 import { StopRecurringModal } from "./StopRecurringModal";
 import { DeleteRecurringModal } from "./DeleteRecurringModal";
+import Button from "@/shared/system/Button";
 
 export function RecurringRuleList({ rules = [] }) {
   const [stopTarget, setStopTarget] = useState(null);
@@ -68,31 +69,33 @@ export function RecurringRuleList({ rules = [] }) {
 
             {/* ACTIVE */}
             {r.isActive && (
-              <button
+              <Button
                 onClick={() => setStopTarget(r)}
-                className="btn-secondary text-xs"
+                variant="secondary"
+                size="sm"
               >
                 Stop
-              </button>
+              </Button>
             )}
 
             {/* INACTIVE */}
             {!r.isActive && (
               <>
-                <button
+                <Button
                   onClick={() => handleEnable(r)}
-                  className="btn-primary text-xs"
-                  disabled={enableMutation.isPending}
+                  isLoading={enableMutation.isPending}
+                  size="sm"
                 >
                   Enable
-                </button>
+                </Button>
 
-                <button
+                <Button
                   onClick={() => setDeleteTarget(r)}
-                  className="btn-primary bg-red-500 text-xs"
+                  size="sm"
+                  variant="tertiary"
                 >
                   Delete
-                </button>
+                </Button>
               </>
             )}
           </div>

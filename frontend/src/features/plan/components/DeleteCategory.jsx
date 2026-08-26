@@ -1,6 +1,8 @@
 import { useToast } from "../../../contexts/ToastContext";
 import { useDeleteCategory } from "../../../services/categoryApi";
-import { Modal } from "../../../shared/components/Modal";
+
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
 
 export const DeleteCategory = ({ category, onClose }) => {
   console.log(category);
@@ -37,22 +39,26 @@ export const DeleteCategory = ({ category, onClose }) => {
   };
 
   return (
-    <Modal title="Delete Category" onClose={onClose}>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
-        Are you sure you want to delete this category - {category.name}?
-      </p>
-      <div className="flex justify-end gap-3">
-        <button className="btn-secondary" onClick={onClose}>
+    <Modal onClose={onClose}>
+      <Modal.Header>Delete Category</Modal.Header>
+      <Modal.Body>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+          Are you sure you want to delete this category - {category.name}?
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size="sm" variant="secondary" onClick={onClose}>
           Cancel
-        </button>
-        <button
-          className="btn-primary"
+        </Button>
+        <Button
+          size="sm"
+          variant="tertiary"
           onClick={handleDelete}
-          disabled={isPending}
+          isLoading={isPending}
         >
           Delete
-        </button>
-      </div>
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

@@ -11,7 +11,7 @@ function App() {
     <AppProviders>
       <CategoryProvider>
         <GroupProvider>
-          <div className="min-h-screen bg-white dark:bg-gray-50 text-gray-900 dark:text-gray-100">
+          <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
             <PWAInstallPrompt />
             <AppRoutes />
             <ToastContainer />

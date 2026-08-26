@@ -11,10 +11,15 @@ import { TransactionItem } from "../features/transactions/components/Transaction
 import { useRecurringRules } from "../services/recurringApi";
 import { RecurringDrawer } from "../features/recurring/components/RecurringDrawer";
 import { DateRangePicker } from "../shared/components/DateRangePicker";
+import Button from "@/shared/system/Button";
+import Input from "@/shared/system/FormField/Input";
+import Select from "@/shared/system/FormField/Select";
+import PageHeading from "../shared/components/PageHeading";
+import Typography from "@/shared/system/Typography";
 
 export default function TransactionPage() {
   const { selectedMonth, startDate, endDate } = useSelector(
-    (state) => state.app,
+    (state) => state.app
   );
   const { data, isLoading, error } = useTransaction({
     month: selectedMonth,
@@ -70,7 +75,7 @@ export default function TransactionPage() {
       const isIncome =
         tx.type?.toLowerCase() === "income" ||
         ["salary", "bonus", "interest", "other income", "dividend"].includes(
-          tx.category.toLowerCase(),
+          tx.category.toLowerCase()
         );
 
       total += isIncome ? tx.amount : -tx.amount;
@@ -96,45 +101,32 @@ export default function TransactionPage() {
       <div className="space-y-8 sm:space-y-12">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
-              Transactions
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 font-medium tracking-tight mt-1">
-              Manage and track your financial flow
-            </p>
-          </div>
+          {/* Page Header */}
+          <PageHeading
+            title="Transactions"
+            subtitle="Manage and track your financial flow"
+          />
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <DateRangePicker />
 
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={() => setIsRecurringOpen(true)}
-                className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl"
+                variant="secondary"
+                className="uppercase tracking-widest leading-none"
+                leftIcon={<CalendarDays size={16} />}
               >
-                <CalendarDays
-                  size={18}
-                  className="group-hover:rotate-12 transition-transform"
-                />
-                <span className="text-sm font-black uppercase tracking-widest leading-none">
-                  Recurring
-                </span>
-              </button>
+                Recurring
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setShowAddModal(true)}
-                className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 group h-12 px-6 rounded-2xl shadow-xl shadow-primary-500/20 active:scale-95 transition-all"
+                className="uppercase tracking-widest leading-none"
+                leftIcon={<Plus size={16} strokeWidth={2} />}
               >
-                <Plus
-                  size={22}
-                  strokeWidth={3}
-                  className="group-hover:rotate-90 transition-transform"
-                />
-                <span className="text-sm font-black uppercase tracking-widest leading-none">
-                  Add New
-                </span>
-              </button>
+                Add New
+              </Button>
             </div>
           </div>
         </div>
@@ -143,28 +135,22 @@ export default function TransactionPage() {
         <div className="flex flex-col gap-8">
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-primary-500 transition-colors" />
-              <input
-                type="text"
-                placeholder="Search history..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field pl-12 bg-white dark:bg-gray-950/50 font-semibold"
-              />
-            </div>
-
-            <select
+            <Input
+              type="text"
+              placeholder="Search history..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              leftIcon={<Search />}
+            />
+            <Select
               value={categoryFilter}
+              placeholder="Select a category"
+              options={categoryOptions.map((cat) => ({
+                label: cat,
+                value: cat,
+              }))}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="input-field md:w-56 bg-white dark:bg-gray-950 font-bold border-r-[16px] border-white-100/20"
-            >
-              {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* Mini Summary Card */}
@@ -174,18 +160,27 @@ export default function TransactionPage() {
                 <Wallet size={120} strokeWidth={1} />
               </div>
               <div className="relative z-10">
-                <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">
+                <Typography
+                  variant="label"
+                  className="uppercase tracking-widest"
+                >
                   Filtered Balance
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <h2 className="text-3xl font-black tracking-tighter">
-                    {summary.total >= 0 ? "+" : "-"}
-                    {formatCurrency(Math.abs(summary.total))}
-                  </h2>
-                </div>
-                <p className="text-[11px] font-bold opacity-70 mt-1 uppercase tracking-wider">
+                </Typography>
+                <Typography
+                  className="tracking-tighter"
+                  variant="h3"
+                  role="contentinfo"
+                >
+                  {summary.total >= 0 ? "+" : "-"}
+                  {formatCurrency(Math.abs(summary.total))}
+                </Typography>
+
+                <Typography
+                  variant="caption"
+                  className="uppercase tracking-widest"
+                >
                   {filteredTransactions.length} records found
-                </p>
+                </Typography>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center relative z-10">
                 <Wallet className="w-6 h-6" />
@@ -200,24 +195,25 @@ export default function TransactionPage() {
             <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-4xl shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Wallet className="w-12 h-12 text-gray-300 dark:text-gray-600" />
             </div>
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">
-              No History Found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-xs font-medium">
+            <Typography variant="h4"> No History Found</Typography>
+            <Typography variant="subtitle1">
               We couldn&apos;t find any transactions for the selected period or
               filters.
-            </p>
+            </Typography>
           </div>
         ) : (
           <div className="space-y-12">
             {Object.entries(groupedTransactions).map(([date, txList]) => (
               <div key={date} className="animate-fade-in">
                 <div className="flex items-center gap-4 mb-6 ml-2">
-                  <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-400">
+                  <div className="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
+                  <Typography
+                    variant="overline"
+                    className="uppercase tracking-[0.2em]"
+                  >
                     {date}
-                  </h3>
-                  <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                  </Typography>
+                  <div className="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">

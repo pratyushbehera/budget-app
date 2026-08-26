@@ -6,6 +6,8 @@ import { useToast } from "../../../contexts/ToastContext";
 import { AvatarBubble } from "../../../shared/components/AvatarBubble";
 import { Wallet, Plus, Coins } from "lucide-react";
 
+import Button from "@/shared/system/Button";
+
 const GroupSummary = ({ group, groupId }) => {
   const { addToast } = useToast();
   const { user } = useSelector((state) => state.auth);
@@ -86,7 +88,7 @@ const GroupSummary = ({ group, groupId }) => {
             message: "Balances settled successfully.",
           });
         },
-      },
+      }
     );
   };
 
@@ -101,12 +103,12 @@ const GroupSummary = ({ group, groupId }) => {
       <div
         className={`rounded-[2.5rem] p-8 text-white shadow-2xl transition-all duration-500 hover:scale-[1.02]
         ${
-    yourBalance === 0
-      ? "bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20"
-      : yourBalance < 0
-        ? "bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20"
-        : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
-    }`}
+          yourBalance === 0
+            ? "bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20"
+            : yourBalance < 0
+            ? "bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-500/20"
+            : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
+        }`}
       >
         <div className="flex justify-between items-start">
           <div className="space-y-1">
@@ -239,12 +241,14 @@ const GroupSummary = ({ group, groupId }) => {
                 </p>
 
                 {isYouOwe && (
-                  <button
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
                     onClick={() => handleSettle(s.from.id, s.to.id, s.amount)}
-                    className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-primary-500 hover:bg-primary-500 hover:text-white transition-all shadow-sm active:scale-95"
+                    className="hover:text-primary-500"
                   >
-                    <Plus size={20} strokeWidth={3} />
-                  </button>
+                    <Plus size={20} strokeWidth={2} />
+                  </Button>
                 )}
               </div>
             </motion.div>

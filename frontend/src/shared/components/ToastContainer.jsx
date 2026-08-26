@@ -1,6 +1,8 @@
 import { useToast } from "../../contexts/ToastContext";
 import { CheckCircle, AlertTriangle, XCircle, Info, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Button from "@/shared/system/Button";
+import Typography from "@/shared/system/Typography";
 
 export function ToastContainer() {
   const { toasts, removeToast } = useToast();
@@ -9,30 +11,30 @@ export function ToastContainer() {
 
   const getStyles = (type) => {
     switch (type) {
-    case "error":
-      return {
-        gradient: "from-red-500/90 to-red-600/90",
-        Icon: XCircle,
-        text: "text-white",
-      };
-    case "warning":
-      return {
-        gradient: "from-yellow-500/90 to-amber-600/90",
-        Icon: AlertTriangle,
-        text: "text-black",
-      };
-    case "success":
-      return {
-        gradient: "from-green-500/90 to-emerald-600/90",
-        Icon: CheckCircle,
-        text: "text-white",
-      };
-    default:
-      return {
-        gradient: "from-blue-500/90 to-indigo-600/90",
-        Icon: Info,
-        text: "text-white",
-      };
+      case "error":
+        return {
+          gradient: "from-red-500/90 to-red-600/90",
+          Icon: XCircle,
+          text: "text-white",
+        };
+      case "warning":
+        return {
+          gradient: "from-yellow-500/90 to-amber-600/90",
+          Icon: AlertTriangle,
+          text: "text-black",
+        };
+      case "success":
+        return {
+          gradient: "from-green-500/90 to-emerald-600/90",
+          Icon: CheckCircle,
+          text: "text-white",
+        };
+      default:
+        return {
+          gradient: "from-blue-500/90 to-indigo-600/90",
+          Icon: Info,
+          text: "text-white",
+        };
     }
   };
 
@@ -57,18 +59,18 @@ export function ToastContainer() {
                 <Icon size={22} className="flex-shrink-0 mt-0.5" />
 
                 <div className="flex-1">
-                  <h4 className="font-semibold leading-tight">{toast.title}</h4>
+                  <Typography variant="h5">{toast.title}</Typography>
                   {toast.message && (
-                    <p className="text-sm mt-1 opacity-90">{toast.message}</p>
+                    <Typography variant="body2">{toast.message}</Typography>
                   )}
                 </div>
-
-                <button
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  className="border hover:text-tertiary-500 hover:bg-transparent"
+                  leftIcon={<X size={16} />}
                   onClick={() => removeToast(toast.id)}
-                  className="opacity-70 hover:opacity-100 transition"
-                >
-                  <X size={18} />
-                </button>
+                ></Button>
               </div>
             </motion.div>
           );

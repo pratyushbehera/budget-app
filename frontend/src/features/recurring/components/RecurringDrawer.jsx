@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { RecurringRuleList } from "./RecurringRuleList";
 import { useMediaQuery } from "../../../shared/hooks/useMediaQuery";
 import { useEffect } from "react";
+import Button from "@/shared/system/Button";
 
 export function RecurringDrawer({ open, onClose, rules }) {
   const isDesktop = useMediaQuery("(min-width: 640px)");
@@ -17,7 +18,6 @@ export function RecurringDrawer({ open, onClose, rules }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  
 
   return (
     <AnimatePresence>
@@ -36,10 +36,10 @@ export function RecurringDrawer({ open, onClose, rules }) {
           <motion.div
             className={`fixed z-50 bg-white dark:bg-gray-950 shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col
               ${
-        isDesktop
-          ? "top-0 right-0 h-full w-[480px] rounded-l-[3.5rem]"
-          : "bottom-0 left-0 w-full h-[90%] rounded-t-[3.5rem]"
-        }
+                isDesktop
+                  ? "top-0 right-0 h-full w-[480px] rounded-l-[3.5rem]"
+                  : "bottom-0 left-0 w-full h-[90%] rounded-t-[3.5rem]"
+              }
             `}
             initial={isDesktop ? { x: "100%" } : { y: "100%" }}
             animate={isDesktop ? { x: 0 } : { y: 0 }}
@@ -71,12 +71,13 @@ export function RecurringDrawer({ open, onClose, rules }) {
                   Manage your pulse
                 </p>
               </div>
-              <button 
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                className="border hover:text-tertiary-500"
+                leftIcon={<X size={16} strokeWidth={2} />}
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-2xl transition-all"
-              >
-                <X className="w-6 h-6 text-gray-400" />
-              </button>
+              ></Button>
             </div>
 
             {/* Content */}
@@ -86,7 +87,8 @@ export function RecurringDrawer({ open, onClose, rules }) {
 
             {/* Footer */}
             <div className="px-8 py-6 border-t border-gray-100 dark:border-white/5 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">
-              New rule? Use <span className="text-primary-500">Add Transaction</span>
+              New rule? Use{" "}
+              <span className="text-primary-500">Add Transaction</span>
             </div>
           </motion.div>
         </>

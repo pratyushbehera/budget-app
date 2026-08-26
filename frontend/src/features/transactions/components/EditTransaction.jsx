@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Modal } from "../../../shared/components/Modal";
 import { useToast } from "../../../contexts/ToastContext";
 import { useEditTransaction } from "../../../services/transactionApi";
 import { useGroup } from "../../../services/groupApi";
@@ -11,7 +10,12 @@ import { useGroup } from "../../../services/groupApi";
 import { GroupSection } from "./GroupSection";
 import { SplitSection } from "./SplitSection";
 import { useSplitCalculation } from "../hooks/useSplitCalculation";
-import { FormInput } from "../../../shared/components/FormInput";
+import Button from "@/shared/system/Button";
+import Modal from "@/shared/system/Modal";
+import Input from "@/shared/system/FormField/Input";
+import Textarea from "@/shared/system/FormField/TextArea";
+import Select from "@/shared/system/FormField/Select";
+import Typography from "@/shared/system/Typography";
 
 const transactionSchema = yup.object().shape({
   date: yup.string().required("Date is required"),
@@ -26,7 +30,7 @@ const transactionSchema = yup.object().shape({
 
 export const EditTransaction = ({ transaction, onClose }) => {
   const { category: categoryList, loading: isCatLoading } = useSelector(
-    (s) => s.category,
+    (s) => s.category
   );
   const { groups = [] } = useSelector((s) => s.group || {});
   const { addToast } = useToast();
@@ -73,7 +77,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     let categoryId = transaction.categoryId;
     if (!categoryId) {
       categoryId = categoryList.find(
-        (ct) => ct.name === transaction.category,
+        (ct) => ct.name === transaction.category
       )?._id;
     }
 
@@ -108,7 +112,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
 
     const initialized = selectedGroup.members.map((m) => {
       const existing = transaction.splitDetails.find(
-        (s) => s.userId === m.userId?._id || s.email === m.email,
+        (s) => s.userId === m.userId?._id || s.email === m.email
       );
 
       return {
@@ -126,7 +130,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
     const equalAmt = total / initialized.length;
 
     const isEqual = initialized.every(
-      (itm) => Math.abs(itm.amount - equalAmt) < 0.01,
+      (itm) => Math.abs(itm.amount - equalAmt) < 0.01
     );
 
     if (isEqual) return setSplitMode("equal");
@@ -194,7 +198,7 @@ export const EditTransaction = ({ transaction, onClose }) => {
               title: "Error updating",
               message: err?.message || "Something went wrong.",
             }),
-        },
+        }
       );
     } catch (err) {
       addToast({
@@ -209,111 +213,93 @@ export const EditTransaction = ({ transaction, onClose }) => {
   // RENDER
   // -------------------------
   return (
-    <Modal title="Edit Transaction" onClose={onClose}>
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        {/* ---------------- Transaction Fields ---------------- */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-            Transaction Details
-          </h3>
+    <Modal onClose={onClose} size="2xl">
+      <Modal.Header>Edit Transaction</Modal.Header>
+      <form className="overflow-y-auto" onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          {/* ---------------- Transaction Fields ---------------- */}
+          <div>
+            <Typography variant="h6" role="heading">
+              Transaction Details
+            </Typography>
+            <div className="flex gap-4">
+              <Input
+                label="Date"
+                id="edit-date"
+                type="date"
+                required
+                error={errors?.date?.message}
+                {...register("date")}
+              />
 
-          <FormInput
-            label="Date"
-            id="edit-date"
-            type="date"
-            error={errors.date}
-            {...register("date")}
-          />
-
-          <div className="space-y-2 mt-3">
-            <label
-              htmlFor="edit-category"
-              className="text-xs font-medium text-gray-500 dark:text-gray-400"
-            >
-              Category
-            </label>
-            <select
-              id="edit-category"
-              className={`input-field ${
-                errors.categoryId ? "border-red-500" : ""
-              }`}
-              {...register("categoryId")}
-            >
-              <option value="">Select Category</option>
-              {categoryList?.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.categoryId.message}
-              </p>
-            )}
-          </div>
-
-          <FormInput
-            label="Amount"
-            id="edit-amount"
-            type="number"
-            placeholder="0.00"
-            step="0.01"
-            error={errors.amount}
-            {...register("amount")}
-          />
-
-          <div className="space-y-2 mt-3">
-            <label
-              htmlFor="edit-notes"
-              className="text-xs font-medium text-gray-500 dark:text-gray-400"
-            >
-              Notes
-            </label>
-            <textarea
-              id="edit-notes"
-              className="input-field resize-none"
-              rows={3}
-              placeholder="Optional"
-              {...register("notes")}
+              <Select
+                label="Category"
+                required
+                placeholder="Select a category"
+                options={categoryList.map((cat) => ({
+                  label: cat.name,
+                  value: cat._id,
+                }))}
+                error={errors?.categoryId?.message}
+                {...register("categoryId")}
+              />
+            </div>
+            <Input
+              label="Amount"
+              id="edit-amount"
+              required
+              placeholder="0.00"
+              step="0.01"
+              error={errors?.amount?.message}
+              {...register("amount")}
             />
+
+            <div className="space-y-2 mt-3">
+              <Textarea
+                label="Notes"
+                id="edit-notes"
+                rows={3}
+                placeholder="Optional"
+                {...register("notes")}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* ---------------- Group Section ---------------- */}
-        <GroupSection
-          groups={groups}
-          form={formValues}
-          updateFormField={updateFormField}
-          disabled={false}
-        />
-
-        {/* ---------------- Split Section ---------------- */}
-        {formValues.groupId && selectedGroup && (
-          <SplitSection
-            splitMode={splitMode}
-            setSplitMode={setSplitMode}
-            splitDetails={splitDetails}
-            updatePercent={updatePercent}
-            updateExact={updateExact}
-            isSplitValid={isSplitValid}
-            totalSplit={totalSplit}
-            amount={formValues.amount}
-            selectedGroup={selectedGroup}
-            paidBy={formValues.paidBy}
-            onPaidByChange={updateFormField}
+          {/* ---------------- Group Section ---------------- */}
+          <GroupSection
+            groups={groups}
+            form={formValues}
+            updateFormField={updateFormField}
+            disabled={false}
           />
-        )}
 
+          {/* ---------------- Split Section ---------------- */}
+          {formValues.groupId && selectedGroup && (
+            <SplitSection
+              splitMode={splitMode}
+              setSplitMode={setSplitMode}
+              splitDetails={splitDetails}
+              updatePercent={updatePercent}
+              updateExact={updateExact}
+              isSplitValid={isSplitValid}
+              totalSplit={totalSplit}
+              amount={formValues.amount}
+              selectedGroup={selectedGroup}
+              paidBy={formValues.paidBy}
+              onPaidByChange={updateFormField}
+            />
+          )}
+        </Modal.Body>
         {/* ---------------- Actions ---------------- */}
-        <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800">
-          <button type="button" className="btn-secondary" onClick={onClose}>
+
+        <Modal.Footer>
+          <Button size="sm" variant="secondary" onClick={onClose}>
             Cancel
-          </button>
-          <button type="submit" className="btn-primary" disabled={isPending}>
+          </Button>
+          <Button size="sm" type="submit" isLoading={isPending}>
             {isPending ? "Saving..." : "Update"}
-          </button>
-        </div>
+          </Button>
+        </Modal.Footer>
       </form>
     </Modal>
   );

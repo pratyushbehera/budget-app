@@ -1,6 +1,7 @@
 import { Shield, XCircle, LogOut } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGravatar } from "../../../shared/hooks/useGravatar";
+import Button from "@/shared/system/Button";
 
 const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
   const user = useSelector((s) => s.auth.user);
@@ -72,25 +73,27 @@ const MemberRow = ({ member, owner, isAdmin, onRemove, onLeave }) => {
         )}
 
         {!isAdmin && isYou && (
-          <button
-            className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="hover:text-tertiary-500"
             onClick={onLeave}
             title="Leave group"
-          >
-            <LogOut size={16} strokeWidth={2.5} />
-          </button>
+            leftIcon={<LogOut size={16} strokeWidth={2.5} />}
+          ></Button>
         )}
 
         {isAdmin && !isYou && (
-          <button
-            className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:bg-rose-500 hover:text-white transition-all active:scale-95"
+          <Button
+            variant="secondary"
+            size="icon-sm"
+            className="hover:bg-tertiary-500 hover:text-white"
             onClick={() => onRemove(userObj)}
             title={
               member.status === "pending" ? "Cancel Invite" : "Remove member"
             }
-          >
-            <XCircle size={16} strokeWidth={2.5} />
-          </button>
+            leftIcon={<XCircle size={16} strokeWidth={2.5} />}
+          ></Button>
         )}
       </div>
     </div>
