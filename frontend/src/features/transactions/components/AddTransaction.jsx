@@ -15,7 +15,7 @@ import Button from "@/shared/system/Button";
 import Modal from "@/shared/system/Modal";
 import Input from "@/shared/system/FormField/Input";
 import Textarea from "@/shared/system/FormField/TextArea";
-import Checkbox from "@/shared/system/FormField/Checkbox";
+import Checkbox from "@/shared/system/FormField/CheckBox";
 import Select from "@/shared/system/FormField/Select";
 import Typography from "@/shared/system/Typography";
 
