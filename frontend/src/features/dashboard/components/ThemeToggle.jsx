@@ -13,7 +13,7 @@ export function ThemeToggle() {
       variant="ghost"
       className="rounded-full"
     >
-      {theme === "light" ? <Moon /> : <Sun />}
+      {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
     </Button>
   );
 }

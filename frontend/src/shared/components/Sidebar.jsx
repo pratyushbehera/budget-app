@@ -1,152 +1,247 @@
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
+import { useState } from "react";
 import {
   LayoutDashboard,
   CreditCard,
   FileText,
-  X,
-  TicketCheck,
   Group,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
-import Button from "@/shared/system/Button";
 
+import Button from "@/shared/system/Button";
 import Typography from "@/shared/system/Typography";
 
-export const Sidebar = ({ onClose }) => {
-  const { user } = useSelector((state) => state.auth);
-  const { groups, loading: isGroupLoading } = useSelector(
-    (state) => state.group,
-  );
+const NAV_ITEMS = [
+  {
+    to: "/dashboard",
+    icon: LayoutDashboard,
+    label: "Overview",
+  },
+  {
+    to: "/transactions",
+    icon: CreditCard,
+    label: "Transactions",
+  },
+  {
+    to: "/plan",
+    icon: FileText,
+    label: "Budget Plan",
+  },
+  {
+    to: "/groups",
+    icon: Group,
+    label: "Money Groups",
+  },
+];
 
-  const acceptedGroups = groups?.filter((grp) => {
-    const member = grp.members?.find((m) => m.userId === user?._id);
-    return member && member.status !== "pending";
-  });
-
+export const Sidebar = ({ isCollapsed, onToggle }) => {
   return (
-    <>
-      {/* Sidebar */}
-       <aside
-      className="
+    <aside
+      className={`
         hidden
         md:flex
         fixed
-        left-0
-        top-0
-        bottom-0
-        w-[18rem]
+        left-4
+        top-4
+        bottom-4
+        z-50
         flex-col
-        border-r
-        border-gray-200
-        bg-white
-        dark:border-gray-800
-        dark:bg-gray-950
-      "
+
+        rounded-[2rem]
+        border
+        border-gray-200/80
+        bg-white/90
+        shadow-xl
+        shadow-gray-900/5
+        backdrop-blur-xl
+
+        dark:border-gray-800/80
+        dark:bg-gray-900/90
+        dark:shadow-black/20
+
+        transition-all
+        duration-300
+        ease-in-out
+
+        ${isCollapsed ? "w-[5rem]" : "w-[15rem]"}
+      `}
     >
-        <div className="flex flex-col h-full p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-10 px-2">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary-500 rounded-2xl shadow-lg shadow-primary-500/20">
-                <img
-                  src="/icon-192x192.png"
-                  alt="FinPal Logo"
-                  className="w-7 h-7 object-contain brightness-0 invert"
-                />
-              </div>
+      <div
+        className={`
+          flex
+          h-full
+          flex-col
+          ${isCollapsed ? "p-3" : "p-4"}
+        `}
+      >
+        {/* =====================================================
+            BRAND
+        ====================================================== */}
+        <div
+          className={`
+            flex
+            items-center
+            mb-8
+            ${isCollapsed ? "justify-center" : "px-1"}
+          `}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                bg-primary-500
+                shadow-lg
+                shadow-primary-500/20
+              "
+            >
+              <img
+                src="/icon-192x192.png"
+                alt="FinPal Logo"
+                className="
+                  h-7
+                  w-7
+                  object-contain
+                  brightness-0
+                  invert
+                "
+              />
+            </div>
+
+            {!isCollapsed && (
               <Typography
                 variant="h2"
-                className="text-primary-500 tracking-tighter"
+                className="
+                  whitespace-nowrap
+                  tracking-tighter
+                  animate-fade-in
+                "
               >
-                Finpal
+                Fin<span className="text-primary-500">pal</span>
               </Typography>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                aria-label="Close menu"
-                className="md:hidden border hover:text-tertiary-500"
-                onClick={onClose}
-                leftIcon={<X size={20} />}
-              ></Button>
-            </div>
+            )}
           </div>
+        </div>
 
-          {/* Nav Links */}
-          <nav className="flex-1 overflow-y-auto space-y-2 py-2">
-            {[
-              { to: "/dashboard", icon: LayoutDashboard, label: "Overview" },
-              { to: "/transactions", icon: CreditCard, label: "Transactions" },
-              { to: "/plan", icon: FileText, label: "Budget Plan" },
-              { to: "/groups", icon: Group, label: "Money Groups" },
-            ].map((item) => (
-              <Link
+        {/* =====================================================
+            NAVIGATION
+        ====================================================== */}
+        <nav className="flex-1 space-y-2">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <NavLink
                 key={item.to}
                 to={item.to}
-                onClick={onClose}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+                end
+                title={isCollapsed ? item.label : undefined}
+                className={({ isActive }) => `
+                  group
+                  flex
+                  items-center
+                  rounded-2xl
+                  font-bold
+                  transition-all
+                  duration-200
+
                   ${
-                    window.location.pathname === item.to
-                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
-                      : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-                  }`}
+                    isCollapsed
+                      ? "h-12 w-12 justify-center mx-auto"
+                      : "gap-4 px-4 py-3.5"
+                  }
+
+                  ${
+                    isActive
+                      ? `
+                        bg-primary-500
+                        text-white
+                        shadow-lg
+                        shadow-primary-500/20
+                      `
+                      : `
+                        text-gray-500
+                        hover:bg-gray-100
+                        hover:text-gray-900
+                        dark:text-gray-400
+                        dark:hover:bg-gray-800/60
+                        dark:hover:text-white
+                      `
+                  }
+                `}
               >
-                <item.icon
-                  size={22}
-                  className={`transition-transform duration-300 group-hover:scale-110 ${
-                    window.location.pathname === item.to
-                      ? "text-white"
-                      : "text-gray-400 group-hover:text-primary-500"
-                  }`}
-                />
-                <span className="tracking-tight">{item.label}</span>
-              </Link>
-            ))}
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      size={21}
+                      strokeWidth={isActive ? 2.5 : 2}
+                      className={`
+                        shrink-0
+                        transition-transform
+                        duration-200
+                        group-hover:scale-110
 
-            {/* Groups Section */}
-            {!isGroupLoading && acceptedGroups?.length > 0 && (
-              <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
-                <Typography
-                  variant="h4"
-                  className="uppercase tracking-[0.2em] text-[16px]"
-                >
-                  Your Groups
-                </Typography>
-                <div className="space-y-1">
-                  {acceptedGroups?.map((grp) => (
-                    <Link
-                      key={grp?._id}
-                      to={`/groups/${grp?._id}`}
-                      onClick={onClose}
-                      className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all group
                         ${
-                          window.location.pathname.includes(grp?._id)
-                            ? "bg-secondary-500 text-white shadow-lg shadow-secondary-500/20"
-                            : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-                        }`}
-                    >
-                      <TicketCheck
-                        size={20}
-                        className={`${
-                          window.location.pathname.includes(grp?._id)
+                          isActive
                             ? "text-white"
-                            : "text-gray-400 group-hover:text-secondary-500"
-                        }`}
-                      />
-                      <span className="text-sm truncate tracking-tight">
-                        {grp.name}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </nav>
-        </div>
-      </aside>
+                            : "text-gray-400 group-hover:text-primary-500"
+                        }
+                      `}
+                    />
 
-      
-    </>
+                    {!isCollapsed && (
+                      <span className="truncate tracking-tight">
+                        {item.label}
+                      </span>
+                    )}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* =====================================================
+            COLLAPSE BUTTON
+        ====================================================== */}
+        <div
+          className={`
+            pt-4
+            border-t
+            border-gray-100
+            dark:border-gray-800
+
+            ${isCollapsed ? "flex justify-center" : ""}
+          `}
+        >
+          <Button
+            size={isCollapsed ? "icon-sm" : "sm"}
+            variant="ghost"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={onToggle}
+            leftIcon={
+              isCollapsed ? (
+                <PanelLeftOpen size={19} />
+              ) : (
+                <PanelLeftClose size={19} />
+              )
+            }
+            className={`
+              rounded-xl
+              ${isCollapsed ? "h-10 w-10" : "w-full justify-start"}
+            `}
+          >
+            {!isCollapsed && "Collapse"}
+          </Button>
+        </div>
+      </div>
+    </aside>
   );
 };

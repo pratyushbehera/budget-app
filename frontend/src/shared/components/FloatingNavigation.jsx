@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import {
   Menu,
   LayoutDashboard,
-  ArrowLeftRight,
-  Wallet,
-  Users,
+  CreditCard,
+  FileText,
+  Group,
+  X,
 } from "lucide-react";
 
 import Button from "@/shared/system/Button";
+import Typography from "@/shared/system/Typography";
 
 const NAV_ITEMS = [
   {
@@ -18,17 +20,17 @@ const NAV_ITEMS = [
   {
     label: "Transactions",
     to: "/transactions",
-    icon: ArrowLeftRight,
+    icon: CreditCard,
   },
   {
     label: "Budget Plan",
-    to: "/budget",
-    icon: Wallet,
+    to: "/plan",
+    icon: FileText,
   },
   {
     label: "Money Groups",
     to: "/groups",
-    icon: Users,
+    icon: Group,
   },
 ];
 
@@ -80,6 +82,9 @@ export const FloatingNavigation = () => {
       {/* Menu button */}
       <div
         className="
+         flex
+          items-center
+          justify-center
           rounded-full
           border
           border-gray-200/80
@@ -91,26 +96,55 @@ export const FloatingNavigation = () => {
           dark:border-gray-800/80
           dark:bg-gray-900/85
           dark:shadow-black/20
+          gap-3
+          pr-5
         "
       >
         <Button
           size="icon-sm"
           variant="ghost"
-          aria-label="Open navigation"
+          aria-label={isOpen ? "Close navigation" : "Open navigation"}
           aria-expanded={isOpen}
           onClick={() => setIsOpen((value) => !value)}
-          leftIcon={
+          className="relative rounded-full"
+        >
+          <span className="relative flex h-5 w-5 items-center justify-center">
+            {/* Menu */}
             <Menu
               size={20}
               className={`
-                transition-transform
-                duration-200
-                ${isOpen ? "rotate-90" : ""}
-              `}
+        absolute
+        transition-all
+        duration-200
+        ease-in-out
+        ${
+          isOpen
+            ? "rotate-90 scale-0 opacity-0"
+            : "rotate-0 scale-100 opacity-100"
+        }
+      `}
             />
-          }
-          className="rounded-full"
-        />
+
+            {/* X */}
+            <X
+              size={20}
+              className={`
+        absolute
+        transition-all
+        duration-200
+        ease-in-out
+        ${
+          isOpen
+            ? "rotate-0 scale-100 opacity-100"
+            : "-rotate-90 scale-0 opacity-0"
+        }
+      `}
+            />
+          </span>
+        </Button>
+        <Typography variant="h3" className=" tracking-tighter">
+          Fin<span className="text-primary-500">pal</span>
+        </Typography>
       </div>
 
       {/* Navigation popover */}

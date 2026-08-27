@@ -3,28 +3,34 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../../shared/components/Sidebar";
 import { FloatingNavigation } from "../../shared/components/FloatingNavigation";
 import { FloatingUserMenu } from "../../shared/components/FloatingUserMenu";
-import { FloatingBrand } from "../../shared/components/FloatingBrand";
+import { useState } from "react";
 
 const ProtectedLayout = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   return (
     <div className="min-h-screen">
       {/* Desktop navigation */}
-      <Sidebar />
+      <Sidebar
+        isCollapsed={isSidebarCollapsed}
+        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      />
 
       {/* Mobile navigation */}
       <FloatingNavigation />
-      <FloatingBrand />
 
       {/* Main content */}
       <main
-        className="
+        className={`
           min-h-screen
           bg-gray-50
           p-4
           dark:bg-gray-950
           sm:p-6
-          md:ml-[18rem]
-        "
+          transition-[padding-left]
+    duration-300
+    ease-in-out
+          ${isSidebarCollapsed ? "md:pl-[5rem]" : "md:pl-[17rem]"}
+        `}
       >
         <Outlet />
       </main>
